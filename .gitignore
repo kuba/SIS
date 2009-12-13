@@ -4,3 +4,6 @@
 /dist/
 *.db
 *.swp
+/students
+/teachers
+/schedule
