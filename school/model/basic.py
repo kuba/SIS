@@ -53,7 +53,7 @@ class Subject(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(Unicode, nullable=False)
-    
+
     def __init__(self, name):
         self.name = name
 
@@ -83,7 +83,7 @@ class Subgroup(Base):
     group_id = Column(ForeignKey('groups.id'))
     group = relation('Group')
     name = Column(Unicode, nullable=False)
-    
+
     @property
     def full_name(self):
         return self.group.name + self.name
@@ -106,7 +106,7 @@ class Lesson(Base):
             )
 
     id = Column(Integer, primary_key=True)
-    
+
     group_id = Column(Integer)
     group = relation('Group')
     subgroup_id = Column(Integer)
