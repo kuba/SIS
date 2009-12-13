@@ -9,8 +9,8 @@ setup(
     name='School',
     version='0.1',
     description='',
-    author='',
-    author_email='',
+    author='Jakub Warmuz',
+    author_email='jakub.warmuz@gmail.com',
     url='',
     install_requires=[
         "Pylons>=0.9.7",
