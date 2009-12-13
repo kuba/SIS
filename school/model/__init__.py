@@ -34,3 +34,10 @@ def init_model(engine):
 #
 #class Reflected(object):
 #    pass
+
+from basic import Person, Educator, Subject,\
+                  Group, Subgroup, Lesson,\
+                  Student, SubgroupMembership
+__all__ = ["Person", "Educator", "Subject",
+           "Group", "Subgroup", "Lesson",
+           "Student", "SubgroupMembership"]
