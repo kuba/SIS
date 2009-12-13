@@ -1,0 +1,12 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:py="http://genshi.edgewall.org/"
+    py:strip="">
+    <ol>
+        <li py:for="lesson in c.lessons">
+            <py:choose>
+                <py:when test="lesson">${'/'.join([x.group.name + (x.subgroup and x.subgroup.name or '') for x in lesson])}</py:when>
+                <py:otherwise>-</py:otherwise>
+            </py:choose>
+        </li>
+    </ol>
+</html>

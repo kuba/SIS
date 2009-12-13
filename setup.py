@@ -13,6 +13,7 @@ setup(
     author_email='jakub.warmuz@gmail.com',
     url='',
     install_requires=[
+        "Routes>=1.11",
         "Pylons>=0.9.7",
         "SQLAlchemy>=0.5",
         "Genshi>=0.4",
