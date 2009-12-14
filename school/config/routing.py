@@ -19,6 +19,11 @@ def make_map():
     map.connect('/error/{action}/{id}', controller='error')
 
     # CUSTOM ROUTES HERE
+    map.connect('now_home', r'/now', controller='now', action='index')
+    with map.submapper(path_prefix='/now', controller='now') as m:
+        m.connect('now_id', '/{id:\d+}', action='now_id')
+        m.connect('now_name', '/{surname}', action='now')
+
     map.connect('schedule_home', r'/plan', controller='schedule', action='index')
     with map.submapper(path_prefix='/plan', controller='schedule') as m:
         m.connect('schedule_group_course', r'/{group_name:\d\w+}+{course}/{day_name}', action='get_group_schedule')
