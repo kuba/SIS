@@ -37,7 +37,9 @@ def init_model(engine):
 
 from basic import Person, Educator, Subject,\
                   Group, Subgroup, Lesson,\
-                  Student, SubgroupMembership
+                  Student, SubgroupMembership,\
+                  SchoolYear
 __all__ = ["Person", "Educator", "Subject",
            "Group", "Subgroup", "Lesson",
-           "Student", "SubgroupMembership"]
+           "Student", "SubgroupMembership",
+           "SchoolYear"]

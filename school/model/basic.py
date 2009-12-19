@@ -61,14 +61,32 @@ class Subject(Base):
         return "<Subject('%s')>" % self.name
 
 
+class SchoolYear(Base):
+    __tablename__ = 'school_years'
+
+    id = Column(Integer, primary_key=True)
+    start = Column(Date, nullable=False)
+    end = Column(Date, nullable=True)
+
+    def __init__(self, start, end):
+        self.start = start
+        self.end = end
+
+    def __repr__(self):
+        return "<SchoolYear('%s/%s')>" % (self.start.year, self.end.year)
+
+
 class Group(Base):
     __tablename__ = 'groups'
 
     id = Column(Integer, primary_key=True)
     name = Column(Unicode, nullable=False)
+    year_id = Column(ForeignKey('school_years.id'))
+    year = relation('SchoolYear')
 
-    def __init__(self, name):
+    def __init__(self, name, year):
         self.name = name
+        self.year = year
 
     def __repr__(self):
         return "<Group('%s')>" % self.name
@@ -161,6 +179,13 @@ class SubgroupMembership(Base):
     since = Column(Date, nullable=False)
     to = Column(Date, nullable=True)
     active = Column(Boolean, nullable=True)
+
+    def __init__(self, student, subgroup, since, to=None, active=True):
+        self.student = student
+        self.subgroup = subgroup
+        self.since = since
+        self.to = to
+        self.active = active
 
     def __repr__(self):
         return "<SubgroupMembership('%s%s', '%s')>" % \

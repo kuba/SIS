@@ -1,5 +1,7 @@
 """Setup the School application"""
+import os
 from codecs import open
+import datetime
 
 import logging
 log = logging.getLogger(__name__)
@@ -9,8 +11,10 @@ from pylons import config
 from school.config.environment import load_environment
 from school.model import meta
 
-from school.parsers import StudentsParser,\
-                           parse_teachers,\
+from school.model import SchoolYear
+
+from school.parsers import TeachersParser,\
+                           StudentsParser,\
                            parse_schedule
 
 
@@ -26,21 +30,26 @@ def setup_app(command, conf, vars):
     # Run parsers
     log.info("Running parsers...")
 
-    # Parse students
-    log.info("Parsing students...")
-    students_lines = open(config['students_file'], 'r', 'utf-8').readlines()
-    students_parser = StudentsParser(meta.Session, students_lines)
-    students_parser.parse()
-    log.info("Students parsed.")
-
     # Parse teachers data
     log.info("Parsing teachers data...")
-    teachers = parse_teachers(open(config['teachers_file'], 'r', 'utf-8'))
+    teachers_parser = TeachersParser(open(config['teachers_file'], 'r', 'utf-8'))
+    teachers = teachers_parser.teachers
     log.info("Teachers parsed.")
+
+    # Parse students
+    log.info("Parsing students...")
+    students_dir = config['students_dir']
+    for year in os.listdir(students_dir):
+        students_lines = open(os.path.join(students_dir, year), 'r', 'utf-8').readlines()
+        StudentsParser(students_lines)
+    log.info("Students parsed.")
+
+    q = meta.Session.query(SchoolYear).order_by(SchoolYear.id).all()
+    school_years = {q[0]: '1', q[1]: '2', q[2]: '3'}
 
     # Parse schedule
     log.info("Parsing schedule...")
-    parse_schedule(open(config['schedule_file'], 'r', 'utf-8'), teachers)
+    parse_schedule(open(config['schedule_file'], 'r', 'utf-8'), teachers, school_years)
     log.info("Schedule parsed.")
 
     log.info("Commiting changes to database...")
