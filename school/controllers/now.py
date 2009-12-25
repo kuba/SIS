@@ -122,7 +122,6 @@ class NowController(BaseController):
         return render('now/index.xml')
 
     def now(self, surname):
-        o = []
         try:
             c.lesson = fetch_current_lesson(meta.Session, surname)
             return render('now/now.xml')
@@ -130,7 +129,7 @@ class NowController(BaseController):
             c.people = e.people
             return render('now/list.xml')
         except NowError as e:
-            return e
+            return repr(e)
 
     def now_id(self, id):
         return self.now(int(id))
