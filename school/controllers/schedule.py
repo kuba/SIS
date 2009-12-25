@@ -83,21 +83,6 @@ class ScheduleController(BaseController):
                 lessons[-1] = lesson
             else:
                 lessons[-1][lesson.subgroup.name] = lesson
-        c.lessons = lessons
-        return render('schedule/group.xml')
 
-        lessons = {}
-        n = 1
-        for lesson in q:
-            while n < lesson.order:
-                lessons[n] = None
-                n += 1
-            if not lessons.has_key(lesson.order):
-                lessons[lesson.order] = {}
-            if lesson.subgroup is None:
-                lessons[lesson.order] = lesson
-            else:
-                lessons[lesson.order][lesson.subgroup.name] = lesson
-            n += 1
         c.lessons = lessons
         return render('schedule/group.xml')
