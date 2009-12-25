@@ -35,12 +35,13 @@ class StudentsParser(object):
             else:
                 raise IncosistentError(self.lnr, self.line)
 
-        for group in self.students:
-            l = len(self.students[group])
+        for membership in self.students.values():
+            membership.sort(key=lambda o: o.student.last_name)
+            l = len(membership)
             last_first = ceil(l/2.0)
             first_part = Subgroup(group, '1')
             second_part = Subgroup(group, '2')
-            for order, student in enumerate(self.students[group]):
+            for order, student in enumerate(membership):
                 if order < last_first:
                     student.subgroup = first_part
                 else:
