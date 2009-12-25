@@ -41,11 +41,13 @@ class StudentsParser(Parser):
         
         # Add students to appropriate group
         # parts (determined by surname's order
-        for membership in self.students.values():
+        for group_name, membership in self.students.items():
             membership.sort(key=lambda o: o.student.last_name)
-            l = len(membership)
-            last_first = ceil(l/2.0)
+            group_count = len(membership)
+            last_first = ceil(group_count/2.0)
+            group = Group(group_name, self.year)
             for order, student in enumerate(membership):
+                student.group = group
                 if order < last_first:
                     student.part = 1
                 else:
@@ -87,12 +89,12 @@ class StudentsParser(Parser):
             raise ParserError("No such gender, try one of %r" % gender)
         
         student = Student(first_name, last_name, is_male)
-        membership = GroupMembership(self.section, None, student, self.year.start)
+        membership = GroupMembership(None, None, student, self.year.start)
         self.section.append(membership)
 
         if course_name is not None:
             course_name = course_name.lower()
             if not self.students.has_key(course_name):
-                seld.students[course_name] = []
-            course_membership = GroupMembership(group, None, student, self.year.start)
+                self.students[course_name] = []
+            course_membership = GroupMembership(None, None, student, self.year.start)
             self.students[course_name].append(course_membership)
