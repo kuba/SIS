@@ -10,13 +10,13 @@
                             ${lesson.subject.name}
                         </py:when>
                         <py:otherwise>
-                            <py:choose test="lesson.has_key('1')">
-                                <py:when test="True">${lesson['1'].subject.name}</py:when>
+                            <py:choose test="lesson.has_key(1)">
+                                <py:when test="True">${lesson[1].subject.name}</py:when>
                                 <py:otherwise>-</py:otherwise>
                             </py:choose>
                             /
-                            <py:choose test="lesson.has_key('2')">
-                                <py:when test="True">${lesson['2'].subject.name}</py:when>
+                            <py:choose test="lesson.has_key(2)">
+                                <py:when test="True">${lesson[2].subject.name}</py:when>
                                 <py:otherwise>-</py:otherwise>
                             </py:choose>
                         </py:otherwise>

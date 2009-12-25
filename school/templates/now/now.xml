@@ -2,5 +2,5 @@
       xmlns:xi="http://www.w3.org/2001/XInclude"
       xmlns:py="http://genshi.edgewall.org/"
       py:strip="">
-      (${c.lesson.order}) ${c.lesson.subject.name} ${c.lesson.group.name}<py:if test="c.lesson.subgroup">${c.lesson.subgroup.name}</py:if>
+      (${c.lesson.order}) ${c.lesson.subject.name} ${c.lesson.group.name}<py:if test="c.lesson.part">${c.lesson.part}</py:if>
 </html>

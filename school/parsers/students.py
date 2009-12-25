@@ -2,9 +2,11 @@ import re, datetime
 from math import ceil
 
 from school.parsers.parser import Parser, ParserError
-from school.model import SchoolYear, Group,\
-        Subgroup, Student, SubgroupMembership
+from school.model import SchoolYear, Group, Student, \
+                         Group, GroupMembership
+
 from school.model.meta import Session
+
 
 RESTUDENT = re.compile(r"""
                         (?P<last>\w+)\s+           # last name
@@ -14,6 +16,7 @@ RESTUDENT = re.compile(r"""
                         (?P<gender>M|F)(?:\s+      # sex
                         (?P<course>\w))?$          # language course
                         """, re.UNICODE + re.VERBOSE)
+
 
 class StudentsParser(Parser):
     def __init__(self, *args, **kwargs):
@@ -35,20 +38,18 @@ class StudentsParser(Parser):
         self.year = SchoolYear(start, end)
 
         super(StudentsParser, self).parse()
-
-        # Add students to appropriate subgroups
-        # (determined by surname's order)
-        for group_name, students in self.students.items():
-            group_count = len(students)
-            last_first = ceil(group_count/2.0)
-            group = Group(group_name, self.year)
-            first_part = Subgroup(group, 1)
-            second_part = Subgroup(group, 2)
-            for order, student in enumerate(students):
+        
+        # Add students to appropriate group
+        # parts (determined by surname's order
+        for membership in self.students.values():
+            membership.sort(key=lambda o: o.student.last_name)
+            l = len(membership)
+            last_first = ceil(l/2.0)
+            for order, student in enumerate(membership):
                 if order < last_first:
-                    student.subgroup = first_part
+                    student.part = 1
                 else:
-                    student.subgroup = second_part
+                    student.part = 2
                 Session.add(student)
 
     def parse_line(self):
@@ -86,12 +87,12 @@ class StudentsParser(Parser):
             raise ParserError("No such gender, try one of %r" % gender)
         
         student = Student(first_name, last_name, is_male)
-        membership = SubgroupMembership(student, None, self.year.start)
+        membership = GroupMembership(self.section, None, student, self.year.start)
         self.section.append(membership)
 
         if course_name is not None:
             course_name = course_name.lower()
             if not self.students.has_key(course_name):
-                self.students[course_name] = []
-            course = SubgroupMembership(student, None, self.year.start)
-            self.students[course_name].append(course)
+                seld.students[course_name] = []
+            course_membership = GroupMembership(group, None, student, self.year.start)
+            self.students[course_name].append(course_membership)

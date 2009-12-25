@@ -12,7 +12,7 @@ from pylons import url
 from pylons.controllers.util import abort, redirect_to
 
 from school.lib.base import BaseController, render
-from school.model import Person, Student, Lesson, Subgroup, SubgroupMembership
+from school.model import Person, Student, Lesson, GroupMembership
 from school.model import meta
 
 
@@ -68,15 +68,16 @@ def fetch_lesson(session, person, weekday, order):
             person = matching_people[0]
 
     # Fetch lessson
-    subgroups = session.query(Subgroup).filter(Subgroup.members.any(SubgroupMembership.student.has(Student.id == person.id))).all()
-    if subgroups:
+    groups_membership = session.query(GroupMembership).\
+            join(GroupMembership.student).\
+            filter(Student.id == person.id).all()
+    if groups_membership:
         # Student
         lessons = []
-        for subgroup in subgroups:
+        for membership in groups_membership:
             q = session.query(Lesson).\
-                        filter(or_(and_(Lesson.group_id == subgroup.group.id,\
-                                        Lesson.subgroup_id == None),\
-                               Lesson.subgroup_id == subgroup.id)).\
+                        filter(Lesson.group_id == membership.group.id).\
+                        filter(or_(Lesson.part == None, Lesson.part == membership.part)).\
                         filter(Lesson.day == weekday).\
                         filter(Lesson.order == order).\
                         all()
@@ -122,7 +123,6 @@ class NowController(BaseController):
         return render('now/index.xml')
 
     def now(self, surname):
-        o = []
         try:
             c.lesson = fetch_current_lesson(meta.Session, surname)
             return render('now/now.xml')
@@ -130,7 +130,7 @@ class NowController(BaseController):
             c.people = e.people
             return render('now/list.xml')
         except NowError as e:
-            return e
+            return repr(e)
 
     def now_id(self, id):
         return self.now(int(id))

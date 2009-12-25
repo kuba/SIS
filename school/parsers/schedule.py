@@ -5,7 +5,7 @@ from codecs import open
 
 from school.parsers.parser import Parser, ParserError
 
-from school.model import Group, Subgroup, Subject, Lesson, Educator, Schedule
+from school.model import Group, Subject, Lesson, Educator, Schedule
 from school.model.meta import Session
 
 
@@ -123,12 +123,10 @@ class ClassScheduleParser(ScheduleParser):
                         (?(sub2none)/-|(?(sub2)/(?P<room2>\w+)))$""",
                         re.UNICODE + re.VERBOSE)
 
-
-    def __init__(self, schedule, subjects, groups, subgroups, *args, **kwargs):
+    def __init__(self, schedule, subjects, groups, *args, **kwargs):
         self.schedule = schedule
         self.subjects = subjects
         self.groups = groups
-        self.subgroups = subgroups
         super(ClassScheduleParser, self).__init__(*args, **kwargs)
 
     def process_section_line(self, line):
@@ -151,13 +149,11 @@ class ClassScheduleParser(ScheduleParser):
         else:
             # Lesson is split into groups
             if m['sub1'] is not None:
-                subgroup = self.subgroups[self.group.name][1]
-                part1 = self.process_lesson(m['sub1'], m['room1'], subgroup)
+                part1 = self.process_lesson(m['sub1'], m['room1'], 1)
             else:
                 part1 = None
             if m['sub2'] is not None:
-                subgroup = self.subgroups[self.group.name][2]
-                part2 = self.process_lesson(m['sub2'], m['room2'], subgroup)
+                part2 = self.process_lesson(m['sub2'], m['room2'], 2)
             else:
                 part2 = None
             self.day[self.order] = (part1, part2)
@@ -219,7 +215,7 @@ def parse(file, teachers_info, school_years):
     c, t = re.search(r'!classes(.*)!teachers(.*)', d, re.DOTALL).groups()
 
     # PARSE!
-    classes = ClassScheduleParser(schedule, subs, groups, subgroups, c.split('\n'))
+    classes = ClassScheduleParser(schedule, subs, groups, c.split('\n'))
     teachers = TeacherScheduleParser(teachers_info, classes.sections, t.split('\n'))
 
     return (classes.sections, teachers.sections)

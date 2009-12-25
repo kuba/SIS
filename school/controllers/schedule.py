@@ -6,7 +6,7 @@ from pylons.controllers.util import abort, redirect_to
 
 from school.lib.base import BaseController, render
 
-from school.model import Lesson, Educator, Group, Subgroup
+from school.model import Lesson, Educator, Group, Group
 from school.model import meta
 
 import datetime
@@ -67,11 +67,10 @@ class ScheduleController(BaseController):
         q = meta.Session.query(Lesson).\
                 join(Lesson.group).\
                 filter(or_(Group.name == group_name, Group.name == course)).\
-                outerjoin(Lesson.subgroup).\
-                filter(or_(Subgroup.name == None, Subgroup.name == u'2', Subgroup.name == u'1')).\
+                filter(or_(Lesson.part == None, Lesson.part == 1, Lesson.part == 2)).\
                 filter(Lesson.day == day).\
                 order_by(Lesson.order).\
-                order_by(Subgroup.name)
+                order_by(Lesson.part)
 
         lessons = []
         for lesson in q:
@@ -79,25 +78,10 @@ class ScheduleController(BaseController):
                 lessons.append(None)
             if not len(lessons) == lesson.order:
                 lessons.append({})
-            if lesson.subgroup is None:
+            if lesson.part is None:
                 lessons[-1] = lesson
             else:
-                lessons[-1][lesson.subgroup.name] = lesson
-        c.lessons = lessons
-        return render('schedule/group.xml')
+                lessons[-1][lesson.part] = lesson
 
-        lessons = {}
-        n = 1
-        for lesson in q:
-            while n < lesson.order:
-                lessons[n] = None
-                n += 1
-            if not lessons.has_key(lesson.order):
-                lessons[lesson.order] = {}
-            if lesson.subgroup is None:
-                lessons[lesson.order] = lesson
-            else:
-                lessons[lesson.order][lesson.subgroup.name] = lesson
-            n += 1
         c.lessons = lessons
         return render('schedule/group.xml')
