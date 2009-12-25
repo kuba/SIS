@@ -67,6 +67,9 @@ class Group(Base):
     id = Column(Integer, primary_key=True)
     name = Column(Unicode, nullable=False)
 
+    members = relation('GroupMembership')
+    students = association_proxy('members', 'student')
+
     def __init__(self, name):
         self.name = name
 
@@ -74,43 +77,52 @@ class Group(Base):
         return "<Group('%s')>" % self.name
 
 
-class Subgroup(Base):
-    __tablename__ = 'subgroups'
+class GroupMembership(Base):
+    __tablename__ = 'groups_memberships'
 
-    id = Column(Integer, primary_key=True)
-    members = relation('SubgroupMembership')
-    students = association_proxy('members', 'student')
-    group_id = Column(ForeignKey('groups.id'))
+    student_id = Column(ForeignKey('students.id'), primary_key=True)
+    student = relation('Student')
+
+    group_id = Column(ForeignKey('groups.id'), primary_key=True)
     group = relation('Group')
-    name = Column(Unicode, nullable=False)
+    part = Column(Integer, nullable=False)
 
-    @property
-    def full_name(self):
-        return self.group.name + self.name
+    since = Column(Date, nullable=False)
+    to = Column(Date, nullable=True)
+    active = Column(Boolean, nullable=True)
 
-    def __init__(self, group, name):
+    def __init__(self, group, part, student, since, to=None, active=True):
         self.group = group
-        self.name = name
+        self.part = part
+        self.student = student
+        self.since = since
+        self.to = to
+        self.active = active
 
     def __repr__(self):
-        return "<Subgroup('%s%s')>" % (self.group.name, self.name)
+        return "<GroupMembership('%s%s', '%s')>" % (self.group.name, self.part if self.part else '', self.student)
+
+
+class Student(Person):
+    __tablename__ = 'students'
+    __mapper_args__ = {'polymorphic_identity' : 'student'}
+
+    id = Column(ForeignKey('people.id'), primary_key=True)
+    groups_membership = relation('GroupMembership')
+    groups = association_proxy('groups_membership', 'group')
+
+    def __repr__(self):
+        return "<Student('%s %s')>" % (self.first_name, self.last_name)
 
 
 class Lesson(Base):
     __tablename__ = 'lessons'
-    __table_args__ = (
-            ForeignKeyConstraint(['group_id'], ['groups.id']),
-            ForeignKeyConstraint(['group_id', 'subgroup_id'],
-                ['subgroups.group_id', 'subgroups.id']),
-            {}
-            )
 
     id = Column(Integer, primary_key=True)
 
-    group_id = Column(Integer)
+    group_id = Column(ForeignKey('groups.id'), nullable=False)
     group = relation('Group')
-    subgroup_id = Column(Integer)
-    subgroup = relation('Subgroup')
+    part = Column(Integer, nullable=True)
 
     subject_id = Column(ForeignKey('subjects.id'), nullable=False)
     subject = relation('Subject', backref=backref('lessons', order_by='id'))
@@ -122,9 +134,9 @@ class Lesson(Base):
     day = Column(Integer, nullable=False)
     room = Column(Integer, nullable=False)
 
-    def __init__(self, group, subgroup, subject, teacher, day, order, room):
+    def __init__(self, group, part, subject, teacher, day, order, room):
         self.group = group
-        self.subgroup = subgroup
+        self.part = part
         self.subject = subject
         self.teacher = teacher
         self.day = day
@@ -133,35 +145,5 @@ class Lesson(Base):
 
     def __repr__(self):
         return "<Lesson('%s', '%s', '%s', '%s', '%s', '%s', '%s')>" % \
-                (self.group, self.subgroup, self.subject,
+                (self.group, self.part, self.subject,
                         self.teacher, self.day, self.order, self.room)
-
-
-class Student(Person):
-    __tablename__ = 'students'
-    __mapper_args__ = {'polymorphic_identity' : 'student'}
-
-    id = Column(ForeignKey('people.id'), primary_key=True)
-    subgroups_membership = relation('SubgroupMembership')
-    subgroups = association_proxy('subgroups_membership', 'subgroup')
-
-    def __repr__(self):
-        return "<Student('%s %s')>" % (self.first_name, self.last_name)
-
-
-class SubgroupMembership(Base):
-    __tablename__ = 'subgroups_memberships'
-
-    student_id = Column(ForeignKey('students.id'), primary_key=True)
-    student = relation('Student')
-
-    subgroup_id = Column(ForeignKey('subgroups.id'), primary_key=True)
-    subgroup = relation('Subgroup')
-
-    since = Column(Date, nullable=False)
-    to = Column(Date, nullable=True)
-    active = Column(Boolean, nullable=True)
-
-    def __repr__(self):
-        return "<SubgroupMembership('%s%s', '%s')>" % \
-                (self.subgroup.group.name, self.subgroup.name, self.student.name)

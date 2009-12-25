@@ -2,7 +2,7 @@ import re, datetime
 from math import ceil
 
 from school.model import meta
-from school.model import Student, Group, Subgroup, SubgroupMembership
+from school.model import Student, Group, GroupMembership 
 
 from schedule import IncosistentError
 
@@ -39,13 +39,11 @@ class StudentsParser(object):
             membership.sort(key=lambda o: o.student.last_name)
             l = len(membership)
             last_first = ceil(l/2.0)
-            first_part = Subgroup(group, '1')
-            second_part = Subgroup(group, '2')
             for order, student in enumerate(membership):
                 if order < last_first:
-                    student.subgroup = first_part
+                    student.part = 1
                 else:
-                    student.subgroup = second_part
+                    student.part = 2
                 self.session.add(student)
 
     def process_section_line(self, line):
@@ -62,10 +60,7 @@ class StudentsParser(object):
         is_male = m['gender'] == 'M' and True or False
         student = Student(m['first'], m['last'], is_male)
 
-        membership = SubgroupMembership()
-        membership.student = student
-        membership.since = datetime.datetime.now()
-        membership.active = True
+        membership = GroupMembership(self.section, None, student, datetime.datetime.now())
         self.students[self.section].append(membership)
 
         if m['course'] is not None:
@@ -73,11 +68,8 @@ class StudentsParser(object):
             if not self.courses.has_key(course_name):
                 self.courses[course_name] = Group(course_name)
 
-            course = SubgroupMembership()
             group = self.courses[course_name]
-            course.student = student
-            course.since = datetime.datetime.now()
-            course.active = True
+            course = GroupMembership(group, None, student, datetime.datetime.now())
             if not self.students.has_key(group):
                 self.students[group] = []
             self.students[group].append(course)

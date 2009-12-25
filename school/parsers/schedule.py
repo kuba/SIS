@@ -3,7 +3,7 @@ import sys
 
 from codecs import open
 
-from school.model import Group, Subgroup, Subject, Lesson, Educator
+from school.model import Group, Subject, Lesson, Educator
 from school.model import meta
 
 
@@ -90,10 +90,9 @@ class ClassScheduleParser(ScheduleParser):
     redata = re.compile(r'(?:(?P<sub1>\w+)|(?P<sub1none>-))(?:/((?P<sub2>\w+)|(?P<sub2none>-)))?\s+(?(sub1none)-|(?P<room1>\w+))(?(sub2none)/-|(?(sub2)/(?P<room2>\w+)))$')
     subjects = [u'mat', u'pol', u'bio', u'chem', u'fiz', u'geo', u'hist', u'inf', u'wf', u'ang', u'ros', u'fr', u'niem', u'rel', u'muz', u'zwo', u'plast', u'wos', u'plast', u'tech', u'po', u'eko', u'wok']
 
-    def __init__(self, session, groups, subgroups, *args, **kwargs):
+    def __init__(self, session, groups, *args, **kwargs):
         super(ClassScheduleParser, self).__init__(*args, **kwargs)
         self.groups = groups
-        self.subgroups = subgroups
         self.session = session
         # subjects
         subjects = {}
@@ -120,11 +119,11 @@ class ClassScheduleParser(ScheduleParser):
         else:
             # Split
             if m['sub1'] is not None:
-                l1 = self.process_lesson(m['sub1'], m['room1'], self.subgroups[self.group.name]['1'])
+                l1 = self.process_lesson(m['sub1'], m['room1'], 1)
             else:
                 l1 = None
             if m['sub2'] is not None:
-                l2 = self.process_lesson(m['sub2'], m['room2'], self.subgroups[self.group.name]['2'])
+                l2 = self.process_lesson(m['sub2'], m['room2'], 2)
             else:
                 l2 = None
             self.sections[self.section][self.day][self.order] = (l1, l2)
@@ -166,14 +165,7 @@ def parse(file, teachers_info):
     for g in q:
         groups[g.name] = g
 
-    q2 = meta.Session.query(Subgroup).all()
-    subgroups = {}
-    for subgroup in q2:
-        if not subgroups.has_key(subgroup.group.name):
-            subgroups[subgroup.group.name] = {}
-        subgroups[subgroup.group.name][subgroup.name] = subgroup
-
-    classes = ClassScheduleParser(meta.Session, groups, subgroups, c.split('\n'))
+    classes = ClassScheduleParser(meta.Session, groups, c.split('\n'))
     classes.parse()
     teachers = TeacherScheduleParser(t.split('\n'), classes.sections, teachers_info, groups)
     teachers.parse()
