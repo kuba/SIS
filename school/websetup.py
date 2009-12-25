@@ -44,7 +44,7 @@ def setup_app(command, conf, vars):
         StudentsParser(students_lines)
     log.info("Students parsed.")
 
-    q = meta.Session.query(SchoolYear).order_by(SchoolYear.id).all()
+    q = meta.Session.query(SchoolYear).order_by(SchoolYear.id).limit(3)
     school_years = {q[0]: '1', q[1]: '2', q[2]: '3'}
 
     # Parse schedule

@@ -76,6 +76,22 @@ class SchoolYear(Base):
         return "<SchoolYear('%s/%s')>" % (self.start.year, self.end.year)
 
 
+class Schedule(Base):
+    __tablename__ = 'schedules'
+
+    id = Column(Integer, primary_key=True)
+    year_id = Column(ForeignKey('school_years.id'), nullable=False)
+    year = relation('SchoolYear')
+    active = Column(Boolean, nullable=False)
+
+    def __init__(self, year, active=True):
+        self.year = year
+        self.active = active
+
+    def __repr__(self):
+        return "<Schedule()>"
+
+
 class Group(Base):
     __tablename__ = 'groups'
 
@@ -125,6 +141,9 @@ class Lesson(Base):
 
     id = Column(Integer, primary_key=True)
 
+    schedule_id = Column(ForeignKey('schedules.id'), nullable=False)
+    schedule = relation('Schedule')
+
     group_id = Column(Integer)
     group = relation('Group')
     subgroup_id = Column(Integer)
@@ -140,7 +159,8 @@ class Lesson(Base):
     day = Column(Integer, nullable=False)
     room = Column(Integer, nullable=False)
 
-    def __init__(self, group, subgroup, subject, teacher, day, order, room):
+    def __init__(self, schedule, group, subgroup, subject, teacher, day, order, room):
+        self.schedule = schedule
         self.group = group
         self.subgroup = subgroup
         self.subject = subject
@@ -150,8 +170,8 @@ class Lesson(Base):
         self.room = room
 
     def __repr__(self):
-        return "<Lesson('%s', '%s', '%s', '%s', '%s', '%s', '%s')>" % \
-                (self.group, self.subgroup, self.subject,
+        return "<Lesson('%r', '%s', '%s', '%s', '%s', '%s', '%s', '%s')>" % \
+                (self.schedule, self.group, self.subgroup, self.subject,
                         self.teacher, self.day, self.order, self.room)
 
 

@@ -5,7 +5,7 @@ from codecs import open
 
 from school.parsers.parser import Parser, ParserError
 
-from school.model import Group, Subgroup, Subject, Lesson, Educator
+from school.model import Group, Subgroup, Subject, Lesson, Educator, Schedule
 from school.model.meta import Session
 
 
@@ -124,7 +124,8 @@ class ClassScheduleParser(ScheduleParser):
                         re.UNICODE + re.VERBOSE)
 
 
-    def __init__(self, subjects, groups, subgroups, *args, **kwargs):
+    def __init__(self, schedule, subjects, groups, subgroups, *args, **kwargs):
+        self.schedule = schedule
         self.subjects = subjects
         self.groups = groups
         self.subgroups = subgroups
@@ -138,8 +139,8 @@ class ClassScheduleParser(ScheduleParser):
         sub = self.subjects[sub]
         teacher = None
         room = room == 'h' and 1000 or room
-        l = Lesson(self.group, part, sub, teacher,
-                self.day_number, self.order, room)
+        l = Lesson(self.schedule, self.group, part, sub,
+                teacher, self.day_number, self.order, room)
         Session.add(l)
         return l
 
@@ -163,16 +164,21 @@ class ClassScheduleParser(ScheduleParser):
 
 
 def parse(file, teachers_info, school_years):
-    #lines = file.readlines()
-    d = file.read()
-    c, t = re.search(r'!classes(.*)!teachers(.*)', d, re.DOTALL).groups()
+    # Create new Schedule
+    current_year = school_years.keys()[0]
+    schedule = Schedule(current_year)
+
+    # Retrieve possible groups
     groups = {}
     from sqlalchemy import or_
-    q = Session.query(Group).filter(or_(Group.year_id == school_years.keys()[0].id, Group.year_id == school_years.keys()[1].id, Group.year_id == school_years.keys()[2].id)).order_by(Group.year_id).all()
+    q = Session.query(Group).\
+            filter(or_(Group.year_id == school_years.keys()[0].id, Group.year_id == school_years.keys()[1].id, Group.year_id == school_years.keys()[2].id)).\
+            order_by(Group.year_id)
     for g in q:
         pr = school_years[g.year]
         groups[pr + g.name] = g
 
+    # Retrieve subgroups
     q2 = Session.query(Subgroup).all()
     subgroups = {}
     for subgroup in q2:
@@ -180,6 +186,7 @@ def parse(file, teachers_info, school_years):
             subgroups[subgroup.group.name] = {}
         subgroups[subgroup.group.name][subgroup.name] = subgroup
 
+    # Initiate subjects
     subjects = [u'mat',
                 u'pol',
                 u'bio',
@@ -207,7 +214,12 @@ def parse(file, teachers_info, school_years):
     for s in subjects:
         subs[s] = Subject(s)
 
-    classes = ClassScheduleParser(subs, groups, subgroups, c.split('\n'))
+    # Read schedule file and split it respectively
+    d = file.read()
+    c, t = re.search(r'!classes(.*)!teachers(.*)', d, re.DOTALL).groups()
+
+    # PARSE!
+    classes = ClassScheduleParser(schedule, subs, groups, subgroups, c.split('\n'))
     teachers = TeacherScheduleParser(teachers_info, classes.sections, t.split('\n'))
 
     return (classes.sections, teachers.sections)

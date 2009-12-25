@@ -38,8 +38,8 @@ def init_model(engine):
 from basic import Person, Educator, Subject,\
                   Group, Subgroup, Lesson,\
                   Student, SubgroupMembership,\
-                  SchoolYear
+                  SchoolYear, Schedule
 __all__ = ["Person", "Educator", "Subject",
            "Group", "Subgroup", "Lesson",
            "Student", "SubgroupMembership",
-           "SchoolYear"]
+           "SchoolYear", "Schedule"]
