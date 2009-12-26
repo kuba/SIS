@@ -174,14 +174,6 @@ def parse(file, teachers_info, school_years):
         pr = school_years[g.year]
         groups[pr + g.name] = g
 
-    # Retrieve subgroups
-    q2 = Session.query(Subgroup).all()
-    subgroups = {}
-    for subgroup in q2:
-        if not subgroups.has_key(subgroup.group.name):
-            subgroups[subgroup.group.name] = {}
-        subgroups[subgroup.group.name][subgroup.name] = subgroup
-
     # Initiate subjects
     subjects = [u'mat',
                 u'pol',

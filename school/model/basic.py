@@ -89,7 +89,7 @@ class Schedule(Base):
         self.active = active
 
     def __repr__(self):
-        return "<Schedule()>"
+        return "<Schedule('%r')>" % (self.year)
 
 
 class Group(Base):
@@ -183,5 +183,5 @@ class Lesson(Base):
 
     def __repr__(self):
         return "<Lesson('%r', '%s', '%s', '%s', '%s', '%s', '%s', '%s')>" % \
-                (self.schedule, self.group, self.subgroup, self.subject,
+                (self.schedule, self.group, self.part, self.subject,
                         self.teacher, self.day, self.order, self.room)
