@@ -38,11 +38,9 @@ class ScheduleController(BaseController):
         if day is None:
             return 'Bad day!'
 
-        last_name = teacher_name.capitalize()
-
         q = meta.Session.query(Lesson).\
                 join(Lesson.teacher).\
-                filter(Educator.last_name == last_name).\
+                filter(Educator.last_name.like(teacher_name)).\
                 filter(Lesson.day == day).\
                 order_by(Lesson.order)
 

@@ -60,7 +60,7 @@ def fetch_lesson(session, person, weekday, order):
     elif isinstance(person, types.UnicodeType):
         matching_people = session.query(Person).\
                 with_polymorphic(Student).\
-                filter(Person.last_name == person.capitalize()).\
+                filter(Person.last_name.like(person)).\
                 all()
         if len(matching_people) > 1:
             raise MultiplePeopleFoundError(matching_people)
@@ -114,7 +114,7 @@ def fetch_current_lesson(session, student):
     if order == 0:
         raise TooLateError("Kidding me? After school, go and have fun!")
 
-    return fetch_lesson(session, student, 0, 2)
+    return fetch_lesson(session, student, weekday, order)
 
 
 class NowController(BaseController):
