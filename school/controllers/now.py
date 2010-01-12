@@ -114,7 +114,7 @@ def fetch_current_lesson(session, student):
     if order == 0:
         raise TooLateError("Kidding me? After school, go and have fun!")
 
-    return fetch_lesson(session, student, 0, 2)
+    return fetch_lesson(session, student, weekday, order)
 
 
 class NowController(BaseController):
