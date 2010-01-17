@@ -4,8 +4,8 @@ from school.model import Educator
 
 
 class TeachersParser(object):
-    pattern = re.compile("""
-                         #(?P<short>.*)\n
+    pattern = re.compile(r"""
+                         \#(?P<short>.*)\n
                           (?P<title>.*)\n
                           (?P<first>.*)\n
                           (?P<last>.*)\n
@@ -21,5 +21,4 @@ class TeachersParser(object):
         for short, title, first, last, gender in teachers:
             gender = gender == 'M' and True or False
             self.teachers[short] = Educator(title, first, last, gender)
-
         return self.teachers
