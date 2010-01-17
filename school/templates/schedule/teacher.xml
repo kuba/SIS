@@ -4,7 +4,7 @@
     <ol>
         <li py:for="lesson in c.lessons">
             <py:choose>
-                <py:when test="lesson">${'/'.join([x.group.name + (str(x.part) if x.part else '') for x in lesson])}</py:when>
+                <py:when test="lesson">${'/'.join([x.group.full_name + (str(x.part) if x.part else '') for x in lesson])}</py:when>
                 <py:otherwise>-</py:otherwise>
             </py:choose>
         </li>

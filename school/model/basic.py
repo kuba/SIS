@@ -3,6 +3,7 @@ from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy import Column, Integer, SmallInteger, \
                        Unicode, Boolean, Date, ForeignKey, \
                        ForeignKeyConstraint
+from sqlalchemy import func
 from sqlalchemy.orm import relation, backref
 
 from school.model.meta import Base, Session
@@ -112,6 +113,10 @@ class Group(Base):
 
     members = relation('GroupMembership')
     students = association_proxy('members', 'student')
+
+    @property
+    def full_name(self):
+        return str(Session.query(func.count(SchoolYear.id)).filter(SchoolYear.start > self.year.start).one()[0]+1) + self.name
 
     def __init__(self, name, year):
         self.name = name
