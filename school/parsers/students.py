@@ -40,7 +40,7 @@ class StudentsParser(Parser):
         super(StudentsParser, self).parse()
         
         # Add students to appropriate group
-        # parts (determined by surname's order
+        # parts (determined by surname's order)
         for group_name, membership in self.students.items():
             membership.sort(key=lambda o: o.student.last_name)
             group_count = len(membership)
