@@ -5,7 +5,9 @@ from sqlalchemy import Column, Integer, SmallInteger, \
                        ForeignKeyConstraint
 from sqlalchemy.orm import relation, backref
 
-from meta import Base
+from school.model.meta import Base, Session
+from sqlalchemy import desc
+import datetime
 
 
 class Person(Base):
@@ -68,9 +70,17 @@ class SchoolYear(Base):
     start = Column(Date, nullable=False)
     end = Column(Date, nullable=True)
 
+    query = Session.query_property()
+
     def __init__(self, start, end):
         self.start = start
         self.end = end
+
+    @classmethod
+    def getRecent(cls):
+        now = datetime.datetime.now()
+        return cls.query.filter(cls.start < now).\
+                order_by(desc(cls.start)).limit(3)
 
     def __repr__(self):
         return "<SchoolYear('%s/%s')>" % (self.start.year, self.end.year)
