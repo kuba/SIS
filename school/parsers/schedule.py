@@ -140,6 +140,11 @@ class TeacherScheduleParser(ScheduleParser):
 
     def process_data_line(self, line):
         groups = line.split('/')
+        try:
+            teacher = self.teachers[self.section]
+        except KeyError:
+            sys.exit("No such teacher: %s" % self.section)
+
         for g in groups:
             if not self.classes.has_key(g):
                 name = g[:-1]
