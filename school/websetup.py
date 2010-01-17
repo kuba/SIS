@@ -25,7 +25,7 @@ def setup_app(command, conf, vars):
     # Create the tables if they don't already exist
     log.info("Creating tables...")
     meta.metadata.create_all(bind=meta.engine)
-    log.info("Successfully set up.")
+    log.info("Schema saved to the database.")
 
     # Run parsers
     log.info("Running parsers...")
@@ -33,7 +33,7 @@ def setup_app(command, conf, vars):
     # Parse teachers data
     log.info("Parsing teachers data...")
     teachers_parser = TeachersParser(open(config['teachers_file'], 'r', 'utf-8'))
-    teachers = teachers_parser.teachers
+    teachers = teachers_parser.parse()
     log.info("Teachers parsed.")
 
     # Parse students

@@ -4,16 +4,22 @@ from school.model import Educator
 
 
 class TeachersParser(object):
-    def __init__(self, file, autoload=True):
-        self.d = file.read()
-
-        if autoload:
-            self.parse()
+    pattern = re.compile("""
+                         #(?P<short>.*)\n
+                          (?P<title>.*)\n
+                          (?P<first>.*)\n
+                          (?P<last>.*)\n
+                          (?P<gender>M|F)""", re.VERBOSE)
+    def __init__(self, filename):
+        self.filename = filename
+        self.teachers = {}
     
     def parse(self):
-        f = re.findall(r'#(?P<short>.*)\n(?P<title>.*)\n(?P<first>.*)\n(?P<last>.*)\n(?P<gender>M|F)', self.d)
-        self.teachers = {}
+        self.data = self.filename.read()
+        teachers = self.pattern.findall(self.data)
         
-        for short, title, first, last, gender in f:
+        for short, title, first, last, gender in teachers:
             gender = gender == 'M' and True or False
             self.teachers[short] = Educator(title, first, last, gender)
+
+        return self.teachers
