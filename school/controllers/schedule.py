@@ -6,7 +6,7 @@ from pylons.controllers.util import abort, redirect_to
 
 from school.lib.base import BaseController, render
 
-from school.model import Lesson, Educator, Group, Group
+from school.model import Lesson, Educator, Group, Group, SchoolYear
 from school.model import meta
 
 import datetime
@@ -55,16 +55,19 @@ class ScheduleController(BaseController):
         return render('schedule/teacher.xml')
 
     def get_group_schedule(self, group_name, day_name=None, course=None):
+        try:
+            year = SchoolYear.getRecent()[int(group_name[0])-1]
+        except IndexError:
+            return "Bad year!"
+
         day = self.translate_weekday(day_name)
         if day is None:
             return 'Bad day!'
 
-        if course:
-            course = group_name[0] + course
-
         q = meta.Session.query(Lesson).\
                 join(Lesson.group).\
-                filter(or_(Group.name == group_name, Group.name == course)).\
+                filter(Group.year == year).\
+                filter(or_(Group.name == group_name[1:], Group.name == course)).\
                 filter(or_(Lesson.part == None, Lesson.part == 1, Lesson.part == 2)).\
                 filter(Lesson.day == day).\
                 order_by(Lesson.order).\

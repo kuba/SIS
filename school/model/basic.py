@@ -5,7 +5,9 @@ from sqlalchemy import Column, Integer, SmallInteger, \
                        ForeignKeyConstraint
 from sqlalchemy.orm import relation, backref
 
-from meta import Base
+from school.model.meta import Base, Session
+from sqlalchemy import desc
+import datetime
 
 
 class Person(Base):
@@ -61,17 +63,59 @@ class Subject(Base):
         return "<Subject('%s')>" % self.name
 
 
+class SchoolYear(Base):
+    __tablename__ = 'school_years'
+
+    id = Column(Integer, primary_key=True)
+    start = Column(Date, nullable=False)
+    end = Column(Date, nullable=True)
+
+    query = Session.query_property()
+
+    def __init__(self, start, end):
+        self.start = start
+        self.end = end
+
+    @classmethod
+    def getRecent(cls):
+        now = datetime.datetime.now()
+        return cls.query.filter(cls.start < now).\
+                order_by(desc(cls.start)).limit(3)
+
+    def __repr__(self):
+        return "<SchoolYear('%s/%s')>" % (self.start.year, self.end.year)
+
+
+class Schedule(Base):
+    __tablename__ = 'schedules'
+
+    id = Column(Integer, primary_key=True)
+    year_id = Column(ForeignKey('school_years.id'), nullable=False)
+    year = relation('SchoolYear')
+    active = Column(Boolean, nullable=False)
+
+    def __init__(self, year, active=True):
+        self.year = year
+        self.active = active
+
+    def __repr__(self):
+        return "<Schedule('%r')>" % (self.year)
+
+
 class Group(Base):
     __tablename__ = 'groups'
 
     id = Column(Integer, primary_key=True)
     name = Column(Unicode, nullable=False)
+    year_id = Column(ForeignKey('school_years.id'))
+    year = relation('SchoolYear')
 
     members = relation('GroupMembership')
     students = association_proxy('members', 'student')
 
-    def __init__(self, name):
+    def __init__(self, name, year):
         self.name = name
+        self.year = year
 
     def __repr__(self):
         return "<Group('%s')>" % self.name
@@ -120,6 +164,9 @@ class Lesson(Base):
 
     id = Column(Integer, primary_key=True)
 
+    schedule_id = Column(ForeignKey('schedules.id'), nullable=False)
+    schedule = relation('Schedule')
+
     group_id = Column(ForeignKey('groups.id'), nullable=False)
     group = relation('Group')
     part = Column(Integer, nullable=True)
@@ -134,7 +181,8 @@ class Lesson(Base):
     day = Column(Integer, nullable=False)
     room = Column(Integer, nullable=False)
 
-    def __init__(self, group, part, subject, teacher, day, order, room):
+    def __init__(self, schedule, group, part, subject, teacher, day, order, room):
+        self.schedule = schedule
         self.group = group
         self.part = part
         self.subject = subject
@@ -144,6 +192,6 @@ class Lesson(Base):
         self.room = room
 
     def __repr__(self):
-        return "<Lesson('%s', '%s', '%s', '%s', '%s', '%s', '%s')>" % \
-                (self.group, self.part, self.subject,
+        return "<Lesson('%r', '%s', '%s', '%s', '%s', '%s', '%s', '%s')>" % \
+                (self.schedule, self.group, self.part, self.subject,
                         self.teacher, self.day, self.order, self.room)

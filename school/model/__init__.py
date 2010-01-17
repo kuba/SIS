@@ -35,7 +35,9 @@ def init_model(engine):
 #class Reflected(object):
 #    pass
 
-from basic import Person, Educator, Subject, Group,\
-                  Lesson, Student, GroupMembership
+from basic import Person, Educator, Subject, Group, \
+                  Lesson, Student, GroupMembership, \
+                  SchoolYear, Schedule
 __all__ = ["Person", "Educator", "Subject", "Group",
-           "Lesson", "Student", "GroupMembership"]
+           "Lesson", "Student", "GroupMembership",
+           "SchoolYear", "Schedule"]
