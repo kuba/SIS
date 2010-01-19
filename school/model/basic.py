@@ -143,6 +143,7 @@ class Group(Base):
 
     members = relation('GroupMembership')
     students = association_proxy('members', 'student')
+    # TODO: unique (name, year)
 
     def __init__(self, name, year):
         self.name = name
@@ -151,6 +152,21 @@ class Group(Base):
     @property
     def full_name(self):
         return "%d%s" % (self.year.index, self.name)
+
+    @classmethod
+    def by_full_name(self, full_name):
+        """
+        Return group by full_name.
+
+        TODO: how to do that without querying the database multiple times?
+        """
+        index = int(full_name[0])
+        name = full_name[1:]
+
+        year = SchoolYear.by_index(index)
+        if year is None:
+            return None
+        return Session.query(Group).filter_by(year=year, name=name).one()
 
     def __repr__(self):
         return "<Group('%s')>" % self.name
