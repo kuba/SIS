@@ -71,17 +71,47 @@ class SchoolYear(Base):
     start = Column(Date, nullable=False)
     end = Column(Date, nullable=True)
 
-    query = Session.query_property()
-
     def __init__(self, start, end):
         self.start = start
         self.end = end
 
     @classmethod
-    def getRecent(cls):
+    def started(cls):
+        """
+        Query only already started years. Order it by date.
+
+        """
+        q = Session.query(SchoolYear)
         now = datetime.datetime.now()
-        return cls.query.filter(cls.start < now).\
-                order_by(desc(cls.start)).limit(3)
+        return q.filter(SchoolYear.start <= now).\
+                order_by(desc(SchoolYear.start))
+
+    @classmethod
+    def recent(cls, count=3):
+        """
+        Return most recent, already started years.
+
+        """
+        q = cls.started()
+        return q.limit(count)
+
+    @classmethod
+    def by_index(cls, index):
+        """
+        Return a school year for given index.
+        """
+        q = cls.started()
+        return q.limit(1).offset(index-1).first()
+
+    @property
+    def index(self):
+        """
+        Return the order in which school year appears back in the history.
+
+        """
+        now = datetime.datetime.now()
+        return self.started().filter(SchoolYear.start > self.start).count() + 1
+
 
     def __repr__(self):
         return "<SchoolYear('%s/%s')>" % (self.start.year, self.end.year)
@@ -114,13 +144,13 @@ class Group(Base):
     members = relation('GroupMembership')
     students = association_proxy('members', 'student')
 
-    @property
-    def full_name(self):
-        return str(Session.query(func.count(SchoolYear.id)).filter(SchoolYear.start > self.year.start).one()[0]+1) + self.name
-
     def __init__(self, name, year):
         self.name = name
         self.year = year
+
+    @property
+    def full_name(self):
+        return "%d%s" % (self.year.index, self.name)
 
     def __repr__(self):
         return "<Group('%s')>" % self.name

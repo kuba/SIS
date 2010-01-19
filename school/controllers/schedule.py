@@ -56,7 +56,7 @@ class ScheduleController(BaseController):
 
     def get_group_schedule(self, group_name, day_name=None, course=None):
         try:
-            year = SchoolYear.getRecent()[int(group_name[0])-1]
+            year = SchoolYear.recent()[int(group_name[0])-1]
         except IndexError:
             return "Bad year!"
 
