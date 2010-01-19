@@ -1,24 +1,64 @@
+"""
+Module for parsing teachers file.
+
+"""
 import re
+import sys
 
 from school.model import Educator
 
 
+class TeachersParserError(Exception):
+    pass
+
+
 class TeachersParser(object):
+    """
+    Parser for teachers file.
+
+    Teachers file must be maintained in following format:
+        title LastName FirstName gender
+    where Gender is one of two values: "M" or "F",
+    for man and woman respectively.
+
+    :ivar pattern: Compiled pattern used for parsing
+                   (matching) lines from input file.
+    :type pattern: _sre.SRE_Pattern
+
+    :ivar filename: Path to parsable file
+    :type filename: :class:`str`
+
+    :ivar teachers: Dictionary of parsed teachers.
+    :type teachers: :class:`dict` of :class:`school.model.Educator` objects
+
+    """
     pattern = re.compile(r"""
-                         \#(?P<short>.*)\n
-                          (?P<title>.*)\n
-                          (?P<first>.*)\n
-                          (?P<last>.*)\n
-                          (?P<gender>M|F)""", re.VERBOSE)
+                          ([.\w-]+)\s # title
+                          ([\w-]+)\s # last
+                          ([\w-]+)\s # first
+                          (M|F)\s    # gender
+                          """, re.VERBOSE + re.UNICODE)
     def __init__(self, filename):
         self.filename = filename
         self.teachers = {}
-    
+
     def parse(self):
-        self.data = self.filename.read()
-        teachers = self.pattern.findall(self.data)
-        
-        for short, title, first, last, gender in teachers:
-            gender = gender == 'M' and True or False
-            self.teachers[short] = Educator(title, first, last, gender)
+        """
+        Read the :attr:`filename` and parse it.
+
+        Parsing means matching lines for :attr:`pattern` and
+        populating new :class:`school.model.Educator` objects.
+
+        Raises :class:`TeachersParserError` when line is not matching.
+
+        :retval: :class:`dict` of :class:`school.model.Educator` objects
+        """
+        self.lines = self.filename.readlines()
+        for lnr, line in enumerate(self.lines):
+            try:
+                title, last, first, gender = self.pattern.match(line).groups()
+            except AttributeError:
+                raise TeachersParserError("Line is not matching: %d. %s" \
+                                           % (lnr+1, line))
+            self.teachers[last] = Educator(title, first, last, gender)
         return self.teachers
