@@ -96,7 +96,7 @@ class TeacherScheduleParser(ScheduleParser):
         try:
             teacher = self.teachers[self.section_name]
         except KeyError:
-            sys.exit("No such teacher: %s" % self.section)
+            sys.exit("No such teacher: %s" % self.section_name)
 
         part = None
         if not self.lessons.has_key(group_name):
