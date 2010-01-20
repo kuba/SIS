@@ -223,10 +223,10 @@ class Lesson(Base):
     part = Column(Integer, nullable=True)
 
     subject_id = Column(ForeignKey('subjects.id'), nullable=False)
-    subject = relation('Subject', backref=backref('lessons', order_by='id'))
+    subject = relation('Subject', backref=backref('lessons', order_by='Lesson.order'))
 
     teacher_id = Column(ForeignKey('educators.id'), nullable=False)
-    teacher = relation('Educator', backref=backref('lessons', order_by='id'))
+    teacher = relation('Educator', backref=backref('lessons', order_by='Lesson.order'))
 
     order = Column(Integer, nullable=False)
     day = Column(Integer, nullable=False)
