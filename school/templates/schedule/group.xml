@@ -7,16 +7,16 @@
                 <py:when test="lesson">
                     <py:choose test="hasattr(lesson, 'subject')">
                         <py:when test="True">
-                            ${lesson.subject.name}
+                            ${lesson.subject.name} ${lesson.room}
                         </py:when>
                         <py:otherwise>
                             <py:choose test="lesson.has_key(1)">
-                                <py:when test="True">${lesson[1].subject.name}</py:when>
+                                <py:when test="True">${lesson[1].subject.name} ${lesson[1].room}</py:when>
                                 <py:otherwise>-</py:otherwise>
                             </py:choose>
                             /
                             <py:choose test="lesson.has_key(2)">
-                                <py:when test="True">${lesson[2].subject.name}</py:when>
+                                <py:when test="True">${lesson[2].subject.name} ${lesson[2].room}</py:when>
                                 <py:otherwise>-</py:otherwise>
                             </py:choose>
                         </py:otherwise>
