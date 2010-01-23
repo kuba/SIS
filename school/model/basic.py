@@ -258,7 +258,7 @@ class Group(Base):
                 join(Lesson.group).filter(Group.id == self.id).\
                 join(Lesson.schedule).filter(Schedule.id.in_(s)).\
                 filter(Lesson.day == day).\
-                order_by(Lesson.order, Lesson.part)
+                order_by(Lesson.order, Lesson.second_part)
 
         schedule = []
         for lesson in q:
@@ -284,7 +284,7 @@ class GroupMembership(Base):
 
     group_id = Column(ForeignKey('groups.id'), primary_key=True)
     group = relation('Group')
-    part = Column(Integer, nullable=False)
+    second_part = Column(Boolean, nullable=False)
 
     since = Column(Date, nullable=False)
     to = Column(Date, nullable=True)
@@ -298,8 +298,28 @@ class GroupMembership(Base):
         self.to = to
         self.active = active
 
+    @property
+    def part(self):
+        if self.second_part:
+            return 2
+        else:
+            return 1
+
+    @part.setter
+    def part(self, part):
+        if self.part == 1:
+            self.second_part = False
+        elif self.part == 2:
+            self.second_part = True
+        else:
+            raise ValueError
+
+    def full_group_name(self):
+        return "%s%d" % (self.group.name, self.part)
+
     def __repr__(self):
-        return "<GroupMembership('%s%s', '%s')>" % (self.group.name, self.part if self.part else '', self.student)
+        return "<GroupMembership('%s', '%s')>" \
+                % (self.full_group_name, self.student)
 
 
 class Student(Person):
@@ -331,7 +351,8 @@ class Lesson(Base):
 
     group_id = Column(ForeignKey('groups.id'), nullable=False)
     group = relation('Group')
-    part = Column(Integer, nullable=True)
+    first_part = Column(Boolean, nullable=False)
+    second_part = Column(Boolean, nullable=False)
 
     subject_id = Column(ForeignKey('subjects.id'), nullable=False)
     subject = relation('Subject', backref=backref('lessons', order_by='Lesson.order'))
@@ -352,6 +373,29 @@ class Lesson(Base):
         self.day = day
         self.order = order
         self.room = room
+
+    @property
+    def part(self):
+        if self.first_part and self.second_part:
+            return None
+        elif self.first_part:
+            return 1
+        else:
+            return 2
+
+    @part.setter
+    def part(self, part):
+        if part is None:
+            self.first_part = True
+            self.second_part = True
+        elif part == 1:
+            self.first_part = True
+            self.second_part = False
+        elif part == 2:
+            self.first_part = False
+            self.second_part = True
+        else:
+            raise ValueError
 
     def __repr__(self):
         return "<Lesson('%r', '%s', '%s', '%s', '%s', '%s', '%s', '%s')>" % \
