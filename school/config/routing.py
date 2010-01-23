@@ -18,6 +18,8 @@ def make_map():
     map.connect('/error/{action}', controller='error')
     map.connect('/error/{action}/{id}', controller='error')
 
+    map.resource('substitution', 'substitutions')
+
     # CUSTOM ROUTES HERE
     map.connect('now_home', r'/now', controller='now', action='index')
     with map.submapper(path_prefix='/now', controller='now') as m:

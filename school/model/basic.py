@@ -48,6 +48,10 @@ class Educator(Person):
         super(Educator, self).__init__(*args, **kwargs)
         self.title = title
 
+    @property
+    def name_with_title(self):
+        return "%s %s" % (self.title, self.name)
+
     def lesson(self, day, order):
         """
         Get lesson for given day and order.
@@ -273,7 +277,7 @@ class Group(Base):
         return schedule
 
     def __repr__(self):
-        return "<Group('%s')>" % self.name
+        return "<Group('%s')>" % self.full_name
 
 
 class GroupMembership(Base):

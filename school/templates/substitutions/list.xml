@@ -1,0 +1,6 @@
+<html xmlns:py="http://genshi.edgewall.org/">
+    <a href="${h.url('substitutions/new')}">New</a>
+    <ol>
+        <li py:for="sub in c.subs">${sub}</li>
+    </ol>
+</html>
