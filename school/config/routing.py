@@ -26,12 +26,12 @@ def make_map():
 
     map.connect('schedule_home', r'/plan', controller='schedule', action='index')
     with map.submapper(path_prefix='/plan', controller='schedule') as m:
-        m.connect('schedule_group_course', r'/{group_name:\d\w+}+{course}/{day_name}', action='get_group_schedule')
-        m.connect('schedule_group_course_today', r'/{group_name:\d\w+}+{course}', action='get_group_schedule')
-        m.connect('schedule_group', r'/{group_name:\d\w+}/{day_name}', action='get_group_schedule')
-        m.connect('schedule_group_today', r'/{group_name:\d\w+}', action='get_group_schedule')
-        m.connect('schedule_teacher', r'/{teacher_name}/{day_name}', action='get_teacher_schedule')
-        m.connect('schedule_teacher_today', r'/{teacher_name}', action='get_teacher_schedule')
+        m.connect('schedule_group_course', r'/{group_name:\d\w+}+{course}/{day_name}', action='get_group')
+        m.connect('schedule_group_course_today', r'/{group_name:\d\w+}+{course}', action='get_group')
+        m.connect('schedule_group', r'/{group_name:\d\w+}/{day_name}', action='get_group')
+        m.connect('schedule_group_today', r'/{group_name:\d\w+}', action='get_group')
+        m.connect('schedule_teacher', r'/{teacher_name}/{day_name}', action='get_teacher')
+        m.connect('schedule_teacher_today', r'/{teacher_name}', action='get_teacher')
 
     map.connect('/{controller}/{action}')
     map.connect('/{controller}/{action}/{id}')

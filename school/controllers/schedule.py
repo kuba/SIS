@@ -34,7 +34,7 @@ class ScheduleController(BaseController):
             day = None
         return day
 
-    def get_teacher_schedule(self, teacher_name, day_name=None):
+    def get_teacher(self, teacher_name, day_name=None):
         day = self.translate_weekday(day_name)
         if day is None:
             return 'Bad day!'
@@ -52,7 +52,7 @@ class ScheduleController(BaseController):
         c.lessons = teacher.schedule_for_day(day)
         return render('schedule/teacher.xml')
 
-    def get_group_schedule(self, group_name, day_name=None, course=None):
+    def get_group(self, group_name, day_name=None, course=None):
         group = Group.by_full_name(group_name)
         if not group:
             return 'No such group!'
