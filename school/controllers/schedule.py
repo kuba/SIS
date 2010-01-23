@@ -6,7 +6,7 @@ from pylons.controllers.util import abort, redirect_to
 
 from school.lib.base import BaseController, render
 
-from school.model import Lesson, Educator, Group, Group, SchoolYear
+from school.model import Lesson, Educator, Group, Group, SchoolYear, Schedule
 from school.model import meta
 
 import datetime
@@ -74,3 +74,16 @@ class ScheduleController(BaseController):
 
         c.lessons = gs
         return render('schedule/group.xml')
+
+    def get_teachers(self):
+        """
+        Get full current teachers schedule (every teacher and every weekday)
+
+        """
+        educators = []
+        for e in meta.Session.query(Educator).order_by(Educator.last_name).all():
+            s = e.schedule()
+            educators.append((e, s))
+        c.educators = educators
+        
+        return render('schedule/teacher/full_table.xml')

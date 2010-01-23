@@ -48,6 +48,10 @@ class Educator(Person):
         super(Educator, self).__init__(*args, **kwargs)
         self.title = title
 
+    @property
+    def name_with_title(self):
+        return "%s %s" % (self.title, self.name)
+
     def lesson(self, day, order):
         """
         Get lesson for given day and order.

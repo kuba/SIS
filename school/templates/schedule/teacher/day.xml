@@ -1,0 +1,11 @@
+<ol xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:py="http://genshi.edgewall.org/">
+    <li py:for="lesson in day">
+        <py:choose>
+            <py:when test="lesson">
+                ${'/'.join([x.group.full_name + (str(x.part) if x.part else '') + " %d" % x.room for x in lesson])}
+            </py:when>
+            <py:otherwise>-</py:otherwise>
+        </py:choose>
+    </li>
+</ol>
