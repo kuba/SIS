@@ -17,9 +17,9 @@ class Person(Base):
     __tablename__ = 'people'
 
     id = Column(Integer, primary_key=True)
-    first_name = Column(Unicode, nullable=False)
-    second_name = Column(Unicode)
-    last_name = Column(Unicode, nullable=False)
+    first_name = Column(Unicode(256), nullable=False)
+    second_name = Column(Unicode(256))
+    last_name = Column(Unicode(256), nullable=False)
     is_male = Boolean(nullable=False)
 
     def __init__(self, first_name, last_name, is_male, second_name=None):
@@ -42,7 +42,7 @@ class Educator(Person):
     __mapper_args__ = {'polymorphic_identity' : 'educator'}
 
     id = Column(ForeignKey('people.id'), primary_key=True)
-    title = Column(Unicode)
+    title = Column(Unicode(16))
 
     def __init__(self, title, *args, **kwargs):
         super(Educator, self).__init__(*args, **kwargs)
@@ -99,7 +99,7 @@ class Subject(Base):
     __tablename__ = 'subjects'
 
     id = Column(Integer, primary_key=True)
-    name = Column(Unicode, nullable=False)
+    name = Column(Unicode(128), nullable=False)
 
     def __init__(self, name):
         self.name = name
@@ -210,7 +210,7 @@ class Group(Base):
     __tablename__ = 'groups'
 
     id = Column(Integer, primary_key=True)
-    name = Column(Unicode, nullable=False)
+    name = Column(Unicode(16), nullable=False)
     year_id = Column(ForeignKey('school_years.id'))
     year = relation('SchoolYear')
 
