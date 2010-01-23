@@ -8,6 +8,8 @@ from sqlalchemy.orm import relation, backref
 
 from school.model.meta import Base, Session
 from sqlalchemy import desc
+from sqlalchemy.orm.exc import NoResultFound
+
 import datetime
 
 
@@ -45,6 +47,44 @@ class Educator(Person):
     def __init__(self, title, *args, **kwargs):
         super(Educator, self).__init__(*args, **kwargs)
         self.title = title
+
+    def lesson(self, day, order):
+        """
+        Get lesson for given day and order.
+
+        """
+        q = Session.query(Lesson).filter_by(day=day, order=order).\
+                join(Lesson.teacher).filter(Educator.id == self.id).first()
+        return q
+
+    def lessons_for_day(self, day):
+        """
+        Get lessons for specific day
+
+        """
+        q = Session.query(Lesson).join(Lesson.teacher).\
+                filter(Educator.id == self.id).\
+                filter(Lesson.day == day).\
+                order_by(Lesson.order)
+        return q
+
+    def schedule(self):
+        schedule = []
+        for day in range(0,5):
+            schedule.append(self.schedule_for_day(day))
+        return schedule
+
+    def schedule_for_day(self, day):
+        schedule = []
+        for lesson in self.lessons_for_day(day):
+            while len(schedule) + 1 < lesson.order:
+                # Pad "empty" lessons
+                schedule.append(None)
+            if not len(schedule) == lesson.order:
+                # One teacher can handle two lessons (groups) at once
+                schedule.append([])
+            schedule[-1].append(lesson)
+        return schedule
 
     def __repr__(self):
         return "<Educator('%s %s')>" % \
@@ -96,6 +136,14 @@ class SchoolYear(Base):
         return q.limit(count)
 
     @classmethod
+    def current(cls):
+        """
+        Return current year.
+
+        """
+        return cls.recent(1)
+
+    @classmethod
     def by_index(cls, index):
         """
         Return a school year for given index.
@@ -128,6 +176,27 @@ class Schedule(Base):
     def __init__(self, year, active=True):
         self.year = year
         self.active = active
+
+    @classmethod
+    def current(cls):
+        """
+        Return current schedules.
+
+        """
+        current_year = SchoolYear.current().first()
+        q = Session.query(cls).filter(SchoolYear.id == current_year.id).filter(cls.active == True)
+        return q.all()
+
+    def check_rooms(self):
+        """
+        Check for repetetive rooms, ie. when one room
+        is occupied simultanously by two lessons.
+
+        """
+        return Session.query(func.count(Lesson.room), Lesson).\
+                group_by(Lesson.room, Lesson.order, Lesson.day).\
+                having(func.count(Lesson.room)>1).\
+                filter(Lesson.room != 100).all()
 
     def __repr__(self):
         return "<Schedule('%r')>" % (self.year)
@@ -166,7 +235,42 @@ class Group(Base):
         year = SchoolYear.by_index(index)
         if year is None:
             return None
-        return Session.query(Group).filter_by(year=year, name=name).one()
+        try:
+            group = Session.query(Group).filter_by(year=year, name=name).one()
+        except NoResultFound:
+            group = None
+        return group
+
+    def lesson(self, day, order):
+        """
+        Return lesson for specified day and order.
+
+        """
+        q = Session.query(Lesson).\
+                filter_by(group_id=self.id, day=day, order=order)
+        return q
+
+    def schedule_for_day(self, day):
+        current_schedule = Schedule.current()
+        s = [x.id for x in current_schedule]
+
+        q = Session.query(Lesson).\
+                join(Lesson.group).filter(Group.id == self.id).\
+                join(Lesson.schedule).filter(Schedule.id.in_(s)).\
+                filter(Lesson.day == day).\
+                order_by(Lesson.order, Lesson.part)
+
+        schedule = []
+        for lesson in q:
+            while len(schedule) + 1 < lesson.order:
+                schedule.append(None)
+            if not len(schedule) == lesson.order:
+                schedule.append({})
+            if lesson.part == None:
+                schedule[-1] = lesson
+            else:
+                schedule[-1][lesson.part] = lesson
+        return schedule
 
     def __repr__(self):
         return "<Group('%s')>" % self.name
@@ -205,6 +309,13 @@ class Student(Person):
     id = Column(ForeignKey('people.id'), primary_key=True)
     groups_membership = relation('GroupMembership')
     groups = association_proxy('groups_membership', 'group')
+
+    def lesson(self, day, order):
+        for group in self.groups:
+            l = group.lesson(day, order).first()
+            if l is not None:
+                return l
+
 
     def __repr__(self):
         return "<Student('%s %s')>" % (self.first_name, self.last_name)

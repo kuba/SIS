@@ -12,6 +12,7 @@ from school.model import meta
 import datetime
 
 from sqlalchemy import or_
+from sqlalchemy.orm.exc import MultipleResultsFound, NoResultFound
 
 
 class ScheduleController(BaseController):
@@ -38,51 +39,38 @@ class ScheduleController(BaseController):
         if day is None:
             return 'Bad day!'
 
-        q = meta.Session.query(Lesson).\
-                join(Lesson.teacher).\
-                filter(Educator.last_name.like(teacher_name)).\
-                filter(Lesson.day == day).\
-                order_by(Lesson.order)
+        try:
+            teacher = meta.Session.query(Educator).\
+                    filter(Educator.last_name.like(teacher_name)).one()
+        except MultipleResultsFound:
+            # TODO: how to do that properly?
+            return """Hey, too much teachers with given surname were found.
+                      Please report it to administrator!"""
+        except NoResultFound:
+            return "No such teacher!"
 
-        lessons = []
-        for lesson in q:
-            while len(lessons) + 1 < lesson.order:
-                lessons.append(None)
-            if not len(lessons) == lesson.order:
-                lessons.append([])
-            lessons[-1].append(lesson)
-        c.lessons = lessons
+        c.lessons = teacher.schedule_for_day(day)
         return render('schedule/teacher.xml')
 
     def get_group_schedule(self, group_name, day_name=None, course=None):
-        try:
-            year = SchoolYear.recent()[int(group_name[0])-1]
-        except IndexError:
-            return "Bad year!"
+        group = Group.by_full_name(group_name)
+        if not group:
+            return 'No such group!'
 
         day = self.translate_weekday(day_name)
         if day is None:
             return 'Bad day!'
 
-        q = meta.Session.query(Lesson).\
-                join(Lesson.group).\
-                filter(Group.year == year).\
-                filter(or_(Group.name == group_name[1:], Group.name == course)).\
-                filter(or_(Lesson.part == None, Lesson.part == 1, Lesson.part == 2)).\
-                filter(Lesson.day == day).\
-                order_by(Lesson.order).\
-                order_by(Lesson.part)
-
-        lessons = []
-        for lesson in q:
-            while len(lessons) + 1 < lesson.order:
-                lessons.append(None)
-            if not len(lessons) == lesson.order:
-                lessons.append({})
-            if lesson.part is None:
-                lessons[-1] = lesson
+        gs = group.schedule_for_day(day)
+        if course is not None:
+            course = Group.by_full_name(group_name[0]+course)
+            if course is None:
+                return "No such course!"
             else:
-                lessons[-1][lesson.part] = lesson
+                cs = course.schedule_for_day(day)
+                for o, lesson in enumerate(cs):
+                    if lesson is not None:
+                        gs[o] = lesson
 
-        c.lessons = lessons
+        c.lessons = gs
         return render('schedule/group.xml')
