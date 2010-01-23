@@ -35,9 +35,10 @@ def init_model(engine):
 #class Reflected(object):
 #    pass
 
-from basic import Person, Educator, Subject, Group, \
+from school.model.basic import Person, Educator, Subject, Group, \
                   Lesson, Student, GroupMembership, \
                   SchoolYear, Schedule
+from school.model.subs import Substitution
 __all__ = ["Person", "Educator", "Subject", "Group",
            "Lesson", "Student", "GroupMembership",
-           "SchoolYear", "Schedule"]
+           "SchoolYear", "Schedule", "Substitution"]
