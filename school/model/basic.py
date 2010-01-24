@@ -104,9 +104,10 @@ class Educator(Person):
         Get full week schedule.
 
         """
-        current_schedules = [s.id for s in Schedule.current()]
+        current = [s.id for s in Schedule.current()]
         q = Session.query(Lesson).filter(Lesson.teacher.has(id=self.id)).\
-                filter(Lesson.schedule.has(Schedule.id.in_(current_schedules)))
+                filter(Lesson.schedule.has(Schedule.id.in_(current))).\
+                order_by(Lesson.day, Lesson.order)
         days = {}
         for x in range(0,5):
             days[x] = []

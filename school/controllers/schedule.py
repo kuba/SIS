@@ -81,7 +81,8 @@ class ScheduleController(BaseController):
 
         """
         educators = []
-        for e in meta.Session.query(Educator).order_by(Educator.last_name).all():
+        q = meta.Session.query(Educator).order_by(Educator.last_name)
+        for e in q:
             s = e.schedule()
             educators.append((e, s))
         c.educators = educators
