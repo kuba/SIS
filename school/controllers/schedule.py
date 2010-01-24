@@ -2,6 +2,7 @@ import logging
 log = logging.getLogger(__name__)
 
 from pylons import request, response, session, tmpl_context as c
+from pylons.decorators.cache import beaker_cache
 from pylons.controllers.util import abort, redirect_to
 
 from school.lib.base import BaseController, render
@@ -76,6 +77,7 @@ class ScheduleController(BaseController):
         c.lessons = gs
         return render('schedule/group.xml')
 
+    @beaker_cache(expire=86400)
     def get_teachers(self):
         """
         Get full current teachers schedule (every teacher and every weekday)
