@@ -11,7 +11,7 @@ import datetime
 
 from sqlalchemy import desc
 
-from school.model import meta
+from school.model.meta import Session
 from school.model import Substitution, Educator, Group, SchoolYear
 
 class SubstitutionsController(BaseController):
@@ -23,7 +23,8 @@ class SubstitutionsController(BaseController):
     def index(self, format='html'):
         """GET /substitutions: All items in the collection"""
         # url('substitutions')
-        c.subs = meta.Session.query(Substitution).order_by(Substitution.date).all()
+        c.year = SchoolYear.current()
+        c.subs = Session.query(Substitution).order_by(Substitution.date).all()
         return render('substitutions/list.xml')
 
     def create(self):
@@ -31,8 +32,8 @@ class SubstitutionsController(BaseController):
         # url('substitutions')
         date = datetime.datetime.strptime(request.params['date'], '%Y-%m-%d')
         order = int(request.params['order'])
-        group = meta.Session.query(Group).get(request.params['group'])
-        teacher = meta.Session.query(Educator).get(request.params['educator'])
+        group = Session.query(Group).get(request.params['group'])
+        teacher = Session.query(Educator).get(request.params['educator'])
         comment = request.params['comment']
         if len(request.params.getall('part')) == 2:
             part = None
@@ -40,16 +41,19 @@ class SubstitutionsController(BaseController):
             part = request.params['part']
 
         s = Substitution(date, order, group, teacher, part, comment)
-        meta.Session.add(s)
-        meta.Session.commit()
+        Session.add(s)
+        Session.commit()
         redirect_to(action="index")
 
     def new(self, format='html'):
         """GET /substitutions/new: Form to create a new item"""
         # url('new_substitution')
         c.today = datetime.date.today()
-        c.groups = meta.Session.query(Group).join(Group.year).order_by(desc(SchoolYear.start), Group.name).all()
-        c.educators = meta.Session.query(Educator).order_by(Educator.last_name).all()
+        c.groups = Session.query(Group).join(Group.year).\
+                order_by(desc(SchoolYear.start), Group.name).all()
+        c.educators = Session.query(Educator).\
+                order_by(Educator.last_name).all()
+        c.year = SchoolYear.current()
         return render('substitutions/new.xml')
 
     def update(self, id):

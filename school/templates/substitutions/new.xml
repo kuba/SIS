@@ -7,7 +7,7 @@
     </select>
     <label for="group">Group:</label>
     <select id="group" name="group">
-        <option py:for="group in c.groups" value="${group.id}">${group.full_name}</option>
+        <option py:for="group in c.groups" value="${group.id}">${group.full_name(c.year)}</option>
     </select>
     <input type="checkbox" name="part" value="1" checked="true" /> part1
     <input type="checkbox" name="part" value="2" checked="true" /> part2

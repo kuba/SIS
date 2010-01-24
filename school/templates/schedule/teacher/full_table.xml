@@ -1,0 +1,26 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:xi="http://www.w3.org/2001/XInclude"
+    xmlns:py="http://genshi.edgewall.org/">
+    <table border="1">
+        <tr>
+            <th rowspan="2">Nauczyciel</th>
+            <th colspan="5">Dzień tygodnia</th>
+        </tr>
+        <tr>
+            <td>poniedziałek</td>
+            <td>wtorek</td>
+            <td>środa</td>
+            <td>czwartek</td>
+            <td>piątek</td>
+        </tr>
+        <tr py:for="e, days in c.educators">
+            <td>${e.name_with_title}</td>
+            <td py:for="day in days">
+                <py:choose test="len(day)">
+                    <py:when test="0">&nbsp;</py:when>
+                    <py:otherwise><xi:include href="day.xml" /></py:otherwise>
+                </py:choose>
+            </td>
+        </tr>
+    </table>
+</html>

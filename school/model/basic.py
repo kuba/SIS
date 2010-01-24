@@ -2,7 +2,7 @@ from sqlalchemy.ext.associationproxy import association_proxy
 
 from sqlalchemy import Column, Integer, SmallInteger, \
                        Unicode, Boolean, Date, ForeignKey, \
-                       ForeignKeyConstraint
+                       UniqueConstraint
 from sqlalchemy import func
 from sqlalchemy.orm import relation, backref
 
@@ -14,15 +14,19 @@ import datetime
 
 
 class Person(Base):
+    """
+    Basic class for representing people.
+
+    """
     __tablename__ = 'people'
 
     id = Column(Integer, primary_key=True)
-    first_name = Column(Unicode, nullable=False)
-    second_name = Column(Unicode)
-    last_name = Column(Unicode, nullable=False)
+    first_name = Column(Unicode(256), nullable=False)
+    second_name = Column(Unicode(256))
+    last_name = Column(Unicode(256), nullable=False)
     is_male = Boolean(nullable=False)
 
-    def __init__(self, first_name, last_name, is_male, second_name=None):
+    def __init__(self, first_name, last_name, is_male=True, second_name=None):
         self.first_name = first_name
         self.second_name = second_name
         self.last_name = last_name
@@ -30,11 +34,15 @@ class Person(Base):
 
     @property
     def name(self):
+        """
+        Get full name (concatenation of first and last names).
+
+        """
         return "%s %s" % (self.first_name, self.last_name)
 
     def __repr__(self):
-        return "<Person('%s %s')>" % \
-                (self.first_name, self.last_name)
+        cls = self.__class__.__name__
+        return "<%s('%s')>" % (cls, self.name)
 
 
 class Educator(Person):
@@ -42,7 +50,7 @@ class Educator(Person):
     __mapper_args__ = {'polymorphic_identity' : 'educator'}
 
     id = Column(ForeignKey('people.id'), primary_key=True)
-    title = Column(Unicode)
+    title = Column(Unicode(16))
 
     def __init__(self, title, *args, **kwargs):
         super(Educator, self).__init__(*args, **kwargs)
@@ -50,6 +58,10 @@ class Educator(Person):
 
     @property
     def name_with_title(self):
+        """
+        Return name prefixed with educator's title.
+
+        """
         return "%s %s" % (self.title, self.name)
 
     def lesson(self, day, order):
@@ -58,54 +70,78 @@ class Educator(Person):
 
         """
         q = Session.query(Lesson).filter_by(day=day, order=order).\
-                join(Lesson.teacher).filter(Educator.id == self.id).first()
-        return q
+                filter(Lesson.teacher.has(id=self.id))
+        return q.all()
 
     def lessons_for_day(self, day):
         """
-        Get lessons for specific day
+        Get lessons for given day.
 
         """
-        q = Session.query(Lesson).join(Lesson.teacher).\
-                filter(Educator.id == self.id).\
-                filter(Lesson.day == day).\
+        q = Session.query(Lesson).filter_by(day=day).\
+                filter(Lesson.teacher.has(id=self.id)).\
                 order_by(Lesson.order)
-        return q
+        return q.all()
 
-    def schedule(self):
-        schedule = []
-        for day in range(0,5):
-            schedule.append(self.schedule_for_day(day))
-        return schedule
+    def _process_schedule(self, day):
+        """
+        Returns a schedule for day.
 
-    def schedule_for_day(self, day):
+        """
         schedule = []
-        for lesson in self.lessons_for_day(day):
+        for lesson in day:
             while len(schedule) + 1 < lesson.order:
-                # Pad "empty" lessons
+                # Pad empty lessons
                 schedule.append(None)
             if not len(schedule) == lesson.order:
-                # One teacher can handle two lessons (groups) at once
+                # One teacher can take two groups at once
                 schedule.append([])
             schedule[-1].append(lesson)
         return schedule
 
+    def schedule(self):
+        """
+        Get full week schedule.
+
+        """
+        current = [s.id for s in Schedule.current()]
+        q = Session.query(Lesson).filter(Lesson.teacher.has(id=self.id)).\
+                filter(Lesson.schedule.has(Schedule.id.in_(current))).\
+                order_by(Lesson.day, Lesson.order)
+        days = {}
+        for x in range(0,5):
+            days[x] = []
+        for lesson in q:
+            days[lesson.day].append(lesson)
+        schedule = []
+        for day in days.values():
+            schedule.append(self._process_schedule(day))
+        return schedule
+
+    def schedule_for_day(self, day):
+        """
+        Get schedule for given day.
+
+        """
+        return self._process_schedule(self.lessons_for_day(day))
+
     def __repr__(self):
-        return "<Educator('%s %s')>" % \
-                (self.title, self.name)
+        cls = self.__class__.__name__
+        return "<%s('%s')>" % (cls, self.name_with_title)
 
 
 class Subject(Base):
     __tablename__ = 'subjects'
 
     id = Column(Integer, primary_key=True)
-    name = Column(Unicode, nullable=False)
+    name = Column(Unicode(128), nullable=False)
 
     def __init__(self, name):
         self.name = name
 
     def __repr__(self):
-        return "<Subject('%s')>" % self.name
+        cls = self.__class__.__name__
+        return "<%s('%s')>" % (cls, self.name)
 
 
 class SchoolYear(Base):
@@ -120,24 +156,25 @@ class SchoolYear(Base):
         self.end = end
 
     @classmethod
-    def started(cls):
+    def query_started(cls):
         """
-        Query only already started years. Order it by date.
+        Query already started years and order
+        it by date from newest to oldest.
 
         """
-        q = Session.query(SchoolYear)
-        now = datetime.datetime.now()
-        return q.filter(SchoolYear.start <= now).\
+        q = Session.query(SchoolYear).\
+                filter(SchoolYear.start <= func.date()).\
                 order_by(desc(SchoolYear.start))
+        return q
 
     @classmethod
     def recent(cls, count=3):
         """
-        Return most recent, already started years.
+        Return most recent already started years.
 
         """
-        q = cls.started()
-        return q.limit(count)
+        q = cls.query_started().limit(count)
+        return q.all()
 
     @classmethod
     def current(cls):
@@ -145,15 +182,17 @@ class SchoolYear(Base):
         Return current year.
 
         """
-        return cls.recent(1)
+        q = cls.query_started()
+        return q.first()
 
     @classmethod
     def by_index(cls, index):
         """
         Return a school year for given index.
         """
-        q = cls.started()
-        return q.limit(1).offset(index-1).first()
+        q = cls.query_started().\
+                limit(1).offset(index-1)
+        return q.first()
 
     @property
     def index(self):
@@ -161,12 +200,17 @@ class SchoolYear(Base):
         Return the order in which school year appears back in the history.
 
         """
-        now = datetime.datetime.now()
-        return self.started().filter(SchoolYear.start > self.start).count() + 1
+        q = self.query_started().\
+                filter(SchoolYear.start > self.start)
+        return q.count() + 1
 
+    @property
+    def name(self):
+        return "%s/%s" % (self.start.year, self.end.year)
 
     def __repr__(self):
-        return "<SchoolYear('%s/%s')>" % (self.start.year, self.end.year)
+        cls = self.__class__.__name__
+        return "<%s('%s')>" % (cls, self.name)
 
 
 class Schedule(Base):
@@ -176,6 +220,7 @@ class Schedule(Base):
     year_id = Column(ForeignKey('school_years.id'), nullable=False)
     year = relation('SchoolYear')
     active = Column(Boolean, nullable=False)
+    # TODO: schedule.name
 
     def __init__(self, year, active=True):
         self.year = year
@@ -184,11 +229,12 @@ class Schedule(Base):
     @classmethod
     def current(cls):
         """
-        Return current schedules.
+        Return current active schedules.
 
         """
-        current_year = SchoolYear.current().first()
-        q = Session.query(cls).filter(SchoolYear.id == current_year.id).filter(cls.active == True)
+        years = [s.id for s in SchoolYear.recent()]
+        q = Session.query(Schedule).\
+                filter(Schedule.year.has(SchoolYear.id.in_(years)))
         return q.all()
 
     def check_rooms(self):
@@ -203,28 +249,44 @@ class Schedule(Base):
                 filter(Lesson.room != 100).all()
 
     def __repr__(self):
-        return "<Schedule('%r')>" % (self.year)
+        cls = self.__class__.__name__
+        return "<%s('%s')>" % (cls, self.year.name)
 
 
 class Group(Base):
     __tablename__ = 'groups'
+    __table_args__ = (
+            UniqueConstraint('name', 'year_id'),
+            {}
+            )
 
     id = Column(Integer, primary_key=True)
-    name = Column(Unicode, nullable=False)
+    name = Column(Unicode(16), nullable=False)
     year_id = Column(ForeignKey('school_years.id'))
     year = relation('SchoolYear')
 
     members = relation('GroupMembership')
     students = association_proxy('members', 'student')
-    # TODO: unique (name, year)
 
     def __init__(self, name, year):
         self.name = name
         self.year = year
 
-    @property
-    def full_name(self):
-        return "%d%s" % (self.year.index, self.name)
+    def index(self, year=None):
+        """
+        If year is given the index is computed reltively.
+        """
+        if year is not None:
+            return year.start.year - self.year.start.year + 1
+        else:
+            return self.year.index
+
+    def full_name(self, year=None):
+        """
+        Return full group name.
+
+        """
+        return "%d%s" % (self.index(year), self.name)
 
     @classmethod
     def by_full_name(self, full_name):
@@ -251,33 +313,73 @@ class Group(Base):
 
         """
         q = Session.query(Lesson).\
-                filter_by(group_id=self.id, day=day, order=order)
+                filter_by(group_id=self.id, day=day, order=order).all()
         return q
 
+    def _process_schedule(self, day):
+        """
+        Create schedule from given lessons padding with None where approriate.
+
+        """
+        schedule = []
+
+        # We need to sort it
+        day.sort()
+
+        for lesson in day:
+            while len(schedule) + 1 < lesson.order:
+                schedule.append(None)
+            if lesson.part is None:
+                # Full group
+                schedule.append(lesson)
+            else:
+                # Parted group
+                if not len(schedule) == lesson.order:
+                    schedule.append([])
+                if len(schedule[-1]) == 0 and lesson.part == 2:
+                    schedule[-1].append(None)
+                schedule[-1].append(lesson)
+        return schedule
+
+    def schedule(self):
+        """
+        Get schedule for entire week.
+
+        """
+        current = [s.id for s in Schedule.current()]
+        q = Session.query(Lesson).filter(Lesson.group.has(id=self.id)).\
+                filter(Lesson.schedule.has(Schedule.id.in_(current))).\
+                order_by(Lesson.day, Lesson.order, desc(Lesson.first_part))
+
+        days = {}
+        for x in range(0,5):
+            days[x] = []
+        for lesson in q:
+            days[lesson.day].append(lesson)
+        schedule = []
+        for day in days.values():
+            schedule.append(self._process_schedule(day))
+
+        return schedule
+
     def schedule_for_day(self, day):
+        """
+        Get schedule for specific day.
+
+        """
         current_schedule = Schedule.current()
         s = [x.id for x in current_schedule]
 
-        q = Session.query(Lesson).\
-                join(Lesson.group).filter(Group.id == self.id).\
-                join(Lesson.schedule).filter(Schedule.id.in_(s)).\
-                filter(Lesson.day == day).\
-                order_by(Lesson.order, Lesson.second_part)
+        q = Session.query(Lesson).filter_by(day=day).\
+                filter(Lesson.group.has(id=self.id)).\
+                filter(Lesson.schedule.has(Schedule.id.in_(s))).\
+                order_by(Lesson.order, desc(Lesson.first_part))
 
-        schedule = []
-        for lesson in q:
-            while len(schedule) + 1 < lesson.order:
-                schedule.append(None)
-            if not len(schedule) == lesson.order:
-                schedule.append({})
-            if lesson.part == None:
-                schedule[-1] = lesson
-            else:
-                schedule[-1][lesson.part] = lesson
-        return schedule
+        return self._process_schedule(q.all())
 
     def __repr__(self):
-        return "<Group('%s')>" % self.full_name
+        cls = self.__class__.__name__
+        return "<%s('%s')>" % (cls, self.name)
 
 
 class GroupMembership(Base):
@@ -335,18 +437,27 @@ class Student(Person):
     groups = association_proxy('groups_membership', 'group')
 
     def lesson(self, day, order):
+        """
+        Get lesson for specified day and order.
+
+        """
+        #TODO check only active membership
         for group in self.groups:
-            l = group.lesson(day, order).first()
+            l = group.lesson(day, order)
             if l is not None:
                 return l
-
-
-    def __repr__(self):
-        return "<Student('%s %s')>" % (self.first_name, self.last_name)
+        return None
 
 
 class Lesson(Base):
     __tablename__ = 'lessons'
+    __table_args__ = (
+            UniqueConstraint('group_id', 'day', 'order',
+                'schedule_id', 'first_part'),
+            UniqueConstraint('group_id', 'day', 'order',
+                'schedule_id', 'second_part'),
+            {}
+            )
 
     id = Column(Integer, primary_key=True)
 
@@ -359,16 +470,17 @@ class Lesson(Base):
     second_part = Column(Boolean, nullable=False)
 
     subject_id = Column(ForeignKey('subjects.id'), nullable=False)
-    subject = relation('Subject', backref=backref('lessons', order_by='Lesson.order'))
+    subject = relation('Subject')
 
     teacher_id = Column(ForeignKey('educators.id'), nullable=False)
-    teacher = relation('Educator', backref=backref('lessons', order_by='Lesson.order'))
+    teacher = relation('Educator')
 
     order = Column(Integer, nullable=False)
     day = Column(Integer, nullable=False)
     room = Column(Integer, nullable=False)
 
-    def __init__(self, schedule, group, part, subject, teacher, day, order, room):
+    def __init__(self, schedule, group, part, subject,
+            teacher, day, order, room):
         self.schedule = schedule
         self.group = group
         self.part = part
@@ -377,6 +489,26 @@ class Lesson(Base):
         self.day = day
         self.order = order
         self.room = room
+
+    def __cmp__(self, other):
+        """
+        Used for sorting.
+
+        Sort by:
+        1. day
+        2. order
+        3. group
+        4. part
+
+        """
+        c = cmp(self.day, other.day)
+        if c == 0:
+            c = cmp(self.order, other.order)
+            if c == 0:
+                c = cmp(self.group, other.group)
+                if c == 0:
+                    c = cmp(self.part, other.part)
+        return c
 
     @property
     def part(self):
