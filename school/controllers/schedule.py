@@ -49,6 +49,7 @@ class ScheduleController(BaseController):
         except NoResultFound:
             return "No such teacher!"
 
+        c.year = SchoolYear.current()
         c.lessons = teacher.schedule_for_day(day)
         return render('schedule/teacher.xml')
 
@@ -85,6 +86,7 @@ class ScheduleController(BaseController):
         for e in q:
             s = e.schedule()
             educators.append((e, s))
+        c.year = SchoolYear.current()
         c.educators = educators
         
         return render('schedule/teacher/full_table.xml')

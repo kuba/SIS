@@ -272,9 +272,21 @@ class Group(Base):
         self.name = name
         self.year = year
 
-    @property
-    def full_name(self):
-        return "%d%s" % (self.year.index, self.name)
+    def index(self, year=None):
+        """
+        If year is given the index is computed reltively.
+        """
+        if year is not None:
+            return year.start.year - self.year.start.year + 1
+        else:
+            return self.year.index
+
+    def full_name(self, year=None):
+        """
+        Return full group name.
+
+        """
+        return "%d%s" % (self.index(year), self.name)
 
     @classmethod
     def by_full_name(self, full_name):
