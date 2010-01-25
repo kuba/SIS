@@ -1,21 +1,44 @@
-<form action="${h.url('substitutions')}" method="post" xmlns:py="http://genshi.edgewall.org/">
+<form action="${url('substitutions')}" method="post"
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:py="http://genshi.edgewall.org/">
+
+    <fieldset>
     <label for="date">Date:</label>
     <input type="text" id="date" name="date" value="${c.today}" />
+
     <label for="order">Order:</label>
     <select id="order" name="order">
-        <option py:for="o in range(1,8)" value="${o}">${o}</option>
+        <option py:for="order in range(1,8)" id="${order}">
+            $order
+        </option>
     </select>
+    </fieldset>
+
+    <fieldset>
     <label for="group">Group:</label>
     <select id="group" name="group">
-        <option py:for="group in c.groups" value="${group.id}">${group.full_name(c.year)}</option>
+        <option py:for="group in c.groups" value="${group.id}">
+            ${group.full_name(c.year)}
+        </option>
     </select>
-    <input type="checkbox" name="part" value="1" checked="true" /> part1
-    <input type="checkbox" name="part" value="2" checked="true" /> part2
+
+    <input type="radio" id="part0" name="part" value="0" checked="checked" />
+    <label for="part0">full</label>
+    <input type="radio" id="part1" name="part" value="1" />
+    <label for="part1">1</label>
+    <input type="radio" id="part2" name="part" value="2" />
+    <label for="part2">2</label>
+    </fieldset>
+
     <label for="educator">Educator:</label>
     <select id="educator" name="educator">
-        <option py:for="educator in c.educators" value="${educator.id}">${educator.name_with_title}</option>
+        <option py:for="educator in c.educators" value="${educator.id}">
+            ${educator.name_with_title}
+        </option>
     </select>
+
     <label for="comment">Comment:</label>
     <input type="text" id="comment" name="comment" />
+
     <input type="submit" />
 </form>

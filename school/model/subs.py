@@ -2,7 +2,10 @@ from sqlalchemy import Column, Integer, Date, \
         ForeignKey, Unicode, Boolean
 from sqlalchemy.orm import relation
 
-from school.model.meta import Base
+from school.model.meta import Base, Session
+from school.model import Lesson
+
+import datetime
 
 
 class Substitution(Base):
@@ -39,7 +42,7 @@ class Substitution(Base):
 
     @part.setter
     def part(self, part):
-        if part is None:
+        if not part:
             self.part1 = True
             self.part2 = True
         elif part == 1:
@@ -52,7 +55,8 @@ class Substitution(Base):
             raise ValueError
 
 
-    def __init__(self, date, order, group, teacher=None, part=None, comment=None):
+    def __init__(self, date, order, group, teacher=None,
+            part=None, comment=None):
         self.date = date
         self.order = order
         self.group = group
@@ -60,8 +64,18 @@ class Substitution(Base):
         self.teacher = teacher
         self.comment = comment
 
+    def lesson(self):
+        """
+        Get correspoding lesson.
+
+        """
+        day = datetime.date.weekday(self.date)
+        q = Session.query(Lesson).filter_by(day=day,\
+                order=self.order, group_id=self.group_id)
+        return q.all()
+
     def __repr__(self):
         cls = self.__class__.__name__
-        return "<%s('%s', '%d', '%s', '%s%s', comment='%s')>" % (cls, self.date,
-                self.order, self.teacher.name, self.group,
+        return "<%s('%s', '%d', '%s', '%s%s', comment='%s')>" % \
+                (cls, self.date, self.order, self.teacher.name, self.group,
                 self.part if self.part else '', self.comment)

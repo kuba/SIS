@@ -27,18 +27,33 @@ class SubstitutionsController(BaseController):
         c.subs = Session.query(Substitution).order_by(Substitution.date).all()
         return render('substitutions/list.xml')
 
+    def table(self):
+        date = datetime.datetime.now() + datetime.timedelta(days=1)
+        q = Session.query(Substitution).filter_by(date=date)
+        teachers = {}
+        subs = {}
+        for sub in q:
+            if not subs.has_key(sub.teacher):
+                subs[sub.teacher] = {}
+            subs[sub.teacher][sub.order] = sub
+
+            for lesson in sub.lesson():
+                if not teachers.has_key(lesson.teacher):
+                    teachers[lesson.teacher] = {}
+                teachers[lesson.teacher][lesson.order] = lesson
+        c.teachers = teachers
+        c.subs = subs
+        return render('substitutions/table.xml')
+
     def create(self):
         """POST /substitutions: Create a new item"""
         # url('substitutions')
         date = datetime.datetime.strptime(request.params['date'], '%Y-%m-%d')
         order = int(request.params['order'])
-        group = Session.query(Group).get(request.params['group'])
+        group = Session.query(Group).get(int(request.params['group']))
+        part = int(request.params['part'])
         teacher = Session.query(Educator).get(request.params['educator'])
         comment = request.params['comment']
-        if len(request.params.getall('part')) == 2:
-            part = None
-        else:
-            part = request.params['part']
 
         s = Substitution(date, order, group, teacher, part, comment)
         Session.add(s)
@@ -73,6 +88,10 @@ class SubstitutionsController(BaseController):
         #    h.form(url('substitution', id=ID),
         #           method='delete')
         # url('substitution', id=ID)
+        s = Session.query(Substitution).get(id)
+        Session.delete(s)
+        Session.commit()
+        redirect_to('substitutions')
 
     def show(self, id, format='html'):
         """GET /substitutions/id: Show a specific item"""

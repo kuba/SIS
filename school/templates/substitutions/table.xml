@@ -1,0 +1,44 @@
+<html xmlns:py="http://genshi.edgewall.org/">
+    <table border="1">
+        <tr>
+            <th>Imię i nazwisko nauczyciela nieobecnego</th>
+            <th>1</th>
+            <th>2</th>
+            <th>3</th>
+            <th>4</th>
+            <th>5</th>
+            <th>6</th>
+            <th>7</th>
+            <th>8</th>
+        </tr>
+        <tr py:for="t, s in c.teachers.items()">
+            <td>$t.name_with_title</td>
+            <td py:for="x in range(1, 9)" width="30px">
+                <py:choose>
+                    <py:when test="s.has_key(x)">${s[x].group.full_name()}${s[x].part}</py:when>
+                    <py:otherwise>&nbsp;</py:otherwise>
+                </py:choose>
+            </td>
+        </tr>
+        <tr>
+            <th>Imię i nazwisko nauczyciela zastępującego</th>
+            <th>1</th>
+            <th>2</th>
+            <th>3</th>
+            <th>4</th>
+            <th>5</th>
+            <th>6</th>
+            <th>7</th>
+            <th>8</th>
+        </tr>
+        <tr py:for="t, s in c.subs.items()">
+            <td>${t.name_with_title}</td>
+            <td py:for="x in range(1, 9)" width="30px">
+                <py:choose>
+                    <py:when test="s.has_key(x)">${s[x].group.full_name()}${s[x].part}</py:when>
+                    <py:otherwise>&nbsp;</py:otherwise>
+                </py:choose>
+            </td>
+        </tr>
+    </table>
+</html>
