@@ -313,7 +313,7 @@ class Group(Base):
 
         """
         q = Session.query(Lesson).\
-                filter_by(group_id=self.id, day=day, order=order).all()
+                filter_by(group_id=self.id, day=day, order=order).first()
         return q
 
     def _process_schedule(self, day):
