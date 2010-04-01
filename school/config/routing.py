@@ -30,7 +30,7 @@ def make_map():
 
     map.connect('schedule_home', r'/plan', controller='schedule', action='index')
     with map.submapper(path_prefix='/plan', controller='schedule') as m:
-        m.connect('schedule_teachers', r'/nauczyciele', action='get_teachers')
+        m.connect('schedule_teachers', r'/teachers', action='get_teachers')
         m.connect('schedule_group_course', r'/{group_name:\d\w+}+{course}/{day_name}', action='get_group')
         m.connect('schedule_group_course_today', r'/{group_name:\d\w+}+{course}', action='get_group')
         m.connect('schedule_group', r'/{group_name:\d\w+}/{day_name}', action='get_group')

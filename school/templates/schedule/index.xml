@@ -8,6 +8,7 @@
       <body>
           <div>
               /[class]/[day] or /[class]+[langclass]/[day] or /[teacher]/[day]<br />
+              or /teachers for full schedule<br />
               where [day] is: mon, tue, wed, thu or fri
            </div>
       </body>

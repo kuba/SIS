@@ -80,19 +80,22 @@ class NowController(BaseController):
         return person.lesson(day, order)
 
     def now(self, surname):
-        try:
-            students = meta.Session.query(Student).\
-                    filter(Student.last_name.like(surname)).all()
-            teachers = meta.Session.query(Educator).\
-                    filter(Educator.last_name.like(surname)).all()
-            people = students + teachers
+        students = meta.Session.query(Student).\
+                filter(Student.last_name.like(surname)).all()
+        teachers = meta.Session.query(Educator).\
+                filter(Educator.last_name.like(surname)).all()
+        people = students + teachers
 
+        try:
             if len(people) > 1:
                 raise MultiplePeopleFoundError(people)
-
+            elif len(people) == 0:
+                raise NoPersonFoundError
         except MultiplePeopleFoundError as e:
             c.people = e.people
             return render('now/list.xml')
+        except NoPersonFoundError:
+            return "No such person!"
 
         try:
             c.lesson = self._now_person(people[0])
