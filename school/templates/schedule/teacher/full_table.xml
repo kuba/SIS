@@ -3,15 +3,15 @@
     xmlns:py="http://genshi.edgewall.org/">
     <table border="1">
         <tr>
-            <th rowspan="2">Nauczyciel</th>
-            <th colspan="5">Dzień tygodnia</th>
+            <th rowspan="2">Educator</th>
+            <th colspan="5">Day of the week</th>
         </tr>
         <tr>
-            <td>poniedziałek</td>
-            <td>wtorek</td>
-            <td>środa</td>
-            <td>czwartek</td>
-            <td>piątek</td>
+            <td>Monday</td>
+            <td>Tuesday</td>
+            <td>Wednesday</td>
+            <td>Thursday</td>
+            <td>Friday</td>
         </tr>
         <tr py:for="e, days in c.educators">
             <td>${e.name_with_title}</td>
