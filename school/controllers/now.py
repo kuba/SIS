@@ -106,7 +106,7 @@ class NowController(BaseController):
     def now_id(self, id):
         person = meta.Session.query(Student).get(id)
         if not person:
-            person = meta.Session.query(Teacher).get(id)
+            person = meta.Session.query(Educator).get(id)
         try:
             c.lesson = self._now_person(person)
         except NowError as e:
