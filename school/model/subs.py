@@ -37,8 +37,10 @@ class Substitution(Base):
             return None
         elif self.part1:
             return 1
-        else:
+        elif self.part2:
             return 2
+        else:
+            return 0
 
     @part.setter
     def part(self, part):

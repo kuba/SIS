@@ -516,8 +516,10 @@ class Lesson(Base):
             return None
         elif self.first_part:
             return 1
-        else:
+        elif self.second_part:
             return 2
+        else:
+            return 0
 
     @part.setter
     def part(self, part):
