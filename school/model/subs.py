@@ -1,9 +1,10 @@
 from sqlalchemy import Column, Integer, Date, \
-        ForeignKey, Unicode, Boolean
+        ForeignKey, Unicode, Boolean, UniqueConstraint
+from sqlalchemy import not_, and_
 from sqlalchemy.orm import relation
 
 from school.model.meta import Base, Session
-from school.model import Lesson
+from school.model import Lesson, Educator
 
 import datetime
 
@@ -16,6 +17,15 @@ class Substitution(Base):
 
     """
     __tablename__ = 'substitutions'
+    __table_args__ = (
+            # Substitution cannot be splitted when the same teacher
+            UniqueConstraint('date', 'order', 'group_id', 'teacher_id'),
+            UniqueConstraint('date', 'order', 'group_id',
+                'part1'),
+            UniqueConstraint('date', 'order', 'group_id',
+                'part2'),
+            {}
+            )
 
     id = Column(Integer, primary_key=True)
     date = Column(Date, nullable=False)
