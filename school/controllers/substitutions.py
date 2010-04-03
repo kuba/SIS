@@ -151,7 +151,7 @@ class SubstitutionsController(BaseController):
                 if not released.has_key(sub.order):
                     released[sub.order] = []
                 released[sub.order].append((sub.group, sub.part))
-                break
+                continue
 
             # What lesson does the group have normally?
             # And with which educator it is?
