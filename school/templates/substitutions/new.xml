@@ -4,7 +4,7 @@
 
     <fieldset>
     <label for="date">Date:</label>
-    <input type="text" id="date" name="date" value="${c.today}" />
+    <input type="text" id="date" name="date" value="${c.date}" />
 
     <label for="order">Order:</label>
     <select id="order" name="order">
@@ -32,6 +32,8 @@
 
     <label for="educator">Educator:</label>
     <select id="educator" name="educator">
+        <option value="0">RELEASED</option>
+        <hr />
         <option py:for="educator in c.educators" value="${educator.id}">
             ${educator.name_with_title}
         </option>

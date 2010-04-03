@@ -19,7 +19,10 @@ def make_map():
     map.connect('/error/{action}/{id}', controller='error')
 
     map.connect(r'/s', controller='substitutions', action='index')
-    map.connect('substitutions_table', r'/z', controller='substitutions', action='table')
+    map.connect('substitutions_table', r'/z',
+            controller='substitutions', action='table')
+    map.connect('substitutions_table_date', r'/z/{date:\d\d\d\d-\d\d-\d\d}',
+            controller='substitutions', action='table')
     map.resource('substitution', 'substitutions')
 
     # CUSTOM ROUTES HERE

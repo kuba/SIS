@@ -1,7 +1,9 @@
 <html xmlns:py="http://genshi.edgewall.org/">
+    <h1>Substitutions for: <a href="/z/${c.date.date()}">${c.date.date()}</a></h1>
+    <h2><a href="${h.url('substitutions')}">edit</a></h2>
     <table border="1">
         <tr>
-            <th>Imię i nazwisko nauczyciela nieobecnego</th>
+            <th>Name of the absent teacher</th>
             <th>1</th>
             <th>2</th>
             <th>3</th>
@@ -11,17 +13,19 @@
             <th>7</th>
             <th>8</th>
         </tr>
-        <tr py:for="t, s in c.teachers.items()">
+        <tr py:for="t, s in c.before.items()">
             <td>$t.name_with_title</td>
             <td py:for="x in range(1, 9)" width="30px">
                 <py:choose>
-                    <py:when test="s.has_key(x)">${s[x].group.full_name()}${s[x].part}</py:when>
+                    <py:when test="s.has_key(x)">
+                        ${'/'.join(["%s%s" % (group.full_name(), part if part is not None else '') for group, part in s[x]])}
+                    </py:when>
                     <py:otherwise>&nbsp;</py:otherwise>
                 </py:choose>
             </td>
         </tr>
         <tr>
-            <th>Imię i nazwisko nauczyciela zastępującego</th>
+            <th>Name of the substituting teacher</th>
             <th>1</th>
             <th>2</th>
             <th>3</th>
@@ -31,14 +35,30 @@
             <th>7</th>
             <th>8</th>
         </tr>
-        <tr py:for="t, s in c.subs.items()">
+        <tr py:for="t, s in c.after.items()">
             <td>${t.name_with_title}</td>
             <td py:for="x in range(1, 9)" width="30px">
                 <py:choose>
-                    <py:when test="s.has_key(x)">${s[x].group.full_name()}${s[x].part}</py:when>
+                    <py:when test="s.has_key(x)">
+                        ${'/'.join(["%s%s" % (group.full_name(), part if part is not None else '') for group, part in s[x]])}
+                    </py:when>
                     <py:otherwise>&nbsp;</py:otherwise>
                 </py:choose>
             </td>
         </tr>
+        <tr>
+            <td colspan="9">
+                <strong>Comments:</strong>
+                <py:if test="len(c.released)>0">
+                    Released:
+                    <py:for each="order, released in c.released.items()">
+                            ${', '.join(["%s%s" % (group.full_name(), part if part is not None else '') for group, part in released])}
+                            L.-${order}
+                    </py:for>
+                </py:if>
+            </td>
+        </tr>
     </table>
+    <h3>Debug:</h3>
+    <pre>${c.debug}</pre>
 </html>

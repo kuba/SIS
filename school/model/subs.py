@@ -76,18 +76,30 @@ class Substitution(Base):
         self.teacher = teacher
         self.comment = comment
 
-    def lesson(self):
+    def group_lesson(self):
         """
-        Get correspoding lesson.
+        Get corresponding group's lesson.
 
         """
         day = datetime.date.weekday(self.date)
         q = Session.query(Lesson).filter_by(day=day,\
                 order=self.order, group_id=self.group_id)
+        q = q.filter(not_(and_(Lesson.first_part == False,
+                               Lesson.second_part == False)))
+        return q.all()
+
+    def teacher_lesson(self):
+        """
+        Get corresponding teacher's lesson.
+
+        """
+        day = datetime.date.weekday(self.date)
+        q = Session.query(Lesson).filter_by(day=day,\
+                order=self.order, teacher_id=self.teacher.id)
         return q.all()
 
     def __repr__(self):
         cls = self.__class__.__name__
         return "<%s('%s', '%d', '%s', '%s%s', comment='%s')>" % \
-                (cls, self.date, self.order, self.teacher.name, self.group,
+                (cls, self.date, self.order, self.teacher, self.group,
                 self.part if self.part else '', self.comment)
