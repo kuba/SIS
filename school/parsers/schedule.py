@@ -169,7 +169,7 @@ class ClassScheduleParser(ScheduleParser):
 
 def parse(file, teachers_info, school_years):
     # Create new Schedule
-    current_year = school_years.keys()[0]
+    current_year = dict((v,k) for k, v in school_years.iteritems())['1']
     schedule = Schedule(current_year)
 
     groups = {}
