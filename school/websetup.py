@@ -15,7 +15,8 @@ from school.model import SchoolYear
 
 from school.parsers import TeachersParser,\
                            StudentsParser,\
-                           parse_schedule
+                           parse_schedule,\
+                           parse_numbers
 
 
 def setup_app(command, conf, vars):
@@ -51,6 +52,11 @@ def setup_app(command, conf, vars):
     log.info("Parsing schedule...")
     parse_schedule(open(config['schedule_file'], 'r', 'utf-8'), teachers, school_years)
     log.info("Schedule parsed.")
+
+    # Parse numbers
+    log.info("Parsing numbers...")
+    parse_numbers(open(config['numbers_file'], 'r', 'utf-8'))
+    log.info("Numbers parsed.")
 
     log.info("Commiting changes to database...")
     meta.Session.commit()
