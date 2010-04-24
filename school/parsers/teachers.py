@@ -60,5 +60,12 @@ class TeachersParser(object):
             except AttributeError:
                 raise TeachersParserError("Line is not matching: %d. %s" \
                                            % (lnr+1, line))
-            self.teachers[last] = Educator(title, first, last, gender)
+            if gender == 'M':
+                is_male = True
+            elif gender == 'F':
+                is_male = False
+            else:
+                raise TeachersParserError("(%d) No such gender: %s. " + \
+                        "Use 'M' or 'F' instead." % (lnr+1, gender))
+            self.teachers[last] = Educator(title, first, last, is_male)
         return self.teachers
