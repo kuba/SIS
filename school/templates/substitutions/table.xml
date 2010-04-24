@@ -18,7 +18,7 @@
             <td py:for="x in range(1, 9)" width="30px">
                 <py:choose>
                     <py:when test="s.has_key(x)">
-                        ${'/'.join(["%s%s" % (group.full_name(), part if part is not None else '') for group, part in s[x]])}
+                        ${'/'.join(["%s%s" % (group.full_name(c.year), part if part is not None else '') for group, part in s[x]])}
                     </py:when>
                     <py:otherwise>&nbsp;</py:otherwise>
                 </py:choose>
@@ -40,7 +40,7 @@
             <td py:for="x in range(1, 9)" width="30px">
                 <py:choose>
                     <py:when test="s.has_key(x)">
-                        ${'/'.join(["%s%s" % (group.full_name(), part if part is not None else '') for group, part in s[x]])}
+                        ${'/'.join(["%s%s" % (group.full_name(c.year), part if part is not None else '') for group, part in s[x]])}
                     </py:when>
                     <py:otherwise>&nbsp;</py:otherwise>
                 </py:choose>
@@ -52,7 +52,7 @@
                 <py:if test="len(c.released)>0">
                     Released:
                     <py:for each="order, released in c.released.items()">
-                            ${', '.join(["%s%s" % (group.full_name(), part if part is not None else '') for group, part in released])}
+                            ${', '.join(["%s%s" % (group.full_name(c.year), part if part is not None else '') for group, part in released])}
                             L.-${order}
                     </py:for>
                 </py:if>

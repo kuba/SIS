@@ -172,6 +172,7 @@ class SubstitutionsController(BaseController):
         c.debug = ("Substitutions for %s:\nbefore:\t\t%r\nafter:\t\t%r\n" + \
                  "released:\t%r") % (date.date(), before, after, released)
 
+        c.year = SchoolYear.current()
         c.date = date
         c.before = before
         c.after = after
