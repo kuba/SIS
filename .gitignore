@@ -1,6 +1,5 @@
 *.pyc
 /data
-*.egg-info
 /build/
 /dist/
 *.db
