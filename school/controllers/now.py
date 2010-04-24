@@ -12,7 +12,7 @@ from pylons import url
 from pylons.controllers.util import abort, redirect_to
 
 from school.lib.base import BaseController, render
-from school.model import Student, Lesson, Educator
+from school.model import Student, Lesson, Educator, Schedule
 from school.model import meta
 
 
@@ -74,12 +74,15 @@ class NowController(BaseController):
 
         return order
 
-    def _now_person(self, person):
+    def _now_person(self, person, schedule):
         order = self.current_order()
         day = datetime.weekday(datetime.now())
-        return person.lesson(day, order)
+        return person.lesson(day, order, schedule.id)
 
     def now(self, surname):
+        schedule = Schedule.current()
+        c.year = schedule.year
+
         students = meta.Session.query(Student).\
                 filter(Student.last_name.like(surname)).all()
         teachers = meta.Session.query(Educator).\
@@ -98,17 +101,25 @@ class NowController(BaseController):
             return "No such person!"
 
         try:
-            c.lesson = self._now_person(people[0])
+            l = self._now_person(people[0], schedule)
+            if len(l) == 0:
+                return "No lesson"
+            c.lesson = l
         except NowError as e:
             return repr(e)
         return render('now/now.xml')
 
     def now_id(self, id):
+        schedule = Schedule.current()
+        c.year = schedule.year
         person = meta.Session.query(Student).get(id)
         if not person:
             person = meta.Session.query(Educator).get(id)
         try:
-            c.lesson = self._now_person(person)
+            l = self._now_person(person, schedule)
+            if len(l) == 0:
+                return "No lesson"
+            c.lesson = l
         except NowError as e:
             return repr(e)
         return render('now/now.xml')

@@ -50,11 +50,15 @@ class ScheduleController(BaseController):
         except NoResultFound:
             return "No such teacher!"
 
-        c.year = SchoolYear.current()
-        c.lessons = teacher.schedule_for_day(day)
+        schedule = Schedule.current()
+        c.year = schedule.year
+        c.lessons = teacher.schedule_for_day(day, schedule.id)
         return render('schedule/teacher.xml')
 
     def get_group(self, group_name, day_name=None, course=None):
+        schedule = Schedule.current()
+        year = schedule.year
+
         group = Group.by_full_name(group_name)
         if not group:
             return 'No such group!'
@@ -63,13 +67,13 @@ class ScheduleController(BaseController):
         if day is None:
             return 'Bad day!'
 
-        gs = group.schedule_for_day(day)
+        gs = group.schedule_for_day(day, schedule.id)
         if course is not None:
             course = Group.by_full_name(group_name[0]+course)
             if course is None:
                 return "No such course!"
             else:
-                cs = course.schedule_for_day(day)
+                cs = course.schedule_for_day(day, schedule.id)
                 for o, lesson in enumerate(cs):
                     if lesson is not None:
                         gs[o] = lesson
