@@ -20,7 +20,7 @@ class Person(Base):
     first_name = Column(Unicode(256), nullable=False)
     second_name = Column(Unicode(256))
     last_name = Column(Unicode(256), nullable=False)
-    is_male = Boolean(nullable=False)
+    is_male = Column(Boolean, nullable=False)
 
     def __init__(self, first_name, last_name, is_male=True, second_name=None):
         self.first_name = first_name
