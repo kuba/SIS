@@ -39,6 +39,8 @@ from school.model.basic import Person, Educator, Subject, Group, \
                   Lesson, Student, GroupMembership, \
                   SchoolYear, Schedule
 from school.model.subs import Substitution
+from school.model.number import LuckyNumber
 __all__ = ["Person", "Educator", "Subject", "Group",
            "Lesson", "Student", "GroupMembership",
-           "SchoolYear", "Schedule", "Substitution"]
+           "SchoolYear", "Schedule", "Substitution",
+           "LuckyNumber"]
