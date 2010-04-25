@@ -28,18 +28,22 @@ class LuckyNumber(Base):
 
     @classmethod
     def draw(cls):
-        stmt =  Session.query(func.count(Student.id).label('student_count'),
-                              Student).\
+        """
+        Draw lucky numbers, not used before, shuffled.
+
+        """
+        student_count = func.count(Student.id).label('student_count')
+        stmt =  Session.query(student_count, Student).\
                         join(GroupMembership).\
                         join(Group).group_by(Group.id).subquery()
         max = Session.query(func.max(stmt.c.student_count)).first()[0]
         count = Session.query(func.count(LuckyNumber.id)).first()[0]
-        past = [x[0] for x in Session.query(LuckyNumber.number).\
-                order_by(desc(LuckyNumber.date)).limit(count % max).all()]
+        past = Session.query(LuckyNumber.number).\
+                       order_by(desc(LuckyNumber.date)).\
+                       limit(count % max).all()
 
-        all = range(1, max + 1)
-        random.shuffle(all)
-        for number in all:
-            if number in past:
-                all.remove(number)
-        return all
+        all = set(range(1, max + 1))
+        past = set(x[0] for x in past)
+        d = list(all.difference(past))
+        random.shuffle(d)
+        return d
