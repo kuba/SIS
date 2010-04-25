@@ -11,7 +11,7 @@
     </py:match>
     <py:match path="body" once="true">
         <body py:attrs="select('@*')">
-            ${select('*[local-name()!="title"]')}
+            ${select('*|text()')}
         </body>
     </py:match>
 </html>
