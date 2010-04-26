@@ -27,6 +27,10 @@ class LuckyNumber(Base):
         return "<%s(%s, %s)>" % (cls, self.date, self.number)
 
     @classmethod
+    def last(cls):
+        return Session.query(cls).order_by(desc(cls.date)).first()
+
+    @classmethod
     def draw(cls):
         """
         Draw lucky numbers, not used before, shuffled.
