@@ -16,7 +16,7 @@ from school.model import LuckyNumber
 class ParserError(object):
     pass
 
-pattern = re.compile('(\d{2}\.\d{2}\.\d{2}) - (\d+)')
+pattern = re.compile('(\d{4}-\d{2}-\d{2}) - (\d+)')
 
 def parse(file):
     for line in file:
@@ -25,7 +25,7 @@ def parse(file):
             raise ParserError("Line doesn't match the format")
 
         raw_date, raw_number = m.groups()
-        date = datetime.datetime.strptime(raw_date, '%d.%m.%y')
+        date = datetime.datetime.strptime(raw_date, '%Y-%m-%d')
         number = int(raw_number)
 
         lucky = LuckyNumber(date, number)
