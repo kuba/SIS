@@ -197,7 +197,7 @@ class SubstitutionsController(BaseController):
         s = Substitution(date, order, group, teacher, part, comment)
         Session.add(s)
         Session.commit()
-        redirect_to(action="index")
+        redirect_to('substitutions')
 
     def new(self, format='html'):
         """GET /substitutions/new: Form to create a new item"""
