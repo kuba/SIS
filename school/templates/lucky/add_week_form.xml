@@ -1,0 +1,26 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:xi="http://www.w3.org/2001/XInclude"
+      xmlns:py="http://genshi.edgewall.org/">
+    <xi:include href="../base.xml" />
+    <head>
+        <title>Add lucky numbers for entire week.</title>
+        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"></script>
+        <script type="text/javascript">
+            numbers = new Array(${','.join(str(x) for x in c.numbers)});
+        </script>
+        <script type="text/javascript" src="/draw.js"></script>
+    </head>
+    <body>
+        <ul id="not_used_numbers">
+            <li py:for="n in c.numbers">${n}</li>
+        </ul>
+        ${h.form(h.url(controller='lucky', action='add_week'), method='post')}
+            <py:for each="x in range(0,5)">
+                ${h.text(value=(c.first_date + c.datetime.timedelta(1)*x).strftime('%d/%m/%Y'), name='lucky-%s.date' % x, id='lucky-%s.date' % x)}
+                ${h.text(name='lucky-%s.number' % x, id='lucky-%s.number' % x)}
+                <br />
+            </py:for>
+            ${h.submit('submit', 'Submit')}
+        ${h.end_form()}
+    </body>
+</html>
