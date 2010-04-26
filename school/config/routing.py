@@ -19,6 +19,12 @@ def make_map():
     map.connect('/error/{action}/{id}', controller='error')
 
     # CUSTOM ROUTES HERE
+    with map.submapper(path_prefix=r'/lucky', controller='lucky') as m:
+        m.connect('lucky', r'', action='all')
+        m.connect('lucky_add_form', r'/add', action='add',
+                  conditions={'method':'POST'})
+        m.connect('lucky_add', r'/add', action='add_week_form')
+
     with map.submapper(controller='substitutions') as m:
         m.connect(r'/s', action='index')
         m.connect('substitutions_table', r'/z', action='table')
