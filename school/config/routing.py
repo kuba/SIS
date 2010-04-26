@@ -18,21 +18,21 @@ def make_map():
     map.connect('/error/{action}', controller='error')
     map.connect('/error/{action}/{id}', controller='error')
 
-    map.connect(r'/s', controller='substitutions', action='index')
-    map.connect('substitutions_table', r'/z',
-            controller='substitutions', action='table')
-    map.connect('substitutions_table_date', r'/z/{date:\d\d\d\d-\d\d-\d\d}',
-            controller='substitutions', action='table')
+    # CUSTOM ROUTES HERE
+    with map.submapper(controller='substitutions') as m:
+        m.connect(r'/s', action='index')
+        m.connect('substitutions_table', r'/z', action='table')
+        m.connect('substitutions_table_date', r'/z/{date:\d\d\d\d-\d\d-\d\d}',
+                  action='table')
     map.resource('substitution', 'substitutions')
 
-    # CUSTOM ROUTES HERE
-    map.connect('now_home', r'/now', controller='now', action='index')
     with map.submapper(path_prefix='/now', controller='now') as m:
+        m.connect('now_home', r'', action='index')
         m.connect('now_id', '/{id:\d+}', action='now_id')
         m.connect('now_name', '/{surname}', action='now')
 
-    map.connect('schedule_home', r'/plan', controller='schedule', action='index')
     with map.submapper(path_prefix='/plan', controller='schedule') as m:
+        m.connect('schedule_home', r'', action='index')
         m.connect('schedule_teachers', r'/teachers', action='get_teachers')
         m.connect('schedule_group_course', r'/{group_name:\d\w+}+{course}/{day_name}', action='get_group')
         m.connect('schedule_group_course_today', r'/{group_name:\d\w+}+{course}', action='get_group')
