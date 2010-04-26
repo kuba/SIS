@@ -4,7 +4,7 @@
     <py:match path="head" once="true">
         <head py:attrs="select('@*')">
             <title py:with="title = list(select('title/text()'))">
-                Porno Staszic!<py:if test="title">: ${title}</py:if>
+                Staszic!<py:if test="title">: ${title}</py:if>
             </title>
             ${select('*[local-name()!="title"]')}
         </head>
