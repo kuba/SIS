@@ -14,8 +14,8 @@
         <ul id="not_used_numbers">
             <li py:for="n in c.numbers">${n}</li>
         </ul>
-        ${h.form(h.url(controller='lucky', action='add_week'), method='post')}
-            <py:for each="x in range(0,5)">
+        ${h.form(h.url(controller='lucky', action='add'), method='post')}
+            <py:for each="x in range(0, c.count)">
                 ${h.text(value=(c.first_date + c.datetime.timedelta(1)*x).strftime('%d/%m/%Y'), name='lucky-%s.date' % x, id='lucky-%s.date' % x)}
                 ${h.text(name='lucky-%s.number' % x, id='lucky-%s.number' % x)}
                 <br />
