@@ -2,6 +2,7 @@
 /data
 /build/
 /dist/
+*.egg-info
 *.db
 *.swp
 /students
