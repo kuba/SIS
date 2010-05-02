@@ -12,7 +12,7 @@ from school.model import meta
 
 import datetime
 
-from sqlalchemy import or_
+from sqlalchemy import desc
 from sqlalchemy.orm.exc import MultipleResultsFound, NoResultFound
 
 
@@ -84,7 +84,7 @@ class ScheduleController(BaseController):
     @beaker_cache(expire=86400)
     def get_teachers(self):
         """
-        Get full current teachers schedule (every teacher and every weekday)
+        Get full current teachers schedule (every teacher and every weekday).
 
         """
         educators = []
@@ -96,3 +96,22 @@ class ScheduleController(BaseController):
         c.educators = educators
         
         return render('schedule/teacher/full_table.xml')
+
+    @beaker_cache(expire=86400)
+    def get_groups(self):
+        """
+        Get full current groups schedule (every group and every weekday).
+
+        """
+        schedule = Schedule.current()
+        groups = []
+        q = meta.Session.query(Group).join(SchoolYear).\
+                         order_by(desc(SchoolYear.start)).\
+                         order_by(Group.name)
+        for g in q:
+            s = g.schedule(schedule.id)
+            if s is not None:
+                groups.append((g, s))
+        c.year = schedule.year
+        c.groups = groups
+        return render('schedule/group/full_table.xml')

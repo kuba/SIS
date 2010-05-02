@@ -4,7 +4,7 @@
     <body>
         <table border="1">
             <tr>
-                <th rowspan="2">Educator</th>
+                <th rowspan="2">Group</th>
                 <th colspan="5">Day of the week</th>
             </tr>
             <tr>
@@ -14,8 +14,8 @@
                 <td>Thursday</td>
                 <td>Friday</td>
             </tr>
-            <tr py:for="e, days in c.educators">
-                <td>${e.name_with_title}</td>
+            <tr py:for="g, days in c.groups">
+                <td>${g.full_name(c.year)}</td>
                 <td py:for="day in days">
                     <py:choose test="len(day)">
                         <py:when test="0">&nbsp;</py:when>
