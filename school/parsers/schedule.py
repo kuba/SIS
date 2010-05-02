@@ -89,7 +89,11 @@ class TeacherScheduleParser(ScheduleParser):
     def process_data_line(self, line):
         groups = line.split('/')
         for g in groups:
-            self.process_group(g)
+            try:
+                self.process_group(g)
+            except (AttributeError, KeyError, TypeError, ValueError):
+                sys.exit('%s :: %s :: %s (%s)' % (self.section_name, self.day_number, self.order, self.line))
+
         self.order += 1
 
     def process_group(self, group_name):
@@ -105,10 +109,7 @@ class TeacherScheduleParser(ScheduleParser):
             if not self.lessons.has_key(group_name):
                 raise ParserError('No such group: %s nor %s' \
                         % (group_name, group_name + part))
-        try:
-            l = self.lessons[group_name][self.day_number][self.order]
-        except (AttributeError, KeyError, TypeError):
-            sys.exit('%s :: %s :: %s (%s)' % (self.section_name, self.day_number, self.order, self.line))
+        l = self.lessons[group_name][self.day_number][self.order]
         if part is not None:
             l[part-1].teacher = teacher
         else:
