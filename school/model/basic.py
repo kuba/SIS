@@ -82,19 +82,14 @@ class Educator(Person):
         :type eager: :class`bool`
 
         """
-        q = Session.query(Lesson)
-        if schedule_id is None:
-            stmt = Schedule.query_current_id().subquery()
-            q = q.join((stmt, Lesson.schedule_id == stmt.c.id))
-        else:
-            q = q.filter_by(schedule_id=schedule_id)
-
-        q = q.filter(Lesson.day==day).filter(Lesson.order==order).\
-              filter(Lesson.teacher.has(id=self.id))
+        q = Lesson.query_current(schedule_id)
+        q = q.filter(Lesson.day == day).\
+              filter(Lesson.order == order).\
+              filter(Lesson.teacher_id == self.id)
 
         if eager:
-            q = q.options(eagerload('group')).\
-                  options(eagerload('group.year'))
+            q = q.options(eagerload('group'), eagerload('group.year'))
+
         return q.all()
 
     def lessons_for_day(self, day, schedule_id=None, eager=True):
@@ -112,20 +107,13 @@ class Educator(Person):
         :type eager: :class`bool`
 
         """
-        q = Session.query(Lesson)
-        if schedule_id is None:
-            stmt = Schedule.query_current_id().subquery()
-            q = q.join((stmt, Lesson.schedule_id == stmt.c.id))
-        else:
-            q = q.filter_by(schedule_id=schedule_id)
-
-        q = q.filter(Lesson.day==day).\
-            filter(Lesson.teacher.has(id=self.id)).\
-            order_by(Lesson.order)
+        q = Lesson.query_current(schedule_id)
+        q = q.filter(Lesson.day == day).\
+              filter(Lesson.teacher_id == self.id)
 
         if eager:
-            q = q.options(eagerload('group')).\
-                  options(eagerload('group.year'))
+            q = q.options(eagerload('group'), eagerload('group.year'))
+
         return q.all()
 
     def _process_schedule(self, day):
@@ -156,16 +144,8 @@ class Educator(Person):
         :type eager: :class:`bool`
 
         """
-        q = Session.query(Lesson)
-        if schedule_id is None:
-            stmt = Schedule.query_current_id().subquery()
-            q = q.join((stmt, Lesson.schedule_id == stmt.c.id))
-            schedule = Schedule.current()
-        else:
-            q = q.filter_by(schedule_id=schedule_id)
-
-        q = q.filter(Lesson.teacher.has(id=self.id)).\
-              order_by(Lesson.day, Lesson.order)
+        q = Lesson.query_current(schedule_id)
+        q = q.filter(Lesson.teacher_id == self.id)
 
         if eager:
             q = q.options(eagerload('group'), eagerload('group.year'))
@@ -424,15 +404,10 @@ class Group(Base):
         Return lesson for specified day and order.
 
         """
-        q = Session.query(Lesson)
-        if schedule_id is None:
-            stmt = Schedule.query_current_id().subquery()
-            q = q.join((stmt, Lesson.schedule_id == stmt.c.id))
-        else:
-            q = q.filter_by(schedule_id=schedule_id)
-        q = q.filter(Lesson.group_id==self.id).\
-              filter(Lesson.day==day).\
-              filter(Lesson.order==order).first()
+        q = Lesson.query_current(schedule_id)
+        q = q.filter(Lesson.group_id == self.id).\
+              filter(Lesson.day == day).\
+              filter(Lesson.order == order).first()
         return q
 
     def _process_schedule(self, day):
@@ -465,20 +440,16 @@ class Group(Base):
         Get schedule for entire week.
 
         """
-        q = Session.query(Lesson)
-        if schedule_id is None:
-            stmt = Schedule.query_current_id().subquery()
-            q = q.join((stmt, Lesson.schedule.id == stmt.c.id))
-        else:
-            q = q.filter_by(schedule_id=schedule_id)
+        q = Lesson.query_current(schedule_id)
+        lessons = q.filter(Lesson.group_id == self.id).all()
 
-        q = q.filter(Lesson.group.has(id=self.id)).\
-              order_by(Lesson.day, Lesson.order, desc(Lesson.first_part))
+        if len(lessons) == 0:
+            return None
 
         days = {}
         for x in range(0,5):
             days[x] = []
-        for lesson in q:
+        for lesson in lessons:
             days[lesson.day].append(lesson)
         schedule = []
         for day in days.values():
@@ -491,16 +462,9 @@ class Group(Base):
         Get schedule for specific day.
 
         """
-        q = Session.query(Lesson)
-        if schedule_id is None:
-            stmt = Schedule.query_current_id().subquery()
-            q = q.join((stmt, Lesson.schedule == stmt.c.id))
-        else:
-            q = q.filter_by(schedule_id=schedule_id)
-
-        q = q.filter_by(day=day).\
-              filter(Lesson.group.has(id=self.id)).\
-              order_by(Lesson.order, desc(Lesson.first_part))
+        q = Lesson.query_current(schedule_id)
+        q = q.filter(Lesson.day == day).\
+              filter(Lesson.group_id == self.id)
 
         return self._process_schedule(q.all())
 
@@ -574,13 +538,7 @@ class Student(Person):
                       and group's year.
 
         """
-        q = Session.query(Lesson)
-        if schedule_id is None:
-            stmt = Schedule.query_current_id().subquery()
-            q = q.join((stmt, Lesson.schedule_id == stmt.c.id))
-        else:
-            q = q.filter_by(schedule_id=schedule_id)
-
+        q = Lesson.query_current(schedule_id)
         q = q.join((Group, Lesson.group_id == Group.id)).\
               join((GroupMembership, Group.id == GroupMembership.group_id)).\
               filter(GroupMembership.student_id == self.id).\
@@ -589,8 +547,7 @@ class Student(Person):
               filter(Lesson.order == order)
 
         if eager:
-            q = q.options(eagerload('group'),
-                          eagerload('group.year'))
+            q = q.options(eagerload('group'), eagerload('group.year'))
         return q.all()
 
 
@@ -638,6 +595,25 @@ class Lesson(Base):
         self.day = day
         self.order = order
         self.room = room
+
+    @classmethod
+    def query_current(cls, schedule_id=None):
+        """
+        Query (ordered) lessons according to current schedule.
+
+        Order by: day, order, part.
+
+        """
+        q = Session.query(cls).\
+                    order_by(cls.day, cls.order, desc(cls.first_part),
+                             desc(cls.second_part))
+        if schedule_id is None:
+            stmt = Schedule.query_current_id().subquery()
+            q = q.join((stmt, cls.schedule_id == stmt.c.id))
+        else:
+            q = q.filter_by(schedule_id=schedule_id)
+        return q
+
 
     def __cmp__(self, other):
         """
