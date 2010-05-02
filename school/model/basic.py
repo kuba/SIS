@@ -3,7 +3,7 @@ import datetime
 from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy import Column, UniqueConstraint, ForeignKey,\
                        Integer, Unicode, Boolean, Date
-from sqlalchemy import func, desc
+from sqlalchemy import func, desc, not_
 from sqlalchemy.orm import relation, eagerload
 
 from school.model.meta import Base, Session
@@ -340,17 +340,20 @@ class Schedule(Base):
     def current_id(cls, year_id=None, date=None):
         return cls.query_current_id().first()[0]
 
-    def check_rooms(self):
+    def check_rooms(self, exclude=[]):
         """
         Check for repetetive rooms, ie. when one room
         is occupied simultanously by two lessons.
+
+        :param exclude: You can exclude specific room, eg. gym.
+        :type excelud: :class:`list` of :class:`int`
 
         """
         return Session.query(func.count(Lesson.room), Lesson).\
                 group_by(Lesson.room, Lesson.order, Lesson.day,
                          Lesson.schedule_id).\
                 having(func.count(Lesson.room)>1).\
-                filter(Lesson.room != 100).all()
+                filter(not_(Lesson.room.in_(exclude))).all()
 
     def __repr__(self):
         cls = self.__class__.__name__
