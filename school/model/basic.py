@@ -516,7 +516,7 @@ class GroupMembership(Base):
 
     def __repr__(self):
         return "<GroupMembership('%s', '%s')>" \
-                % (self.full_group_name, self.student)
+                % (self.full_group_name(), self.student)
 
 
 class Student(Person):
