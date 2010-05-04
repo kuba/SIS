@@ -1,0 +1,42 @@
+body{
+    margin: 0px;
+    color: #333;
+    font-size: 12px;
+    font-family: 'Lucida Grande', 'DejaVu Sans', 'Bitstream Vera Sans', Verdana, Arial, sans-serif;
+}
+
+#header{
+    overflow: hidden;
+    width: 100%;
+    color: #ffc;
+    background-color: #333940;
+}
+
+#header h1{
+    margin: 8px 0px;
+    padding: 0px 10px;
+    font-size: 18px;
+    font-weight: normal;
+    color: white;
+}
+
+#header a:link, #header a:visited {
+    color: white
+}
+
+#header a:hover {
+    text-decoration: none;
+}
+
+#user-tools{
+    font-size: 11px;
+    padding: 1.2em 10px;
+    position: absolute;
+    right: 0px;
+    text-align: right;
+    top: 0px;
+}
+
+#content{
+    margin: 50px;
+}
