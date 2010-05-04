@@ -47,6 +47,8 @@ def make_map():
         m.connect('schedule_teacher', r'/{teacher_name}/{day_name}', action='get_teacher')
         m.connect('schedule_teacher_today', r'/{teacher_name}', action='get_teacher')
 
+    map.connect('login', r'/login', controller='auth', action='login')
+
     map.connect('/{controller}/{action}')
     map.connect('/{controller}/{action}/{id}')
 

@@ -9,6 +9,8 @@ from pylons.middleware import ErrorHandler, StatusCodeRedirect
 from pylons.wsgiapp import PylonsApp
 from routes.middleware import RoutesMiddleware
 
+from repoze.what.plugins.quickstart import add_auth_from_config
+
 from school.config.environment import load_environment
 
 def make_app(global_conf, full_stack=True, static_files=True, **app_conf):
@@ -46,6 +48,7 @@ def make_app(global_conf, full_stack=True, static_files=True, **app_conf):
     app = CacheMiddleware(app, config)
 
     # CUSTOM MIDDLEWARE HERE (filtered by error handling middlewares)
+    app = add_auth_from_config(app, global_conf, config_file=config['auth.ini'])
 
     if asbool(full_stack):
         # Handle Python exceptions

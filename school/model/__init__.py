@@ -40,7 +40,10 @@ from school.model.basic import Person, Educator, Subject, Group, \
                   SchoolYear, Schedule
 from school.model.subs import Substitution
 from school.model.lucky import LuckyNumber
+
+from school.model.auth import AuthUser, AuthGroup, AuthPermission
 __all__ = ["Person", "Educator", "Subject", "Group",
            "Lesson", "Student", "GroupMembership",
            "SchoolYear", "Schedule", "Substitution",
-           "LuckyNumber"]
+           "LuckyNumber", "AuthUser", "AuthGroup",
+           "AuthPermission"]

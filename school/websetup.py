@@ -2,6 +2,7 @@
 import os
 from codecs import open
 import datetime
+from getpass import getpass
 
 import logging
 log = logging.getLogger(__name__)
@@ -18,6 +19,8 @@ from school.parsers import TeachersParser,\
                            parse_schedule,\
                            parse_numbers
 
+from school.model.auth import AuthUser, AuthGroup, AuthPermission
+
 
 def setup_app(command, conf, vars):
     """Place any commands to setup school here"""
@@ -27,6 +30,15 @@ def setup_app(command, conf, vars):
     log.info("Creating tables...")
     meta.metadata.create_all(bind=meta.engine)
     log.info("Schema saved to the database.")
+
+    # Create auth
+    log.info("Creating super admin account...")
+    u = AuthUser()
+    u.user_name = 'admin'
+    u.password = getpass("Password for super admin: ")
+    meta.Session.add(u)
+    meta.Session.commit()
+    log.info("Createad super admin account.")
 
     # Run parsers
     log.info("Running parsers...")
