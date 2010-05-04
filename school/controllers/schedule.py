@@ -51,6 +51,7 @@ class ScheduleController(BaseController):
             return "No such teacher!"
 
         schedule = Schedule.current()
+        c.teacher = teacher
         c.year = schedule.year
         c.lessons = teacher.schedule_for_day(day, schedule.id)
         return render('schedule/teacher.xml')
@@ -78,6 +79,7 @@ class ScheduleController(BaseController):
                     if lesson is not None:
                         gs[o] = lesson
 
+        c.group_name = group.full_name(year)
         c.lessons = gs
         return render('schedule/group.xml')
 

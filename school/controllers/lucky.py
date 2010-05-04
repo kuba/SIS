@@ -26,7 +26,8 @@ class LuckyController(BaseController):
 
     def all(self):
         all = Session.query(LuckyNumber).order_by(LuckyNumber.date).all()
-        return ['%s - %s<br />' % (lucky.date, lucky.number) for lucky in all]
+        c.numbers = all
+        return render('lucky/list.xml')
 
     def current(self):
         # TODO This could be set in the settings file
@@ -41,10 +42,9 @@ class LuckyController(BaseController):
         lucky = Session.query(LuckyNumber).\
                         filter(LuckyNumber.date >= start_date).\
                         order_by(LuckyNumber.date).first()
-        if lucky is None:
-            return "No lucky number set!"
-        else:
-            return "%s - %s" % (lucky.date, lucky.number)
+
+        c.lucky = lucky
+        return render('lucky/current.xml')
 
     def week(self):
         change_hour = 15
@@ -73,15 +73,12 @@ class LuckyController(BaseController):
             else:
                 second_week.append(number)
 
-        def pretty_numbers(n):
-            return ["%s - %s<br />" % (l.date, l.number) for l in n]
-
         if first_week[-1].date  >= closest_day:
-            return pretty_numbers(first_week)
+            week = first_week
         elif len(second_week) > 0:
-            return pretty_numbers(second_week)
-        else:
-            return "No lucky numbers for this or incoming week"
+            week = second_week
+        c.numbers = week
+        return render('lucky/list.xml')
 
     def draw(self):
         return [str(x) + "<br />" for x in LuckyNumber.draw()]

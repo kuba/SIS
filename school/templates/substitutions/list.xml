@@ -1,14 +1,22 @@
-<html xmlns:py="http://genshi.edgewall.org/">
-    <ol>
-        <li><a href="${h.url('new_substitution')}">Simple new</a></li>
-        <li><a href="${h.url('substitutions_table')}">Table</a></li>
-    </ol>
-    <ol>
-        <li py:for="sub in c.subs">
-            ${sub}
-            ${h.form(url('substitution', id=sub.id), method='delete')}
-            <a href="#" onclick="parentNode.submit()">delete</a>
-            ${h.end_form()}
-        </li>
-    </ol>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:xi="http://www.w3.org/2001/XInclude"
+      xmlns:py="http://genshi.edgewall.org/">
+    <xi:include href="../base.xml" />
+    <head>
+          <title>Substitutions list</title>
+    </head>
+    <body>
+        <ol>
+            <li><a href="${h.url('new_substitution')}">Simple new</a></li>
+            <li><a href="${h.url('substitutions_table')}">Table</a></li>
+        </ol>
+        <ol>
+            <li py:for="sub in c.subs">
+                ${sub}
+                ${h.form(url('substitution', id=sub.id), method='delete')}
+                <a href="#" onclick="parentNode.submit()">delete</a>
+                ${h.end_form()}
+            </li>
+        </ol>
+    </body>
 </html>

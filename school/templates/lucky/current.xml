@@ -1,0 +1,18 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:xi="http://www.w3.org/2001/XInclude"
+      xmlns:py="http://genshi.edgewall.org/">
+    <xi:include href="../base.xml" />
+    <head>
+        <title>Lucky numbers</title>
+    </head>
+    <body>
+        <py:choose test="">
+            <span py:when="c.lucky">
+                Lucky number for ${c.lucky.date} is <strong>${c.lucky.number}</strong>
+            </span>
+            <span py:otherwise="">
+                No lucky number set! You should kill the school leader!
+            </span>
+        </py:choose>
+    </body>
+</html>

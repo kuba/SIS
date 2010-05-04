@@ -1,39 +1,36 @@
-<html xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:py="http://genshi.edgewall.org/"
-    py:strip="">
-    <ol>
-        <li py:for="lesson in day">
-            <py:choose>
-                <py:when test="lesson">
-                    <py:choose test="isinstance(lesson, list)">
-                        <py:when test="True">
-                            <py:choose>
-                                <py:when test="lesson[0]">
-                                    ${lesson[0].subject.name} ${lesson[0].room}
-                                </py:when>
-                                <py:otherwise>
-                                    -
-                                </py:otherwise>
-                            </py:choose>
-                            /
-                            <py:choose>
-                                <py:when test="lesson[1]">
-                                    ${lesson[1].subject.name} ${lesson[1].room}
-                                </py:when>
-                                <py:otherwise>
-                                    -
-                                </py:otherwise>
-                            </py:choose>
-                        </py:when>
-                        <py:otherwise>
-                            ${lesson.subject.name} ${lesson.room}
-                        </py:otherwise>
-                    </py:choose>
-                </py:when>
-                <py:otherwise>
-                    -
-                </py:otherwise>
-            </py:choose>
-        </li>
-    </ol>
-</html>
+<ol xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:py="http://genshi.edgewall.org/">
+    <li py:for="lesson in day">
+        <py:choose>
+            <py:when test="lesson">
+                <py:choose test="isinstance(lesson, list)">
+                    <py:when test="True">
+                        <py:choose>
+                            <py:when test="lesson[0]">
+                                ${lesson[0].subject.name} ${lesson[0].room}
+                            </py:when>
+                            <py:otherwise>
+                                -
+                            </py:otherwise>
+                        </py:choose>
+                        /
+                        <py:choose>
+                            <py:when test="lesson[1]">
+                                ${lesson[1].subject.name} ${lesson[1].room}
+                            </py:when>
+                            <py:otherwise>
+                                -
+                            </py:otherwise>
+                        </py:choose>
+                    </py:when>
+                    <py:otherwise>
+                        ${lesson.subject.name} ${lesson.room}
+                    </py:otherwise>
+                </py:choose>
+            </py:when>
+            <py:otherwise>
+                -
+            </py:otherwise>
+        </py:choose>
+    </li>
+</ol>
