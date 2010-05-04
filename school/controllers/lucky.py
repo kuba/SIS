@@ -14,6 +14,9 @@ from school.model import LuckyNumber
 from pylons.decorators import validate
 from pylons.decorators.rest import restrict
 
+from repoze.what.predicates import not_anonymous
+from repoze.what.plugins.pylonshq import ActionProtector
+
 from school.forms import AddLuckyNumbersForm
 
 log = logging.getLogger(__name__)
@@ -95,6 +98,7 @@ class LuckyController(BaseController):
             td = 7 - weekday
         return date + datetime.timedelta(td)
 
+    @ActionProtector(not_anonymous())
     def add_week_form(self):
         """
         Display the form to input numbers only for one week.
@@ -118,6 +122,7 @@ class LuckyController(BaseController):
 
         return render('lucky/add_form.xml')
 
+    @ActionProtector(not_anonymous())
     @restrict('POST')
     @validate(schema=AddLuckyNumbersForm(), form='add_week_form')
     def add(self):

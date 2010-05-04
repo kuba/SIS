@@ -3,6 +3,9 @@ import logging
 from pylons import request, response, session, tmpl_context as c
 from pylons.controllers.util import abort, redirect_to
 
+from repoze.what.predicates import not_anonymous
+from repoze.what.plugins.pylonshq import ActionProtector
+
 from school.lib.base import BaseController, render
 
 log = logging.getLogger(__name__)
@@ -180,6 +183,7 @@ class SubstitutionsController(BaseController):
 
         return render('substitutions/table.xml')
 
+    @ActionProtector(not_anonymous())
     def create(self):
         """POST /substitutions: Create a new item"""
         # url('substitutions')
@@ -199,6 +203,7 @@ class SubstitutionsController(BaseController):
         Session.commit()
         redirect_to('substitutions')
 
+    @ActionProtector(not_anonymous())
     def new(self, format='html'):
         """GET /substitutions/new: Form to create a new item"""
         # url('new_substitution')
@@ -210,6 +215,7 @@ class SubstitutionsController(BaseController):
         c.year = SchoolYear.current()
         return render('substitutions/new.xml')
 
+    @ActionProtector(not_anonymous())
     def update(self, id):
         """PUT /substitutions/id: Update an existing item"""
         # Forms posted to this method should contain a hidden field:
@@ -219,6 +225,7 @@ class SubstitutionsController(BaseController):
         #           method='put')
         # url('substitution', id=ID)
 
+    @ActionProtector(not_anonymous())
     def delete(self, id):
         """DELETE /substitutions/id: Delete an existing item"""
         # Forms posted to this method should contain a hidden field:
@@ -236,6 +243,7 @@ class SubstitutionsController(BaseController):
         """GET /substitutions/id: Show a specific item"""
         # url('substitution', id=ID)
 
+    @ActionProtector(not_anonymous())
     def edit(self, id, format='html'):
         """GET /substitutions/id/edit: Form to edit an existing item"""
         # url('edit_substitution', id=ID)
