@@ -18,7 +18,3 @@ class AuthController(BaseController):
     def login(self):
         came_from = str(request.params.get('came_from', '')) or '/'
         return '<form method="post" action="/login_handler?came_from=%s"><input type="text" name="login" /><input type="pasword" name="password" /><input type="submit" /></form>' % came_from
-
-    def redirect(self):
-        came_from = str(request.params.get('came_from', '')) or '/'
-        redirect_to(came_from)
