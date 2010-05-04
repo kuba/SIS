@@ -11,6 +11,7 @@ from repoze.who.plugins.formcookie import make_redirecting_plugin
 from school.model.meta import Session
 from school.model.auth import AuthUser, AuthGroup, AuthPermission
 
+
 def add_auth(app, app_conf, prefix='auth.'):
     """
     Add authentication and authorization middleware to the ``app``.

@@ -7,3 +7,5 @@ available to Controllers. This module is available to templates as 'h'.
 #from webhelpers.html.tags import checkbox, password
 from pylons import url
 from webhelpers.html.tags import *
+
+from school.lib.auth.helpers import signed_in
