@@ -20,6 +20,7 @@ setup(
         "repoze.who <= 1.99",
         "repoze.what-quickstart >= 1.0.6",
         "repoze.what-pylons >= 1.0",
+        "repoze.who.plugins.formcookie >= 0.3.0"
     ],
     setup_requires=["PasteScript>=1.6.3"],
     packages=find_packages(exclude=['ez_setup']),
