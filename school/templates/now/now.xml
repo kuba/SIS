@@ -1,7 +1,19 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:xi="http://www.w3.org/2001/XInclude"
-      xmlns:py="http://genshi.edgewall.org/"
-      py:strip="">
-      (${c.lesson[0].order})
-      ${'/'.join(["%s %s%s %s" % (l.subject.name,  l.group.full_name(c.year), l.part if l.part else '', l.room) for l in c.lesson])}
+      xmlns:py="http://genshi.edgewall.org/">
+      <xi:include href="../base.xml" />
+    <head>
+        <title>Lista osób</title>
+    </head>
+    <body>
+        <py:choose>
+            <py:when test="c.lesson">
+                (${c.lesson[0].order})
+                ${'/'.join(["%s %s%s %s" % (l.subject.name,  l.group.full_name(c.year), l.part if l.part else '', l.room) for l in c.lesson])}
+            </py:when>
+            <py:otherwise>
+                Nie ma obecnie żadnej lekcji.
+            </py:otherwise>
+        </py:choose>
+    </body>
 </html>

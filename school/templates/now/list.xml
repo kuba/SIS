@@ -7,9 +7,12 @@
     </head>
     <body>
         <ul>
+            <py:if test="not c.people">
+                Nie znaleziono osoby.
+            </py:if>
             <li py:for="person in c.people">
                 <a href="${url('now_id', id=person.id)}">${person.name}</a>
             </li>
         </ul>
-      </body>
+    </body>
 </html>
