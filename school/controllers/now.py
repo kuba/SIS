@@ -43,7 +43,10 @@ class TooLateError(NowError):
 class NowController(BaseController):
 
     def index(self):
-        return render('now/index.xml')
+        if 'surname' in request.params:
+            redirect_to('now_name', surname=request.params['surname'])
+        else:
+            return render('now/index.xml')
 
     def current_order(self):
         schedule = [time(7,55),

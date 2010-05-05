@@ -6,8 +6,11 @@
         <title>Now!</title>
     </head>
     <body>
-        <div>
-            /[nazwisko]
-        </div>
+        <h1>Now!</h1>
+        <form method="post">
+            <label for="surname">Nazwisko ucznia bądź nauczyciela (wielkość liter nie ma znaczenia):</label>
+            <input type="text" id="surname" name="surname" />
+            <input type="submit" value="Now!" />
+        </form>
       </body>
 </html>
