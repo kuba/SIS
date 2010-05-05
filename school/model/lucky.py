@@ -80,7 +80,7 @@ class LuckyNumber(Base):
         if now.hour >= change_hour:
             closest_day = today + datetime.timedelta(1)
         else:
-            closest_day = now
+            closest_day = today
         closest_weekday = datetime.date.weekday(closest_day)
 
         # Retrieve the date of the first day in the week
