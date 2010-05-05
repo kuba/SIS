@@ -128,9 +128,9 @@ class LuckyNumber(Base):
         return Session.query(cls).order_by(desc(cls.date)).first()
 
     @classmethod
-    def draw(cls):
+    def left(cls):
         """
-        Draw lucky numbers, not used before, shuffled.
+        Get left lucky numbers, not used before, sorted.
 
         """
         student_count = func.count(Student.id).label('student_count')
@@ -145,6 +145,16 @@ class LuckyNumber(Base):
 
         all = set(range(1, max + 1))
         past = set(x[0] for x in past)
-        d = list(all.difference(past))
-        random.shuffle(d)
-        return d
+        left = list(all.difference(past))
+        left.sort()
+        return left
+
+    @classmethod
+    def draw(cls):
+        """
+        Draw left lucky numbers, shuffled
+
+        """
+        left = cls.left()
+        random.shuffle(left)
+        return left
