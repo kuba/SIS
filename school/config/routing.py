@@ -20,10 +20,14 @@ def make_map():
 
     # CUSTOM ROUTES HERE
     with map.submapper(path_prefix=r'/lucky', controller='lucky') as m:
-        m.connect('lucky', r'', action='all')
+        m.connect('lucky_home', r'', action='index')
+        m.connect('lucky_search', r'/search', action='search')
+        m.connect('lucky_draw', r'/draw', action='draw')
+        m.connect('lucky_all', r'/all', action='all')
         m.connect('lucky_add_form', r'/add', action='add',
                   conditions={'method':'POST'})
         m.connect('lucky_add', r'/add', action='add_week_form')
+        m.connect('lucky_date', r'/{date:\d\d\d\d-\d\d-\d\d}', action='date')
 
     with map.submapper(controller='substitutions') as m:
         m.connect(r'/s', action='index')
@@ -46,6 +50,10 @@ def make_map():
         m.connect('schedule_group_today', r'/{group_name:\d\w+}', action='get_group')
         m.connect('schedule_teacher', r'/{teacher_name}/{day_name}', action='get_teacher')
         m.connect('schedule_teacher_today', r'/{teacher_name}', action='get_teacher')
+
+    with map.submapper(controller='pages') as m:
+        m.connect('home', r'/', action='index')
+        m.connect('about', r'/about', action='about')
 
     map.connect('login', r'/login', controller='auth', action='login')
 

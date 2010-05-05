@@ -1,0 +1,46 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:xi="http://www.w3.org/2001/XInclude"
+      xmlns:py="http://genshi.edgewall.org/">
+    <xi:include href="../base.xml" />
+    <head>
+        <title>Szczęśliwy numerek</title>
+    </head>
+    <body>
+        <h1>Szczęśliwy numerek</h1>
+
+        <h2 py:if="h.signed_in()"><a href="${url('lucky_add')}">Dodaj</a></h2>
+        <h2 py:if="h.signed_in()"><a href="${url('lucky_draw')}">Losuj</a></h2>
+
+        <h2>Aktualny szczęśliwy numerek</h2>
+        <py:choose test="">
+            <div class="lucky_number" py:when="c.current">
+                <div class="lucky_number_number">${c.current.number}</div>
+                <div class="lucky_number_date">${c.current.date}</div>
+            </div>
+            <span py:otherwise="">
+                Nie ma szczęśliwego numerka! Dorwij przewodniczącego!
+            </span>
+        </py:choose>
+
+        <h2>Szczęśliwe numerki na obecny tydzień</h2>
+        <ul>
+            <li py:for="lucky in c.week">
+                ${lucky.date} - <strong>${lucky.number}</strong>
+            </li>
+        </ul>
+
+        <h2>Pozostały do wylosowania:</h2>
+        <ul>
+            <li py:for="number in c.left">${number}</li>
+        </ul>
+        
+        <h2>Szukaj szczęśliwego numerka</h2>
+        Wpisz tutaj numerek, by zobaczyć jego historię.
+        <form action="${url('lucky_search')}">
+            <input type="text" id="number" name="number" maxlength="2" size="2" value="0"/>
+            <input type="submit" value="Szukaj" />
+        </form>
+
+        <h2><a href="${url('lucky_all')}">Archwium szczęśliwych numerków</a></h2>
+    </body>
+</html>

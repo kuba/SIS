@@ -1,13 +1,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:xi="http://www.w3.org/2001/XInclude"
       xmlns:py="http://genshi.edgewall.org/">
-      <xi:include href="../base.xml" />
+    <xi:include href="../base.xml" />
     <head>
-        <title>Now!</title>
+        <title>Losuj</title>
     </head>
     <body>
-        <div>
-            /[nazwisko]
-        </div>
-      </body>
+        <ul>
+            <li py:for="n in c.numbers">${n}</li>
+        </ul>
+    </body>
 </html>

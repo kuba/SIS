@@ -7,7 +7,7 @@
     </head>
     <body>
         <py:for each="lucky in c.numbers">
-            ${lucky.date} - ${lucky.number}<br />
+            ${lucky.date} - <strong>${lucky.number}</strong><br />
         </py:for>
     </body>
 </html>

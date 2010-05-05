@@ -17,6 +17,8 @@ from pylons.decorators.rest import restrict
 from repoze.what.predicates import not_anonymous
 from repoze.what.plugins.pylonshq import ActionProtector
 
+import webhelpers.paginate as paginate
+
 from school.forms import AddLuckyNumbersForm
 
 log = logging.getLogger(__name__)
@@ -24,64 +26,52 @@ log = logging.getLogger(__name__)
 
 class LuckyController(BaseController):
 
+    def index(self):
+        change_hour = 15
+        c.current = LuckyNumber.current(change_hour)
+        c.week = LuckyNumber.current_week(change_hour)
+        c.left = LuckyNumber.left()
+        return render('lucky/index.xml')
+
     def all(self):
-        all = Session.query(LuckyNumber).order_by(LuckyNumber.date).all()
-        c.numbers = all
+        c.numbers = Session.query(LuckyNumber).order_by(LuckyNumber.date).all()
+        return render('lucky/list.xml')
+
+    def search(self):
+        number = int(request.params.get('number'))
+        c.numbers = Session.query(LuckyNumber).order_by(LuckyNumber.date).\
+                            filter_by(number=number)
         return render('lucky/list.xml')
 
     def current(self):
         # TODO This could be set in the settings file
         change_hour = 15
-
-        now = datetime.datetime.now()
-        if now.hour >= change_hour:
-            start_date = now + datetime.timedelta(1)
-        else:
-            start_date = now
-
-        lucky = Session.query(LuckyNumber).\
-                        filter(LuckyNumber.date >= start_date).\
-                        order_by(LuckyNumber.date).first()
-
-        c.lucky = lucky
+        c.lucky = LuckyNumber.current(change_hour)
         return render('lucky/current.xml')
 
-    def week(self):
+    def date(self, date):
+        """
+        Lucky number for the given date.
+
+        :param date: Date in format: %Y-%m-%d
+
+        """
+        date = date = datetime.datetime.strptime(date, '%Y-%m-%d')
+        c.lucky = Session.query(LuckyNumber).filter_by(date=date).first()
+        return render('lucky/current.xml')
+
+    def current_week(self):
+        """
+        Lucky numbers for current or next week.
+
+        """
         change_hour = 15
-
-        now = datetime.datetime.now()
-        today = now.date()
-        if now.hour >= change_hour:
-            closest_day = today + datetime.timedelta(1)
-        else:
-            closest_day = today
-
-        # We will fetch two weeks from the database
-        start_date = today - datetime.timedelta(datetime.date.weekday(now))
-        end_date = start_date + datetime.timedelta(13)
-
-        numbers = Session.query(LuckyNumber).\
-                          filter(LuckyNumber.date >= start_date).\
-                          filter(LuckyNumber.date <= end_date).\
-                          order_by(LuckyNumber.date).\
-                          all()
-        first_week = []
-        second_week = []
-        for number in numbers:
-            if number.date < end_date - datetime.timedelta(7):
-                first_week.append(number)
-            else:
-                second_week.append(number)
-
-        if first_week[-1].date  >= closest_day:
-            week = first_week
-        elif len(second_week) > 0:
-            week = second_week
-        c.numbers = week
+        c.numbers = LuckyNumber.current_week(change_hour)
         return render('lucky/list.xml')
 
     def draw(self):
-        return [str(x) + "<br />" for x in LuckyNumber.draw()]
+        c.numbers = LuckyNumber.draw()
+        return render('lucky/draw.xml')
 
     def _closest_working_day(self, date):
         """
@@ -123,14 +113,23 @@ class LuckyController(BaseController):
     @restrict('POST')
     @validate(schema=AddLuckyNumbersForm(), form='add_week_form')
     def add(self):
-        for lucky in self.form_result['lucky']:
+        numbers = self.form_result['lucky']
+        added = False
+        for lucky in numbers:
             if lucky['date'] and lucky['number']:
+                added = True
                 Session.add(LuckyNumber(lucky['date'], lucky['number']))
 
         try:
             Session.commit()
         except IntegrityError as e:
+            session['flash'] = 'There is already lucky number for %s' % e.params[0]
+            session.save()
             return redirect_to('lucky_add')
-            return "There is already lucky number for %s!" % e.params[0]
         else:
-            redirect_to('lucky')
+            if not added:
+                session['flash'] = 'No lucky number has been added!'
+            else:
+                session['flash'] = 'Lucky numbers have been added!'
+            session.save()
+            redirect_to('lucky_home')

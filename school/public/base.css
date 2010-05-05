@@ -5,6 +5,25 @@ body{
     font-family: 'Lucida Grande', 'DejaVu Sans', 'Bitstream Vera Sans', Verdana, Arial, sans-serif;
 }
 
+a {
+    text-decoration: none;
+    color: #5b80b2;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: #666;
+}
+
+p {
+    width: 700px;
+}
+
+#flash{
+    padding: 0px 10px;
+    background-color: #ffc;
+    color: #333940;
+}
+
 #header{
     overflow: hidden;
     width: 100%;
@@ -24,8 +43,8 @@ body{
     color: white
 }
 
-#header a:hover {
-    text-decoration: none;
+a:hover {
+    text-decoration: underline;
 }
 
 #user-tools{
@@ -39,4 +58,47 @@ body{
 
 #content{
     margin: 50px;
+}
+
+#menu{
+    font-size: 11px;
+    color: #999;
+    border-bottom: 1px solid #ccc;
+    padding: 2px 8px 3px;
+    background: white url('/menu-bg.gif') repeat-x 0px -10px;
+}
+
+#menu ul{
+    display: inline;
+    padding: 0px;
+    margin-left: 10px;
+}
+
+#menu li{
+    display: inline;
+    margin: 0px 8px;
+}
+
+div .lucky_number{
+    border: 1px solid;
+    text-align: center;
+    width: 200px;
+    color: white;
+    background-color: #333;
+}
+
+.lucky_number_number{
+    font-size: 140px;
+    width: 200px;
+    height: 175px;
+    border-bottom: 2px solid #ff0066;
+}
+
+.lucky_number_date{
+    font-size: 30px;
+}
+
+.beta{
+    color: #ff0066;
+    font-style: italic;
 }

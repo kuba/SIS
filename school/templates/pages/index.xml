@@ -1,0 +1,34 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:xi="http://www.w3.org/2001/XInclude"
+      xmlns:py="http://genshi.edgewall.org/">
+    <xi:include href="../base.xml" />
+    <head>
+        <title>Szkolny System Informacyjny Staszica</title>
+    </head>
+    <body>
+        <h1>Szkolny System Informacyjny Staszica <span class="beta">beta</span></h1>
+
+        <h2><a href="${url('now_home')}">Now!</a></h2>
+        <p>System do wyszukiwania uczniów oraz nauczycieli w czasie rzeczywistym.</p>
+
+        <h2><a href="${url('schedule_home')}">Plan</a></h2>
+        <p>
+            Czyli wszystko co związane z planem zajęć lekcyjnych -
+            dla ucznia i dla nauczyciela!
+        </p>
+
+        <h2><a href="${url('lucky_home')}">Szczęśliwy numerek</a></h2>
+        <p>
+            Sprawdź aktualny szczęśliwy numerek, a także numerki na ten,
+            czy na przyszły tydzień. W razie wątpliwości co do częstości
+            występowania danego numerka zawsze możesz sprawdzić nasze
+            <a href="${url('lucky_all')}">archiwum</a>.
+        </p>
+
+        <h2><a href="${url('substitutions_table')}">Zastępstwa</a></h2>
+        <p>Sprawdź aktualne (i nie tylko) zastępstwa.</p>
+
+        <h2><a href="${url('about')}">About</a></h2>
+        <p>Jeśli chcesz wiedzieć więcej...</p>
+    </body>
+</html>

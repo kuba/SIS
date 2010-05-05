@@ -3,13 +3,14 @@
       xmlns:py="http://genshi.edgewall.org/">
     <xi:include href="../base.xml" />
     <head>
-        <title>Lucky numbers</title>
+        <title>Current lucky number</title>
     </head>
     <body>
         <py:choose test="">
-            <span py:when="c.lucky">
-                Lucky number for ${c.lucky.date} is <strong>${c.lucky.number}</strong>
-            </span>
+            <div class="lucky_number" py:when="c.lucky">
+                <div class="lucky_number_number">${c.lucky.number}</div>
+                <div class="lucky_number_date">${c.lucky.date}</div>
+            </div>
             <span py:otherwise="">
                 No lucky number set! You should kill the school leader!
             </span>

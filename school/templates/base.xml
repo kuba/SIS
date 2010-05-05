@@ -4,7 +4,7 @@
     <py:match path="head" once="true">
         <head py:attrs="select('@*')">
             <title py:with="title = list(select('title/text()'))">
-                Staszic<py:if test="title"> | ${title}</py:if>
+                SSIS<py:if test="title"> | ${title}</py:if>
             </title>
             <link rel="stylesheet" type="text/css" href="/base.css" />
             ${select('*[local-name()!="title"]')}
@@ -13,17 +13,35 @@
     <py:match path="body" once="true">
         <body py:attrs="select('@*')">
             <div id="header">
-                <h1>Staszic Information System</h1>
+                <h1>Szkolny System Informacyjny Staszica <span class="beta">beta</span></h1>
                 <div id="user-tools">
                     <py:choose test="h.signed_in()">
                         <span py:when="None"><a href="/login">Login</a></span>
                         <span py:otherwise="">
-                            Welcome,
+                            Witamy,
                             <strong>${h.signed_in().user_name}</strong>.
-                            <a href="/logout">Logout</a>
+                            <a href="/logout">Wyloguj</a>
                         </span>
                     </py:choose>
                 </div>
+            </div>
+            <div id="menu">
+                Menu:
+                <ul>
+                    <li><a href="${url('/')}">Home</a></li>
+                    <li><a href="${url('now_home')}">Now!</a></li>
+                    <li><a href="${url('schedule_home')}">Plan</a></li>
+                    <li><a href="${url('lucky_home')}">Szczęśliwy numerek</a></li>
+                    <li><a href="${url('substitutions_table')}">Zastępstwa</a></li>
+                    <li><a href="${url('about')}">About</a></li>
+                </ul>
+            </div>
+            <div id="flash" py:if="session.has_key('flash')">
+                ${session.get('flash')}
+                <?python
+                    del session['flash']
+                    session.save()
+                ?>
             </div>
             <div id="content">
                 ${select('*|text()')}

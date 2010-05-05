@@ -3,7 +3,7 @@
       xmlns:py="http://genshi.edgewall.org/">
     <xi:include href="../base.xml" />
     <head>
-        <title>Add new substitution</title>
+        <title>Dodaj nowe zastępstwo</title>
     </head>
     <body>
         <form action="${url('substitutions')}" method="post"
@@ -11,10 +11,10 @@
             xmlns:py="http://genshi.edgewall.org/">
         
             <fieldset>
-            <label for="date">Date:</label>
+                <label for="date">Data:</label>
             <input type="text" id="date" name="date" value="${c.date}" />
         
-            <label for="order">Order:</label>
+            <label for="order">Lekcja nr:</label>
             <select id="order" name="order">
                 <option py:for="order in range(1,8)" id="${order}">
                     $order
@@ -23,7 +23,7 @@
             </fieldset>
         
             <fieldset>
-            <label for="group">Group:</label>
+            <label for="group">Klasa:</label>
             <select id="group" name="group">
                 <option py:for="group in c.groups" value="${group.id}">
                     ${group.full_name(c.year)}
@@ -31,26 +31,26 @@
             </select>
         
             <input type="radio" id="part0" name="part" value="0" checked="checked" />
-            <label for="part0">full</label>
+            <label for="part0">pełna</label>
             <input type="radio" id="part1" name="part" value="1" />
-            <label for="part1">1</label>
+            <label for="part1">grupa 1</label>
             <input type="radio" id="part2" name="part" value="2" />
-            <label for="part2">2</label>
+            <label for="part2">grupa 2</label>
             </fieldset>
         
-            <label for="educator">Educator:</label>
+            <label for="educator">Nauczyciel:</label>
             <select id="educator" name="educator">
-                <option value="0">RELEASED</option>
+                <option value="0">ZWOLNIONA</option>
                 <hr />
                 <option py:for="educator in c.educators" value="${educator.id}">
                     ${educator.name_with_title}
                 </option>
             </select>
         
-            <label for="comment">Comment:</label>
+            <label for="comment">Komentarz:</label>
             <input type="text" id="comment" name="comment" />
         
-            <input type="submit" />
+            <input type="submit" value="Dodaj zastępstwo" />
         </form>
     </body>
 </html>

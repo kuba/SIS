@@ -3,18 +3,18 @@
       xmlns:py="http://genshi.edgewall.org/">
     <xi:include href="../base.xml" />
     <head>
-          <title>Substitutions list</title>
+          <title>Lista zastępstw</title>
     </head>
     <body>
         <ol>
-            <li><a href="${h.url('new_substitution')}">Simple new</a></li>
-            <li><a href="${h.url('substitutions_table')}">Table</a></li>
+            <li><a href="${h.url('new_substitution')}">Dodaj nowe.</a></li>
+            <li><a href="${h.url('substitutions_table')}">Tabelka.</a></li>
         </ol>
         <ol>
             <li py:for="sub in c.subs">
                 ${sub}
                 ${h.form(url('substitution', id=sub.id), method='delete')}
-                <a href="#" onclick="parentNode.submit()">delete</a>
+                <a href="#" onclick="parentNode.submit()">usuń</a>
                 ${h.end_form()}
             </li>
         </ol>

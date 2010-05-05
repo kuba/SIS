@@ -2,10 +2,14 @@
       xmlns:xi="http://www.w3.org/2001/XInclude"
       xmlns:py="http://genshi.edgewall.org/">
       <xi:include href="../base.xml" />
-      <head>
-          <title>Lista osób</title>
-      </head>
-      <body>
-          <a href="${url('now_id', id=person.id)}" py:for="person in c.people">${person.name}</a>
+    <head>
+        <title>Lista osób</title>
+    </head>
+    <body>
+        <ul>
+            <li py:for="person in c.people">
+                <a href="${url('now_id', id=person.id)}">${person.name}</a>
+            </li>
+        </ul>
       </body>
 </html>

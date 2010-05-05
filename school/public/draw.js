@@ -32,8 +32,8 @@ $(document).ready(function() {
 
     // Add the link for drawing
     $('form').prepend(
-        '<a id="draw" href="#">Draw!</a> ',
-        '<a id="clear" href="#">Clear!</a><br />');
+        '<a id="draw" href="#">Losuj!</a> ',
+        '<a id="clear" href="#">Wyczyść!</a><br />');
     $('a#draw').click(draw);
     $('a#clear').click(clear);
 

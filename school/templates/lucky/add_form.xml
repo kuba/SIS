@@ -3,7 +3,7 @@
       xmlns:py="http://genshi.edgewall.org/">
     <xi:include href="../base.xml" />
     <head>
-        <title>Add lucky numbers for entire week.</title>
+        <title>Dodaj szczęśliwe numerki na następny tydzień.</title>
         <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"></script>
         <script type="text/javascript">
             numbers = new Array(${','.join(str(x) for x in c.numbers)});
