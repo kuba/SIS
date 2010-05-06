@@ -19,6 +19,8 @@ def make_map():
     map.connect('/error/{action}/{id}', controller='error')
 
     # CUSTOM ROUTES HERE
+
+    # Lucky number routes
     with map.submapper(path_prefix=r'/lucky', controller='lucky') as m:
         m.connect('lucky_home', r'', action='index')
         m.connect('lucky_search', r'/search', action='search')
@@ -29,34 +31,67 @@ def make_map():
         m.connect('lucky_add', r'/add', action='add_week_form')
         m.connect('lucky_date', r'/{date:\d\d\d\d-\d\d-\d\d}', action='date')
 
+    # Substitutions routes
     with map.submapper(controller='substitutions') as m:
-        m.connect(r'/s', action='index')
-        m.connect('substitutions_table', r'/z', action='table')
-        m.connect('substitutions_table_date', r'/z/{date:\d\d\d\d-\d\d-\d\d}',
-                  action='table')
+        m.connect(r'', action='index')
+
+        # substitutions table
+        with m.submapper(path_prefix='/z', action='table') as table_m:
+            table_m.connect('substitutions_table', r'')
+            table_m.connect('substitutions_table_date',
+                    r'/{date:\d\d\d\d-\d\d-\d\d}')
+    # substitutions RESTful mapping
     map.resource('substitution', 'substitutions')
 
+    # Now! routes
     with map.submapper(path_prefix='/now', controller='now') as m:
         m.connect('now_home', r'', action='index')
         m.connect('now_id', '/{id:\d+}', action='now_id')
         m.connect('now_name', '/{surname}', action='now')
 
-    with map.submapper(path_prefix='/plan', controller='schedule') as m:
+    # Schedule routes
+    with map.submapper(path_prefix='/schedule', controller='schedule') as m:
         m.connect('schedule_home', r'', action='index')
-        m.connect('schedule_teachers', r'/teachers', action='get_teachers')
-        m.connect('schedule_group_course', r'/{group_name:\d\w+}+{course}/{day_name}', action='get_group')
-        m.connect('schedule_group_course_today', r'/{group_name:\d\w+}+{course}', action='get_group')
-        m.connect('schedule_group', r'/{group_name:\d\w+}/{day_name}', action='get_group')
-        m.connect('schedule_group_today', r'/{group_name:\d\w+}', action='get_group')
-        m.connect('schedule_teacher', r'/{teacher_name}/{day_name}', action='get_teacher')
-        m.connect('schedule_teacher_today', r'/{teacher_name}', action='get_teacher')
 
+        # full schedules
+        m.connect('schedule_teachers', r'/teachers', action='get_teachers')
+        m.connect('schedule_groups', r'/groups', action='get_groups')
+
+        # weekly schedules
+        with m.submapper(path_prefix='/week') as week_m:
+            with week_m.submapper(path_prefix='/{group_name:\d\w+}',
+                    action='group_week') as group_m:
+                group_m.connect('schedule_group_week', r'')
+                group_m.connect('schedule_group_course_week', r'+{course_name}')
+            week_m.connect('schedule_teacher_week', r'/{teacher_name}',
+                action='teacher_week')
+
+        # group daily schedule
+        with m.submapper(path_prefix='/{group_name:\d\w+}',
+                         action='get_group') as group_m:
+            group_m.connect('schedule_group', r'/{day_name}')
+            group_m.connect('schedule_group_today', r'')
+
+            # course daily schedule
+            with group_m.submapper(path_prefix='+{course}') as course_m:
+                course_m.connect('schedule_group_course_today', r'')
+                course_m.connect('schedule_group_course', r'/{day_name}')
+        
+        # teacher daily schedule
+        with m.submapper(path_prefix='/{teacher_name}',
+                         action='get_teacher') as teacher_m:
+            teacher_m.connect('schedule_teacher_today', r'')
+            teacher_m.connect('schedule_teacher', r'/{day_name}')
+
+    # Pages routes
     with map.submapper(controller='pages') as m:
         m.connect('home', r'/', action='index')
         m.connect('about', r'/about', action='about')
 
+    # Auth routes
     map.connect('login', r'/login', controller='auth', action='login')
 
+    # DEFAULT routes
     map.connect('/{controller}/{action}')
     map.connect('/{controller}/{action}/{id}')
 
