@@ -3,13 +3,36 @@
       xmlns:py="http://genshi.edgewall.org/">
     <xi:include href="../base.xml" />
     <head>
-        <title>Schedule</title>
+        <title>Plan lekcji</title>
     </head>
     <body>
-        <div>
-            /[klasa]/[dzień] albo /[klasa]+[lektorat]/[dzień] albo /[nauczyciel]/[dzień]<br />
-            albo /teachers dla pełengo planu nauczycieli<br />
-            gdzie [dzień] to : mon, tue, wed, thu bądź fri
-        </div>
+        <h1>Plan lekcji</h1>
+
+        <h2><a href="${url('schedule_teachers')}">Pełny plan lekcji dla nauczycieli</a></h2>
+        <h2><a href="${url('schedule_groups')}">Pełny plan lekcji dla uczniów</a></h2>
+
+        <h2>Plan lekcji dla klasy</h2>
+        <form method="post">
+            <select name="group_name">
+                <option py:for="g in c.groups" value="${g.full_name(c.year)}">${g.full_name(c.year)}</option>
+            </select>
+            <select name="day">
+                <option value="week">cały tydzień</option>
+                <option py:for="d in c.days" value="${d}">${d}</option>
+            </select>
+            <input type="submit" />
+        </form>
+
+        <h2>Plan lekcji dla nauczyciela</h2>
+        <form method="post">
+            <select name="teacher_last_name">
+                <option py:for="t in c.teachers" value="${t.last_name}">${t.name_with_title}</option>
+            </select>
+            <select name="day">
+                <option value='week'>cały tydzień</option>
+                <option py:for="d in c.days" value="${d}">${d}</option>
+            </select>
+            <input type="submit" />
+        </form>
     </body>
 </html>

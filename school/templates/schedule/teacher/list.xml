@@ -1,0 +1,21 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:xi="http://www.w3.org/2001/XInclude"
+      xmlns:py="http://genshi.edgewall.org/">
+    <xi:include href="../../base.xml" />
+    <head>
+        <title>Lista nauczycieli</title>
+    </head>
+    <body>
+        <py:choose test="len(c.teachers)">
+            <py:when test="0">
+                <h1>Błąd</h1>
+                <p>Nie znaleziono nauczyciela</p>
+            </py:when>
+            <ul py:otherwise="">
+                <li py:for="person in c.teachers">
+                    <a href="${url('now_id', id=person.id)}">${person.name}</a>
+                </li>
+            </ul>
+        </py:choose>
+    </body>
+</html>

@@ -1,0 +1,34 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:xi="http://www.w3.org/2001/XInclude"
+      xmlns:py="http://genshi.edgewall.org/">
+    <xi:include href="../../base.xml" />
+    <head>
+        <title>${c.teacher.name_with_title}: tygodniowy plan lekcji</title>
+    </head>
+    <body>
+        <h1>${c.teacher.name_with_title}: tygodniowy plan lekcji</h1>
+        <table py:if="c.schedule is not None" border="1">
+            <tr>
+                <th>lp.</th>
+                <th>poniedziałek</th>
+                <th>wtorek</th>
+                <th>środa</th>
+                <th>czwartek</th>
+                <th>piątek</th>
+            </tr>
+            <tr py:for="x in range(0, 7)">
+                <td>${x+1}.</td>
+                <td py:for="day in c.schedule">
+                    <py:choose>
+                        <py:when test="x &lt; len(day) and day[x]" py:with="lesson=day[x]">
+                            ${'/'.join([x.group.full_name(c.year) + (str(x.part) if x.part else '') + " %d" % x.room for x in lesson])}
+                        </py:when>
+                        <py:otherwise>
+                            &nbsp;
+                        </py:otherwise>
+                    </py:choose>
+                </td>
+            </tr>
+        </table>
+    </body>
+</html>

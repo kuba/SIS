@@ -1,0 +1,57 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:xi="http://www.w3.org/2001/XInclude"
+      xmlns:py="http://genshi.edgewall.org/">
+    <xi:include href="../../base.xml" />
+    <head>
+        <title>Tygodniowy plan lekcji dla klasy ${c.group_name}</title>
+    </head>
+    <body>
+        <h1>Tygodniowy plan lekcji dla klasy ${c.group_name}</h1>
+        <table py:if="c.schedule is not None" border="1">
+            <tr>
+                <th>lp.</th>
+                <th>poniedziałek</th>
+                <th>wtorek</th>
+                <th>środa</th>
+                <th>czwartek</th>
+                <th>piątek</th>
+            </tr>
+            <tr py:for="x in range(0, 7)">
+                <td>${x+1}.</td>
+                <td py:for="day in c.schedule">
+                    <py:choose>
+                        <py:when test="x &lt; len(day) and day[x]" py:with="lesson=day[x]">
+                            <py:choose test="isinstance(lesson, list)">
+                                <py:when test="True">
+                                    <py:choose>
+                                        <py:when test="lesson[0]">
+                                            ${lesson[0].subject.name} ${lesson[0].room}
+                                        </py:when>
+                                        <py:otherwise>
+                                            -
+                                        </py:otherwise>
+                                    </py:choose>
+                                    /
+                                    <py:choose>
+                                        <py:when test="lesson[1]">
+                                            ${lesson[1].subject.name} ${lesson[1].room}
+                                        </py:when>
+                                        <py:otherwise>
+                                            -
+                                        </py:otherwise>
+                                    </py:choose>
+                                </py:when>
+                                <py:otherwise>
+                                    ${lesson.subject.name} ${lesson.room}
+                                </py:otherwise>
+                            </py:choose>
+                        </py:when>
+                        <py:otherwise>
+                            &nbsp;
+                        </py:otherwise>
+                    </py:choose>
+                </td>
+            </tr>
+        </table>
+    </body>
+</html>

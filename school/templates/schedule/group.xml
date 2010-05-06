@@ -3,9 +3,10 @@
       xmlns:py="http://genshi.edgewall.org/">
     <xi:include href="../base.xml" />
     <head>
-        <title>Schedule for ${c.group_name}</title>
+        <title>Plan lekcji dla klasy ${c.group_name}</title>
     </head>
     <body>
+        <h1>Plan lekcji dla klasy ${c.group_name}</h1>
         <xi:include href="group/day.xml" py:with="day=c.lessons"/>
     </body>
 </html>

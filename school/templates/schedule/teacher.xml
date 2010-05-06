@@ -3,7 +3,7 @@
       xmlns:py="http://genshi.edgewall.org/">
     <xi:include href="../base.xml" />
     <head>
-        <title>Schedule for ${c.teacher_name}</title>
+        <title>Schedule for ${c.teacher.name_with_title}</title>
     </head>
     <body>
         <h1>Schedule for ${c.teacher.name_with_title}</h1>
