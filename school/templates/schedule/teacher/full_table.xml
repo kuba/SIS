@@ -3,20 +3,20 @@
       xmlns:py="http://genshi.edgewall.org/">
     <xi:include href="../../base.xml" />
     <head>
-        <title>Full teachers schedule.</title>
+        <title>Pełny plan lekcji dla nayczycieli.</title>
     </head>
     <body>
         <table border="1">
             <tr>
-                <th rowspan="2">Educator</th>
-                <th colspan="5">Day of the week</th>
+                <th rowspan="2">Nauczyciel</th>
+                <th colspan="5">dzień tygodnia</th>
             </tr>
             <tr>
-                <td>Monday</td>
-                <td>Tuesday</td>
-                <td>Wednesday</td>
-                <td>Thursday</td>
-                <td>Friday</td>
+                <td>poniedziałek</td>
+                <td>wtorek</td>
+                <td>środa</td>
+                <td>czwartek</td>
+                <td>piątek</td>
             </tr>
             <tr py:for="e, days in c.educators">
                 <td>${e.name_with_title}</td>
