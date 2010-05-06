@@ -348,7 +348,7 @@ class Group(Base):
             )
 
     id = Column(Integer, primary_key=True)
-    name = Column(Unicode(16), nullable=False)
+    name = Column(Unicode(16), nullable=False, unique=True)
     year_id = Column(ForeignKey('school_years.id'))
     year = relation('SchoolYear')
 
