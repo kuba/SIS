@@ -28,7 +28,7 @@ $(document).ready(function() {
     //});
 
     // Form inputs
-    inputs = $("input[id^='lucky'][id$='number']");
+    inputs = $("input[name^='lucky'][name$='number']");
 
     // Add the link for drawing
     $('form').prepend(

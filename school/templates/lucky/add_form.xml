@@ -11,16 +11,42 @@
         <script type="text/javascript" src="/draw.js"></script>
     </head>
     <body>
+        <h1>Dodaj szczęśliwe numerki na następny tydzień</h1>
+
+        <p>
+            Pamiętaj, że wprowadzane numerki <strong>nie są sprawdzane pod
+            kątem częstości ich występowania</strong>!
+        </p>
+        <p>
+            Formularz został już wypełniony losowymi szczęśliwymi numerkami,
+            które pozostały jeszcze do wylosowania, tj. nie były one jeszcze
+            użyte w obecnej turze.
+        </p>
+        <p>
+            Poniżej znajduje się pełna lista wszystkich szcześliwych numerków
+            pozostałych do wylosowania. Każde odświeżenie strony powoduje
+            wymieszanie numerków w formularzu, jak i w liście.
+        </p>
+        <p>
+            Nie wolno wprowadzać kilku numerków na ten sam dzień!
+        </p>
+
+        <form action="${h.url(controller='lucky', action='add')}" method="post">
+            <py:for each="x in range(0, c.count)">
+                <input type="text" value="${(c.first_date + c.datetime.timedelta(1)*x).strftime('%d/%m/%Y')}" name="lucky-${x}.date" />
+                <input type="text" name="lucky-${x}.number" value="${c.numbers[x]}"/>
+                <br />
+            </py:for>
+            <input type="submit" value="Dodaj!" />
+        </form>
+
+        <h2>Pozostały do wylosowania</h2>
+        <p>
+            Poniżej znajduje się lista numerków, które nie były jeszcze
+            losowane w obecnej turze.
+        </p>
         <ul id="not_used_numbers">
             <li py:for="n in c.numbers">${n}</li>
         </ul>
-        ${h.form(h.url(controller='lucky', action='add'), method='post')}
-            <py:for each="x in range(0, c.count)">
-                ${h.text(value=(c.first_date + c.datetime.timedelta(1)*x).strftime('%d/%m/%Y'), name='lucky-%s.date' % x, id='lucky-%s.date' % x)}
-                ${h.text(name='lucky-%s.number' % x, id='lucky-%s.number' % x)}
-                <br />
-            </py:for>
-            ${h.submit('submit', 'Submit')}
-        ${h.end_form()}
     </body>
 </html>
