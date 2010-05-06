@@ -457,10 +457,8 @@ class Group(Base):
             else:
                 # Parted group
                 if not len(schedule) == lesson.order:
-                    schedule.append([])
-                if len(schedule[-1]) == 0 and lesson.part == 2:
-                    schedule[-1].append(None)
-                schedule[-1].append(lesson)
+                    schedule.append([None, None])
+                schedule[-1][lesson.part-1] = lesson
         return schedule
 
     def schedule(self, schedule_id=None):
