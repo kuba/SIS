@@ -56,6 +56,20 @@ class Educator(Person):
         super(Educator, self).__init__(*args, **kwargs)
         self.title = title
 
+    @classmethod
+    def query_active(cls, schedule_id=None):
+        """
+        Query educator with lessons in the schedule.
+
+        """
+        q = Session.query(cls).outerjoin(Lesson).join(Schedule)
+        if schedule_id is None:
+            stmt = Schedule.query_current_id().subquery()
+            q = q.join((stmt, Lesson.schedule_id == stmt.c.id))
+        else:
+            q = q.filter(Schedule.id == schedule_id)
+        return q
+
     @property
     def name_with_title(self):
         """
@@ -358,6 +372,20 @@ class Group(Base):
     def __init__(self, name, year):
         self.name = name
         self.year = year
+
+    @classmethod
+    def query_active(cls, schedule_id=None):
+        """
+        Query group with lessons in the schedule.
+
+        """
+        q = Session.query(cls).outerjoin(Lesson).join(Schedule)
+        if schedule_id is None:
+            stmt = Schedule.query_current_id().subquery()
+            q = q.join((stmt, Lesson.schedule_id == stmt.c.id))
+        else:
+            q = q.filter(Schedule.id == schedule_id)
+        return q
 
     def index(self, year=None):
         """
