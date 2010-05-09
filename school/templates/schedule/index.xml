@@ -20,7 +20,7 @@
                 <option value="week">cały tydzień</option>
                 <option py:for="d in c.days" value="${d}">${d}</option>
             </select>
-            <input type="submit" />
+            <input type="submit" value="Pokaż" />
         </form>
 
         <h2>Plan lekcji dla nauczyciela</h2>
@@ -32,7 +32,7 @@
                 <option value='week'>cały tydzień</option>
                 <option py:for="d in c.days" value="${d}">${d}</option>
             </select>
-            <input type="submit" />
+            <input type="submit" value="Pokaż" />
         </form>
     </body>
 </html>
