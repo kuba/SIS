@@ -23,7 +23,7 @@ static_files = true
 students_dir = %(here)s/students
 teachers_file = %(here)s/teachers
 schedule_file = %(here)s/schedule
-numbers_files = %(here)s/numbers
+numbers_file = %(here)s/numbers
 
 # Setup auth
 auth.cookie_secret = ${app_instance_secret}
