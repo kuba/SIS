@@ -73,7 +73,7 @@ def make_map():
             group_m.connect('schedule_group_today', r'')
 
             # course daily schedule
-            with group_m.submapper(path_prefix='+{course}') as course_m:
+            with group_m.submapper(path_prefix='+{course_name}') as course_m:
                 course_m.connect('schedule_group_course_today', r'')
                 course_m.connect('schedule_group_course', r'/{day_name}')
         
