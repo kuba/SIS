@@ -57,7 +57,7 @@ class SubstitutionsController(BaseController):
         if date is None:
             date = self._closest_working_day(datetime.datetime.today())
         else:
-            date = datetime.datetime.strptime(date, '%Y-%m-%d')
+            date = datetime.datetime.strptime(date, '%Y-%m-%d').date()
 
         # Fetch substitutions from database
         q = Session.query(Substitution).filter_by(date=date)
