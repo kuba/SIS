@@ -55,7 +55,7 @@ class SubstitutionsController(BaseController):
 
         """
         if date is None:
-            date = self._closest_working_day(datetime.datetime.today())
+            date = self._closest_working_day(datetime.datetime.today()).date()
         else:
             date = datetime.datetime.strptime(date, '%Y-%m-%d').date()
 
@@ -173,7 +173,7 @@ class SubstitutionsController(BaseController):
             fill(after, sub.teacher, sub.order, (sub.group, sub.part))
 
         c.debug = ("Substitutions for %s:\nbefore:\t\t%r\nafter:\t\t%r\n" + \
-                 "released:\t%r") % (date.date(), before, after, released)
+                 "released:\t%r") % (date, before, after, released)
 
         c.year = SchoolYear.current()
         c.date = date

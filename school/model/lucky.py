@@ -47,9 +47,9 @@ class LuckyNumber(Base):
             now = datetime.datetime.now()
 
         if now.hour >= change_hour:
-            start_date = now + datetime.timedelta(1)
+            start_date = now.date() + datetime.timedelta(1)
         else:
-            start_date = now
+            start_date = now.date()
 
         lucky = Session.query(cls).\
                     filter(cls.date >= start_date).\
@@ -75,12 +75,11 @@ class LuckyNumber(Base):
         """
         if now is None:
             now = datetime.datetime.now()
-        today = now.date()
 
         if now.hour >= change_hour:
-            closest_day = today + datetime.timedelta(1)
+            closest_day = now.date() + datetime.timedelta(1)
         else:
-            closest_day = today
+            closest_day = now.date()
         closest_weekday = datetime.date.weekday(closest_day)
 
         # Retrieve the date of the first day in the week
