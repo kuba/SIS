@@ -18,7 +18,9 @@
                 </h1>
                 <div id="user-tools">
                     <py:choose test="h.signed_in()">
-                        <span py:when="None"><a href="/login">Login</a></span>
+                        <span py:when="None">
+                            <a href="/login">Zaloguj</a>
+                        </span>
                         <span py:otherwise="">
                             Witamy,
                             <strong>${h.signed_in().user_name}</strong>.
