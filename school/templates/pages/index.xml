@@ -3,10 +3,10 @@
       xmlns:py="http://genshi.edgewall.org/">
     <xi:include href="../base.xml" />
     <head>
-        <title>Szkolny System Informacyjny Staszica</title>
+        <title>System Informacyjny Staszica</title>
     </head>
     <body>
-        <h1>Szkolny System Informacyjny Staszica <span class="beta">beta</span></h1>
+        <h1>System Informacyjny Staszica <span class="beta">beta</span></h1>
 
         <h2><a href="${url('now_home')}">Now!</a></h2>
         <p>System do wyszukiwania uczniów oraz nauczycieli w czasie rzeczywistym.</p>

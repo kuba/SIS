@@ -4,7 +4,7 @@
     <py:match path="head" once="true">
         <head py:attrs="select('@*')">
             <title py:with="title = list(select('title/text()'))">
-                SSIS<py:if test="title"> | ${title}</py:if>
+                SIS<py:if test="title"> | ${title}</py:if>
             </title>
             <link rel="stylesheet" type="text/css" href="/base.css" />
             ${select('*[local-name()!="title"]')}
@@ -13,7 +13,9 @@
     <py:match path="body" once="true">
         <body py:attrs="select('@*')">
             <div id="header">
-                <h1>Szkolny System Informacyjny Staszica <span class="beta">beta</span></h1>
+                <h1>
+                    System Informacyjny Staszica <span class="beta">beta</span>
+                </h1>
                 <div id="user-tools">
                     <py:choose test="h.signed_in()">
                         <span py:when="None"><a href="/login">Login</a></span>
