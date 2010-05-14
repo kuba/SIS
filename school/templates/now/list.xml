@@ -10,7 +10,7 @@
             <p py:when="not c.people">
                 Nie znaleziono osoby
             </p>
-            <ul py:otherwise>
+            <ul py:otherwise="">
                 <li py:for="person in c.people">
                     <a href="${url('now_id', id=person.id)}">${person.name}</a>
                 </li>
