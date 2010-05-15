@@ -1,3 +1,9 @@
+"""
+Schedule management controller module.
+
+"""
+import datetime
+
 import logging
 log = logging.getLogger(__name__)
 
@@ -5,32 +11,49 @@ from pylons import request, response, session, tmpl_context as c
 from pylons.decorators.cache import beaker_cache
 from pylons.controllers.util import abort, redirect_to
 
-from school.lib.base import BaseController, render
-
-from school.model import Lesson, Educator, Group, Group, SchoolYear, Schedule
-from school.model.meta import Session
-
-import datetime
-
 from sqlalchemy import desc
 from sqlalchemy.orm.exc import MultipleResultsFound, NoResultFound
 
+from school.lib.base import BaseController, render
+
+from school.model import Educator, Group, SchoolYear, Schedule
+from school.model.meta import Session
+
 
 class ScheduleController(BaseController):
+    """
+    Schedule management controller.
 
+    """
     def index(self):
+        """
+        Render schedule management control panel. Handle POST redirects.
+
+        """
         day = request.params.get('day', None)
         group_name = request.params.get('group_name', None)
+        course_name = request.params.get('course_name', None)
         teacher_last_name = request.params.get('teacher_last_name', None)
         if group_name is not None:
-            if day == 'week':
-                redirect_to('schedule_group_week', group_name=group_name)
-            elif day is not None:
-                redirect_to('schedule_group', day_name=day,
-                        group_name=group_name)
+            if course_name is not None:
+                if day == 'week':
+                    redirect_to('schedule_group_course_week',
+                            group_name=group_name, course_name=course_name)
+                elif day is not None:
+                    redirect_to('schedule_group_course', day_name=day,
+                            group_name=group_name, course_name=course_name)
+                else:
+                    redirect_to('schedule_group_course_today',
+                        group_name=group_name, course_name=course_name)
             else:
-                redirect_to('schedule_group_today',
-                        group_name=request.params.get('group_name'))
+                if day == 'week':
+                    redirect_to('schedule_group_week', group_name=group_name)
+                elif day is not None:
+                    redirect_to('schedule_group', day_name=day,
+                            group_name=group_name)
+                else:
+                    redirect_to('schedule_group_today',
+                        group_name=group_name)
         if teacher_last_name is not None:
             if day == 'week':
                 redirect_to('schedule_teacher_week',
@@ -44,22 +67,42 @@ class ScheduleController(BaseController):
         
         schedule = Schedule.current()
         c.year = schedule.year
-        c.days = ['mon', 'tue', 'wed', 'thu', 'fri']
 
-        c.groups = Group.query_active(schedule.id).\
+        groups = Group.query_active(schedule.id).\
                          join((SchoolYear, Group.year_id == SchoolYear.id)).\
                          order_by(desc(SchoolYear.start), Group.name).all()
-        c.teachers = Educator.query_active(schedule.id).\
+        courses = []
+        classes = []
+        for g in groups:
+            if len(g.name) == 1 and g.name not in courses:
+                courses.append(g.name)
+            elif len(g.name) != 1 and g.name not in classes:
+                classes.append(g.full_name(schedule.year))
+        courses.sort()
+        classes.sort()
+
+        teachers = Educator.query_active(schedule.id).\
                                order_by(Educator.last_name).all()
+
+        c.groups = groups
+        c.courses = courses
+        c.classes = classes
+        c.teachers = teachers
         return render('schedule/index.xml')
 
-    def translate_weekday(self, name):
-        days = {'mon' : 0,
+    def _translate_weekday(self, name):
+        """
+        Translate given short ``name`` to the weekday integer.
+
+        """
+        default = datetime.datetime.weekday(datetime.datetime.today())
+        days = {
+                'mon' : 0,
                 'tue' : 1,
                 'wed' : 2,
                 'thu' : 3,
                 'fri' : 4,
-                None : datetime.datetime.weekday(datetime.datetime.today())
+                None: default
                 }
         try:
             day = days[name]
@@ -67,8 +110,15 @@ class ScheduleController(BaseController):
             day = None
         return day
 
-    def get_teacher(self, teacher_name, day_name=None):
-        day = self.translate_weekday(day_name)
+    def teacher(self, teacher_name, day_name=None):
+        """
+        Render teacher's schedule for the given day.
+
+        :param teacher_name: Surname of the teacher
+        :param day_name: Name of the day
+
+        """
+        day = self._translate_weekday(day_name)
         if day is None:
             return 'Bad day!'
 
@@ -88,36 +138,54 @@ class ScheduleController(BaseController):
         c.lessons = teacher.schedule_for_day(day, schedule.id)
         return render('schedule/teacher.xml')
 
-    def get_group(self, group_name, day_name=None, course=None):
+    def group(self, group_name, day_name=None, course_name=None):
+        """
+        Render group's schedule for the given day. Optionally with the course.
+
+        :param group_name: Full name of the group (includeing year index)
+        :param day_name: Name of the day
+        :param course_name: Optional couse name
+
+        """
         schedule = Schedule.current()
         year = schedule.year
 
         group = Group.by_full_name(group_name)
-        if not group:
+        if group is None:
             return 'No such group!'
 
-        day = self.translate_weekday(day_name)
+        day = self._translate_weekday(day_name)
         if day is None:
             return 'Bad day!'
 
         gs = group.schedule_for_day(day, schedule.id)
-        if course is not None:
-            course = Group.by_full_name(group_name[0]+course)
+
+        if course_name is not None:
+            course_full_name = group_name[0] + course_name
+            course = Group.by_full_name(course_full_name)
             if course is None:
                 return "No such course!"
             else:
                 cs = course.schedule_for_day(day, schedule.id)
                 for o, lesson in enumerate(cs):
-                    if lesson is not None:
+                    while len(gs) < o + 1:
+                        gs.append(None)
+                    if gs[o] is None:
                         gs[o] = lesson
+                    # TODO elif gs[o] is list
+            c.course = course
 
-        c.group_name = group.full_name(year)
+        c.group = group
+        c.year = year
         c.lessons = gs
         return render('schedule/group.xml')
 
     def group_week(self, group_name, course_name=None):
         """
         Render group's schedule for entire week.
+
+        :param group_name: Full name of the group (including year index)
+        :pram course_name: Optional name of the course
 
         """
         schedule = Schedule.current()
@@ -131,6 +199,7 @@ class ScheduleController(BaseController):
         # Fetch the course schedule and merge it with group schedule
         if course_name is not None:
             course = Group.by_full_name(group_name[0]+course_name)
+            c.course = course
             if course is None:
                 c.group_name = group_name[0]+course_name
                 return render('schedule/group/not_found.xml')
@@ -143,24 +212,32 @@ class ScheduleController(BaseController):
                                 gs[day_number].append(None)
                             if gs[day_number][order] is None:
                                 gs[day_number][order] = lesson
-                c.group_name += '+%s' % course_name
 
+        if len(group_name) != 2:
+            # group is not course
+            from sqlalchemy import func
+            q = Group.query_active().filter(Group.year_id == group.year_id).\
+                        filter(func.length(Group.name) == 1).\
+                        order_by(Group.name)
+            c.courses = q.all()
+
+        c.group = group
+        c.year = schedule.year
         c.schedule = gs
         return render('schedule/group/week.xml')
 
     def teacher_week(self, teacher_name):
         """
-        Render teacher's weekly schedule
+        Render teacher's weekly schedule.
 
         :param teacher_name: Last name of the teacher
 
         """
-        q = Session.query(Educator).\
-                    filter(Educator.last_name.like(teacher_name))
-        teachers = q.all()
+        teachers = Session.query(Educator).\
+                           filter(Educator.last_name.like(teacher_name)).all()
+
         if len(teachers) != 1:
             c.teachers = teachers
-            # TODO
             return render('schedule/teacher/list.xml')
 
         schedule = Schedule.current()
@@ -170,36 +247,41 @@ class ScheduleController(BaseController):
         return render('schedule/teacher/week.xml')
 
     @beaker_cache(expire=86400)
-    def get_teachers(self):
+    def teachers(self):
         """
-        Get full current teachers schedule (every teacher and every weekday).
-
-        """
-        educators = []
-        q = Session.query(Educator).order_by(Educator.last_name)
-        for e in q:
-            s = e.schedule()
-            educators.append((e, s))
-        c.year = SchoolYear.current()
-        c.educators = educators
-        
-        return render('schedule/teacher/full_table.xml')
-
-    @beaker_cache(expire=86400)
-    def get_groups(self):
-        """
-        Get full current groups schedule (every group and every weekday).
+        Render full currently active teachers schedule table
+        (every teacher and every weekday).
 
         """
         schedule = Schedule.current()
+        q = Educator.query_active(schedule_id=schedule.id).\
+                     order_by(Educator.last_name)
+        educators = []
+        for e in q.all():
+            s = e.schedule()
+            educators.append((e, s))
+
+        c.year = schedule.year
+        c.educators = educators
+        return render('schedule/teacher/full_table.xml')
+
+    @beaker_cache(expire=86400)
+    def groups(self):
+        """
+        Render full currently active groups schedule
+        (every group and every weekday).
+
+        """
+        schedule = Schedule.current()
+        q = Group.query_active(schedule_id=schedule.id).\
+                  join((SchoolYear, Group.year_id == SchoolYear.id)).\
+                  order_by(desc(SchoolYear.start), Group.name)
+
         groups = []
-        q = Session.query(Group).join(SchoolYear).\
-                         order_by(desc(SchoolYear.start)).\
-                         order_by(Group.name)
-        for g in q:
+        for g in q.all():
             s = g.schedule(schedule.id)
-            if s is not None:
-                groups.append((g, s))
+            groups.append((g, s))
+
         c.year = schedule.year
         c.groups = groups
         return render('schedule/group/full_table.xml')

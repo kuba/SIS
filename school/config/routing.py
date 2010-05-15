@@ -54,8 +54,8 @@ def make_map():
         m.connect('schedule_home', r'', action='index')
 
         # full schedules
-        m.connect('schedule_teachers', r'/teachers', action='get_teachers')
-        m.connect('schedule_groups', r'/groups', action='get_groups')
+        m.connect('schedule_teachers', r'/teachers', action='teachers')
+        m.connect('schedule_groups', r'/groups', action='groups')
 
         # weekly schedules
         with m.submapper(path_prefix='/week') as week_m:
@@ -68,7 +68,7 @@ def make_map():
 
         # group daily schedule
         with m.submapper(path_prefix='/{group_name:\d\w+}',
-                         action='get_group') as group_m:
+                         action='group') as group_m:
             group_m.connect('schedule_group', r'/{day_name}')
             group_m.connect('schedule_group_today', r'')
 
@@ -79,7 +79,7 @@ def make_map():
         
         # teacher daily schedule
         with m.submapper(path_prefix='/{teacher_name}',
-                         action='get_teacher') as teacher_m:
+                         action='teacher') as teacher_m:
             teacher_m.connect('schedule_teacher_today', r'')
             teacher_m.connect('schedule_teacher', r'/{day_name}')
 

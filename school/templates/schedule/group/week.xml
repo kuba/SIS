@@ -3,10 +3,10 @@
       xmlns:py="http://genshi.edgewall.org/">
     <xi:include href="../../base.xml" />
     <head>
-        <title>Tygodniowy plan lekcji dla klasy ${c.group_name}</title>
+        <title>Tygodniowy plan lekcji dla klasy ${c.group_name}<py:if test="c.course">+${c.course.name}</py:if></title>
     </head>
     <body>
-        <h1>Tygodniowy plan lekcji dla klasy ${c.group_name}</h1>
+        <h1>Tygodniowy plan lekcji dla klasy ${c.group_name}<py:if test="c.course">+${c.course.name}</py:if></h1>
         <table py:if="c.schedule is not None" border="1">
             <tr>
                 <th>lp.</th>
@@ -53,5 +53,20 @@
                 </td>
             </tr>
         </table>
+
+        <h2 py:if="c.courses">Plan lekcji z lektoratem</h2>
+        <form py:if="c.courses" action="${url('schedule_home')}" method="post">
+            <label for="course_name">Wybierz lektorat:</label>
+            <select name="course_name">
+                <option py:for="c in c.courses">${c.name}</option>
+            </select>
+            <input type="hidden" name="group_name" value="${c.group_name}" />
+            <input type="hidden" name="day" value="week" />
+            <input type="submit" value="Pokaż plan klasy z lektoratem" />
+        </form>
+        <a py:if="c.course" href="${url('schedule_group_week', group_name=c.group_name)}">
+            Pokaż tylko plan klasy ${c.group_name}, bez lektoratu.
+        </a>
+
     </body>
 </html>

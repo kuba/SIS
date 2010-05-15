@@ -8,30 +8,76 @@
     <body>
         <h1>Plan lekcji</h1>
 
-        <h2><a href="${url('schedule_teachers')}">Pełny plan lekcji dla nauczycieli</a></h2>
-        <h2><a href="${url('schedule_groups')}">Pełny plan lekcji dla uczniów</a></h2>
+        <h2>
+            <a href="${url('schedule_teachers')}">
+                Pełny plan lekcji dla nauczycieli
+            </a>
+        </h2>
+        <h2>
+            <a href="${url('schedule_groups')}">
+                Pełny plan lekcji dla klas
+            </a>
+        </h2>
+
+        <select py:match="select_day" name="day" py:attrs="select('@*')">
+            <option value="week">cały tydzień</option>
+            <option value="mon">poniedziałek</option>
+            <option value="tue">wtorek</option>
+            <option value="wed">środa</option>
+            <option value="thu">czwartek</option>
+            <option value="fri">piątek</option>
+        </select>
 
         <h2>Plan lekcji dla klasy</h2>
         <form method="post">
             <select name="group_name">
-                <option py:for="g in c.groups" value="${g.full_name(c.year)}">${g.full_name(c.year)}</option>
+                <option py:for="g in c.groups"
+                        py:with="name = g.full_name(c.year)"
+                        value="${name}">
+                    ${name}
+                </option>
             </select>
-            <select name="day">
-                <option value="week">cały tydzień</option>
-                <option py:for="d in c.days" value="${d}">${d}</option>
-            </select>
+            <select_day />
             <input type="submit" value="Pokaż" />
+        </form>
+
+        <h2>Plan lekcji dla ucznia</h2>
+        <form>
+            <ol>
+                <li>
+                    <label for="group_name">Wybierz klasę</label>
+                    <select id="group_name" name="group_name">
+                        <option py:for="c in c.classes" value="${c}">
+                            ${c}
+                        </option>
+                    </select>
+                </li>
+                <li>
+                    <label for="course_name">Wybierz lektorat</label>
+                    <select id="course_name" name="course_name">
+                        <option py:for="c in c.courses" value="${c}">
+                            ${c}
+                        </option>
+                    </select>
+                </li>
+                <li>
+                    <label for="student_day">Wybierz dzień</label>
+                    <select_day id="student_day" />
+                </li>
+                <li>
+                    <input type="submit" value="Pokaż plan!" />
+                </li>
+            </ol>
         </form>
 
         <h2>Plan lekcji dla nauczyciela</h2>
         <form method="post">
             <select name="teacher_last_name">
-                <option py:for="t in c.teachers" value="${t.last_name}">${t.name_with_title}</option>
+                <option py:for="t in c.teachers" value="${t.last_name}">
+                    ${t.name_with_title}
+                </option>
             </select>
-            <select name="day">
-                <option value='week'>cały tydzień</option>
-                <option py:for="d in c.days" value="${d}">${d}</option>
-            </select>
+            <select_day />
             <input type="submit" value="Pokaż" />
         </form>
     </body>
