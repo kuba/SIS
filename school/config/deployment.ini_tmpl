@@ -5,9 +5,9 @@
 #
 [DEFAULT]
 debug = false
-email_to = you@yourdomain.com
+email_to = school@localhost
 smtp_server = localhost
-error_email_from = paste@localhost
+error_email_from = school@localhost
 
 [server:main]
 use = egg:Paste#http
