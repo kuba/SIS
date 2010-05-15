@@ -34,8 +34,20 @@ class LuckyController(BaseController):
         return render('lucky/index.xml')
 
     def all(self):
+        """
+        Render all lucky numbers.
+
+        """
         c.numbers = Session.query(LuckyNumber).order_by(LuckyNumber.date).all()
         return render('lucky/list.xml')
+
+    def left(self):
+        """
+        Render left lucky numbers.
+
+        """
+        c.numbers = LuckyNumber.left()
+        return render('lucky/left.xml')
 
     def search_form(self):
         """
@@ -95,7 +107,7 @@ class LuckyController(BaseController):
         """
         change_hour = 15
         c.numbers = LuckyNumber.current_week(change_hour)
-        return render('lucky/list.xml')
+        return render('lucky/week.xml')
 
     def draw(self):
         c.numbers = LuckyNumber.draw()

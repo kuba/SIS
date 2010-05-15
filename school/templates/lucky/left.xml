@@ -1,0 +1,19 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:xi="http://www.w3.org/2001/XInclude"
+      xmlns:py="http://genshi.edgewall.org/">
+    <xi:include href="../base.xml" />
+    <head>
+        <title>Pozostałe szczęśliwe numerki</title>
+    </head>
+    <body>
+        <h1>Pozostałe szczęśliwe numerki</h1>
+        <p>
+            Poniżej znajduje się pełna lista wszystkich szcześliwych numerków,
+            które pozostały jeszcze do wylosowania, tj. nie były one jeszcze
+            użyte w obecnej turze.
+        </p>
+        <ul>
+            <li py:for="n in c.numbers">${n}</li>
+        </ul>
+    </body>
+</html>

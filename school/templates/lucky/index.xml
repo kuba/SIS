@@ -11,18 +11,14 @@
         <h2 py:if="h.signed_in()"><a href="${url('lucky_add')}">Dodaj</a></h2>
         <h2 py:if="h.signed_in()"><a href="${url('lucky_draw')}">Losuj</a></h2>
 
-        <h2>Aktualny szczęśliwy numerek</h2>
-        <py:choose test="">
-            <div class="lucky_number" py:when="c.current">
-                <div class="lucky_number_number">${c.current.number}</div>
-                <div class="lucky_number_date">${c.current.date}</div>
-            </div>
-            <p py:otherwise="">
-                Nie ma szczęśliwego numerka! Dorwij przewodniczącego!
-            </p>
-        </py:choose>
+        <h2><a href="${url('lucky_current')}">
+            Aktualny szczęśliwy numerek
+        </a></h2>
+        <xi:include href="current_number.xml" />
 
-        <h2>Szczęśliwe numerki na ten tydzień</h2>
+        <h2><a href="${url('lucky_week')}">
+            Szczęśliwe numerki na ten tydzień
+        </a></h2>
         <py:choose test="">
             <ul py:when="c.current">
                 <li py:for="lucky in c.week">
@@ -30,22 +26,36 @@
                 </li>
             </ul>
             <p py:otherwise="">
-                Nie ma szczęścilwych numerków na ten tydzień.
+                Nie ma szczęśliwych numerków na ten tydzień.
             </p>
         </py:choose>
 
-        <h2>Pozostały do wylosowania:</h2>
+        <h2><a href="${url('lucky_left')}">
+            Pozostały do wylosowania
+        </a></h2>
+        <p>
+            Poniżej znajduje się pełna lista wszystkich szcześliwych numerków,
+            które pozostały jeszcze do wylosowania, tj. nie były one jeszcze
+            użyte w obecnej turze.
+        </p>
         <ul>
             <li py:for="number in c.left">${number}</li>
         </ul>
         
-        <h2>Szukaj szczęśliwego numerka</h2>
-        <p>Wpisz tutaj numerek, by zobaczyć jego historię.</p>
+        <h2><a href="${url('lucky_search_form')}">
+            Szukaj szczęśliwego numerka
+        </a></h2>
+        <p>
+            Wpisz tutaj numerek, by zobaczyć jego historię.
+        </p>
         <form action="${url('lucky_search_form')}" method="POST">
-            <input type="text" id="number" name="number" maxlength="2" size="2" value="0"/>
+            <input type="text" id="number" name="number"
+                   maxlength="2" size="2" value="0"/>
             <input type="submit" value="Szukaj" />
         </form>
 
-        <h2><a href="${url('lucky_all')}">Archwium szczęśliwych numerków</a></h2>
+        <h2>
+            <a href="${url('lucky_all')}">Archwium szczęśliwych numerków</a>
+        </h2>
     </body>
 </html>

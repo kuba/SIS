@@ -3,17 +3,10 @@
       xmlns:py="http://genshi.edgewall.org/">
     <xi:include href="../base.xml" />
     <head>
-        <title>Current lucky number</title>
+        <title>Aktualny szczęśliwy numerek</title>
     </head>
     <body>
-        <py:choose test="">
-            <div class="lucky_number" py:when="c.lucky">
-                <div class="lucky_number_number">${c.lucky.number}</div>
-                <div class="lucky_number_date">${c.lucky.date}</div>
-            </div>
-            <span py:otherwise="">
-                No lucky number set! You should kill the school leader!
-            </span>
-        </py:choose>
+        <h2>Aktualny szczęśliwy numerek</h2>
+        <xi:include href="current_number.xml" />
     </body>
 </html>

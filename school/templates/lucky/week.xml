@@ -3,9 +3,10 @@
       xmlns:py="http://genshi.edgewall.org/">
     <xi:include href="../base.xml" />
     <head>
-        <title>Szczęsliwe numerki</title>
+        <title>Szczęśliwe numerki na ten tydzień</title>
     </head>
     <body>
+        <h2>Szczęśliwe numerki na ten tydzień</h2>
         <py:choose>
             <ul py:when="c.numbers">
                 <li py:for="lucky in c.numbers">
@@ -13,7 +14,7 @@
                 </li>
             </ul>
             <p py:otherwise="">
-                Brak szczęśliwych numerków!
+                Brak szczęśliwych numerków na ten tydzień!
             </p>
         </py:choose>
     </body>

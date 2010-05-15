@@ -23,6 +23,9 @@ def make_map():
     # Lucky number routes
     with map.submapper(path_prefix=r'/lucky', controller='lucky') as m:
         m.connect('lucky_home', r'', action='index')
+        m.connect('lucky_current', r'/current', action='current')
+        m.connect('lucky_week', r'/week', action='current_week')
+        m.connect('lucky_left', r'/left', action='left')
         m.connect('lucky_draw', r'/draw', action='draw')
         m.connect('lucky_all', r'/all', action='all')
         m.connect('lucky_add_form', r'/add', action='add',
