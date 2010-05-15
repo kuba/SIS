@@ -1,15 +1,12 @@
-import logging
 import datetime
+
+import logging
+log = logging.getLogger(__name__)
 
 from pylons import request, response, session, tmpl_context as c
 from pylons.controllers.util import abort, redirect_to
 
 from sqlalchemy.exceptions import IntegrityError
-
-from school.lib.base import BaseController, render
-
-from school.model.meta import Session
-from school.model import LuckyNumber
 
 from pylons.decorators import validate
 from pylons.decorators.rest import restrict
@@ -17,11 +14,14 @@ from pylons.decorators.rest import restrict
 from repoze.what.predicates import not_anonymous
 from repoze.what.plugins.pylonshq import ActionProtector
 
-import webhelpers.paginate as paginate
+import formencode
+from formencode import htmlfill
 
-from school.forms import AddLuckyNumbersForm
+from school.lib.base import BaseController, render
+from school.model.meta import Session
+from school.model import LuckyNumber
 
-log = logging.getLogger(__name__)
+from school.forms import AddLuckyNumbersForm, SearchLuckyForm
 
 
 class LuckyController(BaseController):
@@ -37,8 +37,36 @@ class LuckyController(BaseController):
         c.numbers = Session.query(LuckyNumber).order_by(LuckyNumber.date).all()
         return render('lucky/list.xml')
 
-    def search(self):
-        number = int(request.params.get('number'))
+    def search_form(self):
+        """
+        Render search form.
+
+        """
+        number = request.params.get("number", None)
+        if number is not None:
+            redirect_to('lucky_search', number=number)
+        return render('lucky/search.xml')
+
+    def search(self, number):
+        """
+        Search lucky number. Redirect to form if invalid ``number``
+
+        :param number: Number to search for.
+
+        """
+        schema = SearchLuckyForm()
+        try:
+            c.form_result = schema.to_python({'number' : number})
+        except formencode.Invalid, error:
+            c.form_result = error.value
+            c.form_errors = error.error_dict or {}
+            html = render('lucky/search.xml')
+            return htmlfill.render(
+                html,
+                defaults=c.form_result,
+                errors=c.form_errors
+                )
+
         c.numbers = Session.query(LuckyNumber).order_by(LuckyNumber.date).\
                             filter_by(number=number)
         return render('lucky/list.xml')

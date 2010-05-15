@@ -10,3 +10,8 @@ class AddLuckyNumbersForm(Schema):
     allow_extra_fields = True
     filter_extra_fields = True
     lucky = ForEach(AddLuckyNumberForm())
+
+class SearchLuckyForm(Schema):
+    allow_extra_fields = True
+    filter_extra_fileds = True
+    number = Int()

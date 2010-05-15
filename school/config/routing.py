@@ -23,13 +23,14 @@ def make_map():
     # Lucky number routes
     with map.submapper(path_prefix=r'/lucky', controller='lucky') as m:
         m.connect('lucky_home', r'', action='index')
-        m.connect('lucky_search', r'/search', action='search')
         m.connect('lucky_draw', r'/draw', action='draw')
         m.connect('lucky_all', r'/all', action='all')
         m.connect('lucky_add_form', r'/add', action='add',
                   conditions={'method':'POST'})
         m.connect('lucky_add', r'/add', action='add_week_form')
         m.connect('lucky_date', r'/{date:\d\d\d\d-\d\d-\d\d}', action='date')
+        m.connect('lucky_search_form', r'/search', action='search_form')
+        m.connect('lucky_search', r'/{number}', action='search')
 
     # Substitutions routes
     with map.submapper(controller='substitutions') as m:

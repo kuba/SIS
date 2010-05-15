@@ -41,7 +41,7 @@
         
         <h2>Szukaj szczęśliwego numerka</h2>
         <p>Wpisz tutaj numerek, by zobaczyć jego historię.</p>
-        <form action="${url('lucky_search')}">
+        <form action="${url('lucky_search_form')}" method="POST">
             <input type="text" id="number" name="number" maxlength="2" size="2" value="0"/>
             <input type="submit" value="Szukaj" />
         </form>
