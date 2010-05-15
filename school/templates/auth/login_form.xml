@@ -3,18 +3,20 @@
       xmlns:py="http://genshi.edgewall.org/">
     <xi:include href="../base.xml" />
     <head>
-        <title>Login!</title>
+        <title>Zaloguj!</title>
     </head>
     <body>
         <py:choose test="h.signed_in()">
             <form py:when="None" action="/login_handler" method="post">
-                <label for="login">Login:</label>
+                <label for="login">Użytkownik:</label>
                 <input type="text" id="login" name="login" />
-                <label for="password">Password:</label>
+
+                <label for="password">Hasło:</label>
                 <input type="password" id="password" name="password" />
-                <input type="submit" name="submit" />
+
+                <input type="submit" name="submit" value="Zaloguj"/>
             </form>
-            <py:otherwise>You are signed in.</py:otherwise>
+            <p py:otherwise="">Jesteś zalogowny!</p>
     </py:choose>
     </body>
 </html>
