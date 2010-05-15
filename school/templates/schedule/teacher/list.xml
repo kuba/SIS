@@ -8,7 +8,6 @@
     <body>
         <py:choose test="len(c.teachers)">
             <py:when test="0">
-                <h1>Błąd</h1>
                 <p>Nie znaleziono nauczyciela</p>
             </py:when>
             <ul py:otherwise="">

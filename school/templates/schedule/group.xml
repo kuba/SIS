@@ -8,9 +8,9 @@
         </title>
     </head>
     <body>
-        <h1>
+        <h2>
             Plan lekcji dla klasy ${c.group.full_name(c.year)}<py:if test="c.course">+${c.course.name}</py:if>
-        </h1>
+        </h2>
         <xi:include href="group/day.xml" py:with="day=c.lessons"/>
     </body>
 </html>

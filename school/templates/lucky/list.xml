@@ -3,7 +3,7 @@
       xmlns:py="http://genshi.edgewall.org/">
     <xi:include href="../base.xml" />
     <head>
-        <title>Szczęsliwe numerki</title>
+        <title>Szczęśliwe numerki</title>
     </head>
     <body>
         <py:choose>

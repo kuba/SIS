@@ -11,7 +11,7 @@
         <script type="text/javascript" src="/draw.js"></script>
     </head>
     <body>
-        <h1>Dodaj szczęśliwe numerki na następny tydzień</h1>
+        <h2>Dodaj szczęśliwe numerki na następny tydzień</h2>
 
         <p>
             Pamiętaj, że wprowadzane numerki <strong>nie są sprawdzane pod
@@ -40,7 +40,7 @@
             <input type="submit" value="Dodaj!" />
         </form>
 
-        <h2>Pozostały do wylosowania</h2>
+        <h3>Pozostały do wylosowania</h3>
         <p>
             Poniżej znajduje się lista numerków, które nie były jeszcze
             losowane w obecnej turze.

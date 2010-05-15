@@ -6,9 +6,6 @@
         <title>Nie znaleziono klasy ${c.group_name}!</title>
     </head>
     <body>
-        <h1>Błąd</h1>
-        <p>
-            Nie znaleziono klasy ${c.group_name}
-        </p>
+        <p>Nie znaleziono klasy ${c.group_name}</p>
     </body>
 </html>

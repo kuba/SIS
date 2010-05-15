@@ -6,19 +6,19 @@
         <title>Szczęśliwy numerek</title>
     </head>
     <body>
-        <h1>Szczęśliwy numerek</h1>
+        <h2>Szczęśliwy numerek</h2>
 
-        <h2 py:if="h.signed_in()"><a href="${url('lucky_add')}">Dodaj</a></h2>
-        <h2 py:if="h.signed_in()"><a href="${url('lucky_draw')}">Losuj</a></h2>
+        <h3 py:if="h.signed_in()"><a href="${url('lucky_add')}">Dodaj</a></h3>
+        <h3 py:if="h.signed_in()"><a href="${url('lucky_draw')}">Losuj</a></h3>
 
-        <h2><a href="${url('lucky_current')}">
+        <h3><a href="${url('lucky_current')}">
             Aktualny szczęśliwy numerek
-        </a></h2>
+        </a></h3>
         <xi:include href="current_number.xml" />
 
-        <h2><a href="${url('lucky_week')}">
+        <h3><a href="${url('lucky_week')}">
             Szczęśliwe numerki na ten tydzień
-        </a></h2>
+        </a></h3>
         <py:choose test="">
             <ul py:when="c.current">
                 <li py:for="lucky in c.week">
@@ -30,9 +30,9 @@
             </p>
         </py:choose>
 
-        <h2><a href="${url('lucky_left')}">
+        <h3><a href="${url('lucky_left')}">
             Pozostały do wylosowania
-        </a></h2>
+        </a></h3>
         <p>
             Poniżej znajduje się pełna lista wszystkich szcześliwych numerków,
             które pozostały jeszcze do wylosowania, tj. nie były one jeszcze
@@ -42,9 +42,9 @@
             <li py:for="number in c.left">${number}</li>
         </ul>
         
-        <h2><a href="${url('lucky_search_form')}">
+        <h3><a href="${url('lucky_search_form')}">
             Szukaj szczęśliwego numerka
-        </a></h2>
+        </a></h3>
         <p>
             Wpisz tutaj numerek, by zobaczyć jego historię.
         </p>
@@ -54,8 +54,8 @@
             <input type="submit" value="Szukaj" />
         </form>
 
-        <h2>
+        <h3>
             <a href="${url('lucky_all')}">Archwium szczęśliwych numerków</a>
-        </h2>
+        </h3>
     </body>
 </html>

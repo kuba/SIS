@@ -6,6 +6,7 @@
         <title>Zaloguj!</title>
     </head>
     <body>
+        <h2>Zaloguj</h2>
         <py:choose test="h.signed_in()">
             <form py:when="None" action="/login_handler" method="post">
                 <label for="login">Użytkownik:</label>

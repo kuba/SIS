@@ -6,11 +6,11 @@
         <title>Zastępstwa</title>
     </head>
     <body>
-        <h1>
+        <h2>
             Zastępstwa za nauczycieli nieobecnych na dzień:
             <a href="/z/${c.date}">${c.date}</a>
-        </h1>
-        <h2 py:if="h.signed_in()"><a href="${h.url('substitutions')}">edytuj</a></h2>
+        </h2>
+        <h3 py:if="h.signed_in()"><a href="${h.url('substitutions')}">edytuj</a></h3>
         <table border="1">
             <tr>
                 <th>Imię i Naziwko nauczyciela nieobecnego</th>

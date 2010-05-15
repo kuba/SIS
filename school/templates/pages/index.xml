@@ -6,18 +6,21 @@
         <title>System Informacyjny Staszica</title>
     </head>
     <body>
-        <h1>System Informacyjny Staszica <span class="beta">beta</span></h1>
+        <h2>System Informacyjny Staszica <span class="beta">beta</span></h2>
 
-        <h2><a href="${url('now_home')}">Now!</a></h2>
-        <p>System do wyszukiwania uczniów oraz nauczycieli w czasie rzeczywistym.</p>
+        <h3><a href="${url('now_home')}">Now!</a></h3>
+        <p>
+            System do wyszukiwania uczniów oraz nauczycieli w czasie
+            rzeczywistym.
+        </p>
 
-        <h2><a href="${url('schedule_home')}">Plan</a></h2>
+        <h3><a href="${url('schedule_home')}">Plan</a></h3>
         <p>
             Czyli wszystko co związane z planem zajęć lekcyjnych -
             dla ucznia i dla nauczyciela!
         </p>
 
-        <h2><a href="${url('lucky_home')}">Szczęśliwy numerek</a></h2>
+        <h3><a href="${url('lucky_home')}">Szczęśliwy numerek</a></h3>
         <p>
             Sprawdź aktualny szczęśliwy numerek, a także numerki na ten,
             czy na przyszły tydzień. W razie wątpliwości co do częstości
@@ -25,10 +28,10 @@
             <a href="${url('lucky_all')}">archiwum</a>.
         </p>
 
-        <h2><a href="${url('substitutions_table')}">Zastępstwa</a></h2>
+        <h3><a href="${url('substitutions_table')}">Zastępstwa</a></h3>
         <p>Sprawdź aktualne (i nie tylko) zastępstwa.</p>
 
-        <h2><a href="${url('about')}">About</a></h2>
+        <h3><a href="${url('about')}">About</a></h3>
         <p>Jeśli chcesz wiedzieć więcej...</p>
     </body>
 </html>

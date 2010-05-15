@@ -6,18 +6,18 @@
         <title>Plan lekcji</title>
     </head>
     <body>
-        <h1>Plan lekcji</h1>
+        <h2>Plan lekcji</h2>
 
-        <h2>
+        <h3>
             <a href="${url('schedule_teachers')}">
                 Pełny plan lekcji dla nauczycieli
             </a>
-        </h2>
-        <h2>
+        </h3>
+        <h3>
             <a href="${url('schedule_groups')}">
                 Pełny plan lekcji dla klas
             </a>
-        </h2>
+        </h3>
 
         <select py:match="select_day" name="day" py:attrs="select('@*')">
             <option value="week">cały tydzień</option>
@@ -28,7 +28,7 @@
             <option value="fri">piątek</option>
         </select>
 
-        <h2>Plan lekcji dla klasy</h2>
+        <h3>Plan lekcji dla klasy</h3>
         <form method="post">
             <select name="group_name">
                 <option py:for="g in c.groups"
@@ -41,7 +41,7 @@
             <input type="submit" value="Pokaż" />
         </form>
 
-        <h2>Plan lekcji dla ucznia</h2>
+        <h3>Plan lekcji dla ucznia</h3>
         <form>
             <ol>
                 <li>
@@ -70,7 +70,7 @@
             </ol>
         </form>
 
-        <h2>Plan lekcji dla nauczyciela</h2>
+        <h3>Plan lekcji dla nauczyciela</h3>
         <form method="post">
             <select name="teacher_last_name">
                 <option py:for="t in c.teachers" value="${t.last_name}">

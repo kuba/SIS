@@ -6,7 +6,7 @@
         <title>Tygodniowy plan lekcji dla klasy ${c.group_name}<py:if test="c.course">+${c.course.name}</py:if></title>
     </head>
     <body>
-        <h1>Tygodniowy plan lekcji dla klasy ${c.group_name}<py:if test="c.course">+${c.course.name}</py:if></h1>
+        <h2>Tygodniowy plan lekcji dla klasy ${c.group_name}<py:if test="c.course">+${c.course.name}</py:if></h2>
         <table py:if="c.schedule is not None" border="1">
             <tr>
                 <th>lp.</th>
@@ -54,7 +54,7 @@
             </tr>
         </table>
 
-        <h2 py:if="c.courses">Plan lekcji z lektoratem</h2>
+        <h3 py:if="c.courses">Plan lekcji z lektoratem</h3>
         <form py:if="c.courses" action="${url('schedule_home')}" method="post">
             <label for="course_name">Wybierz lektorat:</label>
             <select name="course_name">

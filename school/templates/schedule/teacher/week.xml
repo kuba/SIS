@@ -6,7 +6,7 @@
         <title>${c.teacher.name_with_title}: tygodniowy plan lekcji</title>
     </head>
     <body>
-        <h1>${c.teacher.name_with_title}: tygodniowy plan lekcji</h1>
+        <h2>${c.teacher.name_with_title}: tygodniowy plan lekcji</h2>
         <table py:if="c.schedule is not None" border="1">
             <tr>
                 <th>lp.</th>

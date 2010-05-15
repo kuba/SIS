@@ -6,7 +6,7 @@
         <title>Szukaj szczęśliwego numerka</title>
     </head>
     <body>
-        <h1>Szukaj szczęśliwego numerka</h1>
+        <h2>Szukaj szczęśliwego numerka</h2>
 
         <p>Wpisz tutaj numerek, by zobaczyć jego historię.</p>
         <form action="${url('lucky_search_form')}" method="post">

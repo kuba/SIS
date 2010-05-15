@@ -6,7 +6,7 @@
         <title>Plan dla nauczyciela: ${c.teacher.name_with_title}</title>
     </head>
     <body>
-        <h1>Plan dla nauczyciela: ${c.teacher.name_with_title}</h1>
+        <h2>Plan dla nauczyciela: ${c.teacher.name_with_title}</h2>
         <xi:include href="teacher/day.xml" py:with="day=c.lessons"/>
     </body>
 </html>
