@@ -1,4 +1,4 @@
-body{
+body {
     margin: 0px;
     color: #333;
     font-size: 12px;
@@ -15,23 +15,23 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 p {
-    width: 700px;
+    max-width: 700px;
 }
 
-#flash{
+#flash {
     padding: 0px 10px;
     background-color: #ffc;
     color: #333940;
 }
 
-#header{
+#header {
     overflow: hidden;
     width: 100%;
     color: #ffc;
     background-color: #333940;
 }
 
-#header h1{
+#header h1 {
     margin: 8px 0px;
     padding: 0px 10px;
     font-size: 18px;
@@ -47,7 +47,7 @@ a:hover {
     text-decoration: underline;
 }
 
-#user-tools{
+#user-tools {
     font-size: 11px;
     padding: 1.2em 10px;
     position: absolute;
@@ -56,11 +56,11 @@ a:hover {
     top: 0px;
 }
 
-#content{
+#content {
     margin: 50px;
 }
 
-#menu{
+#menu {
     font-size: 11px;
     color: #999;
     border-bottom: 1px solid #ccc;
@@ -68,18 +68,18 @@ a:hover {
     background: white url('/menu-bg.gif') repeat-x 0px -10px;
 }
 
-#menu ul{
+#menu ul {
     display: inline;
     padding: 0px;
     margin-left: 10px;
 }
 
-#menu li{
+#menu li {
     display: inline;
     margin: 0px 8px;
 }
 
-div .lucky_number{
+div .lucky_number {
     border: 1px solid;
     text-align: center;
     width: 200px;
@@ -87,18 +87,13 @@ div .lucky_number{
     background-color: #333;
 }
 
-.lucky_number_number{
+.lucky_number_number {
     font-size: 140px;
     width: 200px;
     height: 175px;
     border-bottom: 2px solid #ff0066;
 }
 
-.lucky_number_date{
+.lucky_number_date {
     font-size: 30px;
-}
-
-.beta{
-    color: #ff0066;
-    font-style: italic;
 }
