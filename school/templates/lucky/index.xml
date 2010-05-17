@@ -14,13 +14,13 @@
         <h3><a href="${url('lucky_current')}">
             Aktualny szczęśliwy numerek
         </a></h3>
-        <xi:include href="current_number.xml" />
+        <xi:include href="number.xml" py:with="lucky=c.current" />
 
         <h3><a href="${url('lucky_week')}">
             Szczęśliwe numerki na ten tydzień
         </a></h3>
         <py:choose test="">
-            <ul py:when="c.current">
+            <ul py:when="c.week">
                 <li py:for="lucky in c.week">
                     ${lucky.date} - <strong>${lucky.number}</strong>
                 </li>

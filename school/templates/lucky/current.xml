@@ -7,6 +7,6 @@
     </head>
     <body>
         <h2>Aktualny szczęśliwy numerek</h2>
-        <xi:include href="current_number.xml" />
+        <xi:include href="number.xml" py:with="lucky=c.lucky"/>
     </body>
 </html>

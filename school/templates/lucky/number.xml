@@ -1,9 +1,9 @@
 <py:choose xmlns="http://www.w3.org/1999/xhtml"
            xmlns:xi="http://www.w3.org/2001/XInclude"
            xmlns:py="http://genshi.edgewall.org/">
-    <div class="lucky_number" py:when="c.lucky">
-        <div class="lucky_number_number">${c.lucky.number}</div>
-        <div class="lucky_number_date">${c.lucky.date}</div>
+    <div class="lucky_number" py:when="lucky">
+        <div class="lucky_number_number">${lucky.number}</div>
+        <div class="lucky_number_date">${lucky.date}</div>
     </div>
     <span py:otherwise="">
         Nie ma szczęśliwego numerka! Dorwij przewodniczącego!
