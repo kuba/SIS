@@ -5,9 +5,11 @@ except ImportError:
     use_setuptools()
     from setuptools import setup, find_packages
 
+version = __import__('sis').__version__
+
 setup(
     name='SIS',
-    version='0.1',
+    version=version,
     description='',
     author='Jakub Warmuz',
     author_email='jakub.warmuz@gmail.com',
