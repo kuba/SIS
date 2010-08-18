@@ -1,49 +1,19 @@
-"""The application's model objects"""
-import sqlalchemy as sa
-from sqlalchemy import orm
+"""The application's model objects."""
+from sis.model.meta import Session, Base
 
-from sis.model import meta
-
-def init_model(engine):
-    """Call me before using any of the tables or classes in the model"""
-    ## Reflected tables must be defined and mapped here
-    #global reflected_table
-    #reflected_table = sa.Table("Reflected", meta.metadata, autoload=True,
-    #                           autoload_with=engine)
-    #orm.mapper(Reflected, reflected_table)
-    #
-    meta.Session.configure(bind=engine)
-    meta.engine = engine
-
-
-## Non-reflected tables may be defined and mapped at module level
-#foo_table = sa.Table("Foo", meta.metadata,
-#    sa.Column("id", sa.types.Integer, primary_key=True),
-#    sa.Column("bar", sa.types.String(255), nullable=False),
-#    )
-#
-#class Foo(object):
-#    pass
-#
-#orm.mapper(Foo, foo_table)
-
-
-## Classes for reflected tables may be defined here, but the table and
-## mapping itself must be done in the init_model function
-#reflected_table = None
-#
-#class Reflected(object):
-#    pass
-
-from sis.model.basic import Person, Educator, Subject, Group, \
-                  Lesson, Student, GroupMembership, \
-                  SchoolYear, Schedule
+from sis.model.basic import Person, Educator, Subject, Group, Lesson, Student, \
+        GroupMembership, SchoolYear, Schedule
 from sis.model.subs import Substitution
 from sis.model.lucky import LuckyNumber
 
 from sis.model.auth import AuthUser, AuthGroup, AuthPermission
-__all__ = ["Person", "Educator", "Subject", "Group",
-           "Lesson", "Student", "GroupMembership",
-           "SchoolYear", "Schedule", "Substitution",
-           "LuckyNumber", "AuthUser", "AuthGroup",
-           "AuthPermission"]
+
+__all__ = [
+    "Session", "Base", "Person", "Educator", "Subject", "Group", "Lesson",
+    "Student", "GroupMembership", "SchoolYear", "Schedule", "Substitution",
+    "LuckyNumber", "AuthUser", "AuthGroup", "AuthPermission"
+]
+
+def init_model(engine):
+    """Call me before using any of the tables or classes in the model"""
+    Session.configure(bind=engine)

@@ -1,7 +1,7 @@
 import logging
 
-from pylons import url, request, response, session, tmpl_context as c
-from pylons.controllers.util import abort, redirect_to
+from pylons import url, request, response, session, tmpl_context as c, url
+from pylons.controllers.util import abort, redirect
 
 from sis.lib.base import BaseController, render
 

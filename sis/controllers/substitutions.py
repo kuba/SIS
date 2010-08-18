@@ -1,7 +1,7 @@
 import logging
 
-from pylons import request, response, session, tmpl_context as c
-from pylons.controllers.util import abort, redirect_to
+from pylons import request, response, session, tmpl_context as c, url
+from pylons.controllers.util import abort, redirect
 
 from repoze.what.predicates import not_anonymous
 from repoze.what.plugins.pylonshq import ActionProtector
@@ -18,10 +18,14 @@ from sis.model.meta import Session
 from sis.model import Substitution, Educator, Group, SchoolYear
 
 class SubstitutionsController(BaseController):
-    """REST Controller styled on the Atom Publishing Protocol"""
-    # To properly map this controller, ensure your config/routing.py
-    # file has a resource setup:
-    #     map.resource('substitution', 'substitutions')
+    """
+    REST Substitutions Controller styled on the Atom Publishing Protocol
+
+    To properly map this controller, ensure your config/routing.py
+    file has a resource setup:
+         map.resource('substitution', 'substitutions')
+
+    """
 
     def index(self, format='html'):
         """GET /substitutions: All items in the collection"""
@@ -201,7 +205,7 @@ class SubstitutionsController(BaseController):
         s = Substitution(date, order, group, teacher, part, comment)
         Session.add(s)
         Session.commit()
-        redirect_to('substitutions')
+        redirect(url('substitutions'))
 
     @ActionProtector(not_anonymous())
     def new(self, format='html'):
@@ -237,7 +241,7 @@ class SubstitutionsController(BaseController):
         s = Session.query(Substitution).get(id)
         Session.delete(s)
         Session.commit()
-        redirect_to('substitutions')
+        redirect(url('substitutions'))
 
     def show(self, id, format='html'):
         """GET /substitutions/id: Show a specific item"""

@@ -7,9 +7,9 @@ import datetime
 import logging
 log = logging.getLogger(__name__)
 
-from pylons import request, response, session, tmpl_context as c
+from pylons import request, response, session, tmpl_context as c, url
 from pylons.decorators.cache import beaker_cache
-from pylons.controllers.util import abort, redirect_to
+from pylons.controllers.util import abort, redirect
 
 from sqlalchemy import desc
 from sqlalchemy.orm.exc import MultipleResultsFound, NoResultFound
@@ -37,33 +37,33 @@ class ScheduleController(BaseController):
         if group_name is not None:
             if course_name is not None:
                 if day == 'week':
-                    redirect_to('schedule_group_course_week',
-                            group_name=group_name, course_name=course_name)
+                    redirect(url('schedule_group_course_week',
+                            group_name=group_name, course_name=course_name))
                 elif day is not None:
-                    redirect_to('schedule_group_course', day_name=day,
-                            group_name=group_name, course_name=course_name)
+                    redirect(url('schedule_group_course', day_name=day,
+                            group_name=group_name, course_name=course_name))
                 else:
-                    redirect_to('schedule_group_course_today',
-                        group_name=group_name, course_name=course_name)
+                    redirect(url('schedule_group_course_today',
+                        group_name=group_name, course_name=course_name))
             else:
                 if day == 'week':
-                    redirect_to('schedule_group_week', group_name=group_name)
+                    redirect(url('schedule_group_week', group_name=group_name))
                 elif day is not None:
-                    redirect_to('schedule_group', day_name=day,
-                            group_name=group_name)
+                    redirect(url('schedule_group', day_name=day,
+                                 group_name=group_name))
                 else:
-                    redirect_to('schedule_group_today',
-                        group_name=group_name)
+                    redirect(url('schedule_group_today',
+                        group_name=group_name))
         if teacher_last_name is not None:
             if day == 'week':
-                redirect_to('schedule_teacher_week',
-                        teacher_name=teacher_last_name)
+                redirect(url('schedule_teacher_week',
+                        teacher_name=teacher_last_name))
             elif day is not None:
-                redirect_to('schedule_teacher', day_name=day,
-                        teacher_name=request.params.get('teacher_last_name'))
+                redirect(url('schedule_teacher', day_name=day,
+                        teacher_name=request.params.get('teacher_last_name')))
             else:
-                redirect_to('schedule_teacher_today',
-                        teacher_name=request.params.get('teacher_last_name'))
+                redirect(url('schedule_teacher_today',
+                        teacher_name=request.params.get('teacher_last_name')))
 
         schedule = Schedule.current()
         c.year = schedule.year
@@ -152,7 +152,8 @@ class ScheduleController(BaseController):
 
         group = Group.by_full_name(group_name)
         if group is None:
-            return 'No such group!'
+            c.group_name = group_name
+            return render('schedule/group/not_found.xml')
 
         day = self._translate_weekday(day_name)
         if day is None:
@@ -164,7 +165,8 @@ class ScheduleController(BaseController):
             course_full_name = group_name[0] + course_name
             course = Group.by_full_name(course_full_name)
             if course is None:
-                return "No such course!"
+                c.group_name = course_full_name
+                return render('schedule/group/not_found.xml')
             else:
                 cs = course.schedule_for_day(day, schedule.id)
                 for o, lesson in enumerate(cs):
@@ -174,6 +176,8 @@ class ScheduleController(BaseController):
                         gs[o] = lesson
                     # TODO elif gs[o] is list
             c.course = course
+        else:
+            c.course = None
 
         c.group = group
         c.year = year
@@ -212,6 +216,8 @@ class ScheduleController(BaseController):
                                 gs[day_number].append(None)
                             if gs[day_number][order] is None:
                                 gs[day_number][order] = lesson
+        else:
+            c.course = None
 
         if len(group_name) != 2:
             # group is not course
@@ -222,6 +228,7 @@ class ScheduleController(BaseController):
             c.courses = q.all()
 
         c.group = group
+        c.group_name = group_name
         c.year = schedule.year
         c.schedule = gs
         return render('schedule/group/week.xml')

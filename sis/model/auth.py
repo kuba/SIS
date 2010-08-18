@@ -14,12 +14,12 @@ from sqlalchemy.types import String, Unicode, UnicodeText, Integer, DateTime, \
                              Boolean, Float
 from sqlalchemy.orm import relation, backref, synonym
 
-from sis.model.meta import Base, metadata
+from sis.model.meta import Base
 
 
 # This is the association table for the many-to-many relationship between
 # groups and permissions.
-group_permission_table = Table('auth_group_permission', metadata,
+group_permission_table = Table('auth_group_permission', Base.metadata,
     Column('group_id', Integer, ForeignKey('auth_groups.group_id',
         onupdate="CASCADE", ondelete="CASCADE")),
     Column('permission_id', Integer, ForeignKey('auth_permissions.permission_id',
@@ -28,7 +28,7 @@ group_permission_table = Table('auth_group_permission', metadata,
 
 # This is the association table for the many-to-many relationship between
 # groups and members - this is, the memberships.
-user_group_table = Table('auth_user_group', metadata,
+user_group_table = Table('auth_user_group', Base.metadata,
     Column('user_id', Integer, ForeignKey('auth_users.user_id',
         onupdate="CASCADE", ondelete="CASCADE")),
     Column('group_id', Integer, ForeignKey('auth_groups.group_id',

@@ -3,8 +3,8 @@ import datetime
 import logging
 log = logging.getLogger(__name__)
 
-from pylons import request, response, session, tmpl_context as c
-from pylons.controllers.util import abort, redirect_to
+from pylons import request, response, session, tmpl_context as c, url
+from pylons.controllers.util import abort, redirect
 
 from sqlalchemy.exceptions import IntegrityError
 
@@ -56,7 +56,7 @@ class LuckyController(BaseController):
         """
         number = request.params.get("number", None)
         if number is not None:
-            redirect_to('lucky_search', number=number)
+            redirect(url('lucky_search', number=number))
         return render('lucky/search.xml')
 
     def search(self, number):
@@ -165,11 +165,11 @@ class LuckyController(BaseController):
         except IntegrityError as e:
             session['flash'] = 'There is already lucky number for %s' % e.params[0]
             session.save()
-            return redirect_to('lucky_add')
+            return redirect(url('lucky_add'))
         else:
             if not added:
                 session['flash'] = 'No lucky number has been added!'
             else:
                 session['flash'] = 'Lucky numbers have been added!'
             session.save()
-            redirect_to('lucky_home')
+            return redirect(url('lucky_home'))

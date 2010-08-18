@@ -3,8 +3,8 @@ from datetime import time, datetime
 import logging
 log = logging.getLogger(__name__)
 
-from pylons import request, response, session, tmpl_context as c
-from pylons.controllers.util import abort, redirect_to
+from pylons import request, response, session, tmpl_context as c, url
+from pylons.controllers.util import abort, redirect
 
 from sis.lib.base import BaseController, render
 from sis.model import Student, Educator, Schedule
@@ -20,7 +20,7 @@ class NowController(BaseController):
 
         """
         if 'surname' in request.params:
-            redirect_to('now_name', surname=request.params['surname'])
+            redirect(url('now_name', surname=request.params['surname']))
         else:
             return render('now/index.xml')
 
@@ -58,6 +58,7 @@ class NowController(BaseController):
 
         """
         current_order = self.current_order()
+        c.lesson = None
         if current_order is None:
             return render('now/now.xml')
 
@@ -86,6 +87,7 @@ class NowController(BaseController):
         """
         current_order = self.current_order()
         if current_order is None:
+            c.lesson = None
             return render('now/now.xml')
 
         today = datetime.weekday(datetime.today())
