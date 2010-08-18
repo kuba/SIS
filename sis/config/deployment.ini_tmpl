@@ -1,19 +1,18 @@
 #
-# SIS - Pylons development environment configuration
+# SIS - Pylons configuration
 #
 # The %(here)s variable will be replaced with the parent directory of this file
 #
 [DEFAULT]
-debug = true
-# Uncomment and replace with the address which should receive any error reports
+debug = false
 email_to = sis@localhost
 smtp_server = localhost
 error_email_from = sis@localhost
 
 [server:main]
 use = egg:Paste#http
-host = 127.0.0.1
-port = 6969
+host = 0.0.0.0
+port = 5000
 
 [app:main]
 use = egg:SIS
@@ -27,7 +26,7 @@ schedule_file = %(here)s/schedule
 numbers_file = %(here)s/numbers
 
 # Setup auth
-auth.cookie_secret = secret
+auth.cookie_secret = ${app_instance_secret}
 
 # If you'd like to fine-tune the individual settings for the authentication
 # and authorization system, un-comment the desired settings here:
@@ -37,7 +36,8 @@ auth.cookie_secret = secret
 # Setup caching
 cache_dir = %(here)s/data
 beaker.session.key = sis
-beaker.session.secret = somesecret
+beaker.session.secret = ${app_instance_secret}
+app_instance_uuid = ${app_instance_uuid}
 
 # If you'd like to fine-tune the individual locations of the cache data dirs
 # for the Cache data, or the Session saves, un-comment the desired settings
@@ -46,17 +46,17 @@ beaker.session.secret = somesecret
 #beaker.session.data_dir = %(here)s/data/sessions
 
 # SQLAlchemy database URL
-sqlalchemy.url = sqlite:///%(here)s/development.db
+sqlalchemy.url = sqlite:///sis.db
 
 # WARNING: *THE LINE BELOW MUST BE UNCOMMENTED ON A PRODUCTION ENVIRONMENT*
 # Debug mode will enable the interactive debugging tool, allowing ANYONE to
 # execute malicious code after an exception is raised.
-#set debug = false
+set debug = false
 
 
 # Logging configuration
 [loggers]
-keys = root, routes, sis, sqlalchemy
+keys = root
 
 [handlers]
 keys = console
@@ -68,25 +68,6 @@ keys = generic
 level = INFO
 handlers = console
 
-[logger_routes]
-level = INFO
-handlers =
-qualname = routes.middleware
-# "level = DEBUG" logs the route matched and routing variables.
-
-[logger_sis]
-level = DEBUG
-handlers =
-qualname = sis
-
-[logger_sqlalchemy]
-level = INFO
-handlers =
-qualname = sqlalchemy.engine
-# "level = INFO" logs SQL queries.
-# "level = DEBUG" logs SQL queries and results.
-# "level = WARN" logs neither.  (Recommended for production systems.)
-
 [handler_console]
 class = StreamHandler
 args = (sys.stderr,)
@@ -94,5 +75,4 @@ level = NOTSET
 formatter = generic
 
 [formatter_generic]
-format = %(asctime)s,%(msecs)03d %(levelname)-5.5s [%(name)s] %(message)s
-datefmt = %H:%M:%S
+format = %(asctime)s %(levelname)-5.5s [%(name)s] %(message)s

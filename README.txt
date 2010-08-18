@@ -1,16 +1,16 @@
-This file is for you to describe the School application. Typically
+This file is for you to describe the SIS application. Typically
 you would include information such as the information below:
 
 Installation and Setup
 ======================
 
-Install ``School`` using easy_install::
+Install ``SIS`` using easy_install::
 
-    easy_install School
+    easy_install SIS
 
 Make a config file as follows::
 
-    paster make-config School config.ini
+    paster make-config SIS config.ini
 
 Tweak the config file as appropriate and then setup the application::
 

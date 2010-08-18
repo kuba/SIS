@@ -1,3 +1,3 @@
-include school/config/deployment.ini_tmpl
-recursive-include school/public *
-recursive-include school/templates *
+include sis/config/deployment.ini_tmpl
+recursive-include sis/public *
+recursive-include sis/templates *

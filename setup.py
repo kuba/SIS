@@ -6,7 +6,7 @@ except ImportError:
     from setuptools import setup, find_packages
 
 setup(
-    name='School',
+    name='SIS',
     version='0.1',
     description='',
     author='Jakub Warmuz',
@@ -26,15 +26,15 @@ setup(
     packages=find_packages(exclude=['ez_setup']),
     include_package_data=True,
     test_suite='nose.collector',
-    package_data={'school': ['i18n/*/LC_MESSAGES/*.mo']},
-    #message_extractors={'school': [
+    package_data={'sis': ['i18n/*/LC_MESSAGES/*.mo']},
+    #message_extractors={'sis': [
     #        ('**.py', 'python', None),
     #        ('public/**', 'ignore', None)]},
     zip_safe=False,
     paster_plugins=['PasteScript', 'Pylons'],
     entry_points="""
     [paste.app_factory]
-    main = school.config.middleware:make_app
+    main = sis.config.middleware:make_app
 
     [paste.app_install]
     main = pylons.util:PylonsInstaller
