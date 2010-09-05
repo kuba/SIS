@@ -62,6 +62,10 @@ class AuthUser(Base):
 
     _password = Column('password', Unicode(80))
 
+    def __init__(self, user_name, password):
+        self.user_name = user_name
+        self.password = password
+
     def _set_password(self, password):
         """Hash password on the fly."""
         hashed_password = password

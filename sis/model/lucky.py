@@ -1,3 +1,4 @@
+"""Lucky number models."""
 import datetime
 import random
 
@@ -11,6 +12,12 @@ from sis.model import Student, GroupMembership, Group
 class LuckyNumber(Base):
     """
     Lucky number!
+
+    :ivar date: Date of the lucky number
+    :type date: datetime.date
+
+    :ivar number: The lucky number
+    :type number: int
 
     """
     __tablename__ = 'lucky_numbers'

@@ -10,10 +10,7 @@ from sis.model.meta import Base, Session
 
 
 class Person(Base):
-    """
-    Basic class for representing people.
-
-    """
+    """Basic model for representing people."""
     __tablename__ = 'people'
 
     id = Column(Integer, primary_key=True)
@@ -30,22 +27,15 @@ class Person(Base):
 
     @property
     def name(self):
-        """
-        Get full name (concatenation of first and last names).
-
-        """
+        """Get full name (concatenation of first and last names)."""
         return "%s %s" % (self.first_name, self.last_name)
 
     def __repr__(self):
-        cls = self.__class__.__name__
-        return "<%s('%s')>" % (cls, self.name)
+        return "<%s('%s')>" % (self.__class__.__name__, self.name)
 
 
 class Educator(Person):
-    """
-    Person who has the abbility to teach.
-
-    """
+    """Person with the abbility to teach."""
     __tablename__ = 'educators'
     __mapper_args__ = {'polymorphic_identity' : 'educator'}
 
