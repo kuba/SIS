@@ -219,6 +219,7 @@ class ScheduleController(BaseController):
         else:
             c.course = None
 
+        c.courses = None
         if len(group_name) != 2:
             # group is not course
             from sqlalchemy import func
