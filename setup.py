@@ -1,3 +1,4 @@
+"""Setuptools setup file for the SIS project."""
 try:
     from setuptools import setup, find_packages
 except ImportError:
@@ -13,7 +14,7 @@ setup(
     description='',
     author='Jakub Warmuz',
     author_email='jakub.warmuz@gmail.com',
-    url='',
+    url='http://sis.staszic.edu.pl',
     install_requires=[
         "Routes >= 1.12.3",
         "Pylons >= 1.0",
