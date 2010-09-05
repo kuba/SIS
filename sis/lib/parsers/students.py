@@ -1,11 +1,11 @@
-import re, datetime
+import re
+import datetime
 from math import ceil
 
-from sis.parsers.parser import Parser, ParserError
-from sis.model import SchoolYear, Group, Student, \
-                         Group, GroupMembership
+from sis.lib.parsers.base import Parser, ParserError
+from sis.model import Session, SchoolYear, Group, Student, Group, \
+        GroupMembership
 
-from sis.model.meta import Session
 
 
 RESTUDENT = re.compile(r"""
@@ -23,7 +23,6 @@ class StudentsParser(Parser):
         self.section = None
         self.students = {}
         super(StudentsParser, self).__init__(*args, **kwargs)
-
 
     def parse(self):
         # Retrieve schoolyear's start/end dates
@@ -46,6 +45,7 @@ class StudentsParser(Parser):
             group_count = len(membership)
             last_first = ceil(group_count/2.0)
             group = Group(group_name, self.year)
+            Session.add(group)
             for order, student in enumerate(membership):
                 student.group = group
                 if order < last_first:
@@ -54,18 +54,18 @@ class StudentsParser(Parser):
                     student.part = 2
                 Session.add(student)
 
-    def parse_line(self):
-        if self.line.startswith('#'):
-            self.process_section_line(self.line[1:])
-        elif RESTUDENT.match(self.line):
-            self.process_data_line(self.line)
-        elif len(self.line) == 0:
+    def parse_line(self, line):
+        if line.startswith('#'):
+            self.process_section_line(line[1:])
+        elif RESTUDENT.match(line):
+            self.process_data_line(line)
+        elif len(line) == 0:
             pass
         else:
             raise ParserError('Line is neither section nor data.')
 
     def process_section_line(self, line):
-        group_name = line.split(' ', 1)[0]
+        group_name = line.split(' ')[0]
         # TODO: Teacher name
         if not self.students.has_key(group_name):
             self.students[group_name] = []

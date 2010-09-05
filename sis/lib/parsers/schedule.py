@@ -3,10 +3,9 @@ import sys
 from calendar import day_abbr
 from codecs import open
 
-from sis.parsers.parser import Parser, ParserError
+from sis.lib.parsers.base import Parser, ParserError
 
-from sis.model import Group, Subject, Lesson, Educator, Schedule
-from sis.model.meta import Session
+from sis.model import Session, Group, Subject, Lesson, Educator, Schedule
 
 
 class ScheduleParser(Parser):
@@ -25,19 +24,19 @@ class ScheduleParser(Parser):
         self.day = None
         super(ScheduleParser, self).__init__(*args, **kwargs)
 
-    def parse_line(self):
-        if self.line.startswith('#'):
+    def parse_line(self, line):
+        if line.startswith('#'):
             # New section block begins
-            self.process_section_line(self.line[1:])
-        elif self.line.startswith('@'):
+            self.process_section_line(line[1:])
+        elif line.startswith('@'):
             # New weekday block begins
-            self.process_day_line(self.line[1:])
-        elif self.redata.match(self.line):
-            self.process_data_line(self.line)
-        elif len(self.line) == 0:
+            self.process_day_line(line[1:])
+        elif self.redata.match(line):
+            self.process_data_line(line)
+        elif len(line) == 0:
             # Pass empty line
             pass
-        elif self.line == '-':
+        elif line == '-':
             if self.order is not None:
                 self.order += 1
         else:
@@ -92,9 +91,12 @@ class TeacherScheduleParser(ScheduleParser):
             try:
                 self.process_group(g)
             except (AttributeError, KeyError, TypeError, ValueError):
-                sys.exit('%s :: %s :: %s (%s)' % (self.section_name, self.day_number, self.order, self.line))
-
+                raise ParserError('%s :: %s :: %s (%s)' %
+                                  (self.section_name.encode('utf-8'),
+                                   self.day_number, self.order,
+                                   line.encode('utf-8')))
         self.order += 1
+
 
     def process_group(self, group_name):
         try:
