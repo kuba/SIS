@@ -203,7 +203,6 @@ def parse(file, teachers_info, school_years):
                 u'zwo',
                 u'plast',
                 u'wos',
-                u'plast',
                 u'tech',
                 u'po',
                 u'eko',
