@@ -1,3 +1,13 @@
+"""
+Students parser.
+
+Sample students file::
+
+    Smith John - M A
+    Kowalski Jan Andrzej M B rwos
+    Nowak Janina - F
+
+"""
 import re
 import datetime
 from math import ceil
@@ -6,23 +16,21 @@ from sis.lib.parsers.base import Parser, ParserError
 from sis.model import Session, SchoolYear, Group, Student, Group, \
         GroupMembership
 
-
-
-RESTUDENT = re.compile(r"""
-                        (?P<last>\w+)\s+           # last name
-                        (?P<first>\w+)\s+          # first name
-                        (?:(?P<second>\w+)|-)\s+   # second name
-                                                   # or '-' for none
-                        (?P<gender>M|F)(?:\s+      # sex
-                        (?P<course>\w))?$          # language course
-                        """, re.UNICODE + re.VERBOSE)
-
-
 class StudentsParser(Parser):
+    restudent = re.compile(r"""
+        (?P<last>\w+)\s+           # last name
+        (?P<first>\w+)\s+          # first name
+        (?:(?P<second>\w+)|-)\s+   # second name or '-' if none
+        (?P<gender>M|F)(?:\s+      # sex
+        (?P<extensions>[\w\s]+))?$  # extensions (eg. language course)
+                                   # separated by whitespace
+        """, re.UNICODE + re.VERBOSE)
+
     def __init__(self, *args, **kwargs):
-        self.section = None
+        self._section = None
         self.students = {}
         super(StudentsParser, self).__init__(*args, **kwargs)
+
 
     def parse(self):
         # Retrieve schoolyear's start/end dates
@@ -32,12 +40,14 @@ class StudentsParser(Parser):
             start = datetime.datetime.strptime(start_str, '%d.%m.%Y')
             end = datetime.datetime.strptime(end_str, '%d.%m.%Y')
         except ValueError:
-            raise ParserError("""File has no schoolyear's
-                    start/end dates or is invalid""")
+            raise ParserError("""Metadata line is not valid.""")
+
         self.year = SchoolYear(start, end)
 
         super(StudentsParser, self).parse()
+        self.post_parse()
 
+    def post_parse(self):
         # Add students to appropriate group
         # parts (determined by surname's order)
         for group_name, membership in self.students.items():
@@ -57,7 +67,7 @@ class StudentsParser(Parser):
     def parse_line(self, line):
         if line.startswith('#'):
             self.process_section_line(line[1:])
-        elif RESTUDENT.match(line):
+        elif self.restudent.match(line):
             self.process_data_line(line)
         elif len(line) == 0:
             pass
@@ -65,36 +75,41 @@ class StudentsParser(Parser):
             raise ParserError('Line is neither section nor data.')
 
     def process_section_line(self, line):
+        """Process section line."""
         group_name = line.split(' ')[0]
         # TODO: Teacher name
         if not self.students.has_key(group_name):
             self.students[group_name] = []
-        self.section = self.students[group_name]
+        self._section = self.students[group_name]
 
     def process_data_line(self, line):
-        if self.section is None:
-            raise ParserError("Section hasn't been defined before.")
+        """Process data line."""
 
-        m = RESTUDENT.match(line).groupdict()
-        gender = m['gender'].lower()
+        if self._section is None:
+            raise ParserError("Section hasn't been defined yet.")
+
+        m = self.restudent.match(line).groupdict()
         first_name = m['first']
+        second_name = m['second']
         last_name = m['last']
-        course_name = m['course']
+        gender = m['gender'].lower()
+        extensions = m['extensions']
 
         if gender == 'm':
             is_male = True
-        elif gender == 'f':
-            is_male = False
         else:
-            raise ParserError("No such gender, try one of %r" % gender)
+            is_male = False
 
-        student = Student(first_name, last_name, is_male)
+        student = Student(first_name, last_name, is_male, second_name)
         membership = GroupMembership(None, None, student, self.year.start)
-        self.section.append(membership)
+        self._section.append(membership)
 
-        if course_name is not None:
-            course_name = course_name.lower()
-            if not self.students.has_key(course_name):
-                self.students[course_name] = []
-            course_membership = GroupMembership(None, None, student, self.year.start)
-            self.students[course_name].append(course_membership)
+        # Parse extensions, eg. "A", "rwos", etc.
+        if extensions is not None:
+            for extension in extensions.lower().split(' '):
+                if not self.students.has_key(extension):
+                    self.students[extension] = []
+                membership = GroupMembership(group=None, part=None,
+                                             student=student,
+                                             since=self.year.start)
+                self.students[extension].append(membership)
