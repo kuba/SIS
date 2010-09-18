@@ -1,4 +1,4 @@
-"""Tools parsing teachers file."""
+"""Teachers file parser."""
 import re
 
 from sis.lib.parsers.base import LineError
