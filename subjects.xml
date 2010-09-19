@@ -1,0 +1,97 @@
+<?xml version="1.0" ?>
+<!DOCTYPE subjects [
+    <!ELEMENT subjects  (subject*)>
+    <!ELEMENT subject   (long,short)>
+    <!ELEMENT long      (#PCDATA)>
+    <!ELEMENT short     (#PCDATA)>
+]>
+<subjects xml:lang="pl">
+    <subject>
+        <long>angielski</long>
+        <short>ang</short>
+    </subject>
+    <subject>
+        <long>biologia</long>
+        <short>bio</short>
+    </subject>
+    <subject>
+        <long>chemia</long>
+        <short>chem</short>
+    </subject>
+    <subject>
+        <long>przedsiębiorczość</long>
+        <short>eko</short>
+    </subject>
+    <subject>
+            <long>fizyka</long>
+            <short>fiz</short>
+    </subject>
+    <subject>
+        <long>francuski</long>
+        <short>fr</short>
+    </subject>
+    <subject>
+        <long>geografia</long>
+        <short>geo</short>
+    </subject>
+    <subject>
+        <long>historia</long>
+        <short>hist</short>
+    </subject>
+    <subject>
+        <long>informatyka</long>
+        <short>inf</short>
+    </subject>
+    <subject>
+        <long>matematyka</long>
+        <short>mat</short>
+    </subject>
+    <subject>
+        <long>muzyka</long>
+        <short>muz</short>
+    </subject>
+    <subject>
+        <long>niemiecki</long>
+        <short>niem</short>
+    </subject>
+    <subject>
+        <long>plastyka</long>
+        <short>plast</short>
+    </subject>
+    <subject>
+        <long>przysposobienie obronne</long>
+        <short>po</short>
+    </subject>
+    <subject>
+        <long>język polski</long>
+        <short>pol</short>
+    </subject>
+    <subject>
+        <long>religia</long>
+        <short>rel</short>
+    </subject>
+    <subject>
+        <long>język rosyjski</long>
+        <short>ros</short>
+    </subject>
+    <subject>
+        <long>technika</long>
+        <short>tech</short>
+    </subject>
+    <subject>
+        <long>wychowanie fizyczne</long>
+        <short>wf</short>
+    </subject>
+    <subject>
+        <long>wiedza o kulturze</long>
+        <short>wok</short>
+    </subject>
+    <subject>
+        <long>wiedza o społeczeństwie</long>
+        <short>wos</short>
+    </subject>
+    <subject>
+        <long>ZWO</long>
+        <short>zwo</short>
+    </subject>
+</subjects>
