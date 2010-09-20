@@ -7,7 +7,7 @@
                     <py:when test="True">
                         <py:choose>
                             <py:when test="lesson[0]">
-                                ${lesson[0].subject.name} ${lesson[0].room}
+                                ${lesson[0].subject.short} ${lesson[0].room}
                             </py:when>
                             <py:otherwise>
                                 -
@@ -16,7 +16,7 @@
                         /
                         <py:choose>
                             <py:when test="lesson[1]">
-                                ${lesson[1].subject.name} ${lesson[1].room}
+                                ${lesson[1].subject.short} ${lesson[1].room}
                             </py:when>
                             <py:otherwise>
                                 -
@@ -24,7 +24,7 @@
                         </py:choose>
                     </py:when>
                     <py:otherwise>
-                        ${lesson.subject.name} ${lesson.room}
+                        ${lesson.subject.short} ${lesson.room}
                     </py:otherwise>
                 </py:choose>
             </py:when>

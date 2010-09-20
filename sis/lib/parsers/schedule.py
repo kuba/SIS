@@ -170,53 +170,16 @@ class ClassScheduleParser(ScheduleParser):
             self.day[self.order] = (part1, part2)
 
 
-def parse(file, teachers_info, school_years):
-    # Create new Schedule
-    current_year = dict((v,k) for k, v in school_years.iteritems())['1']
-    schedule = Schedule(current_year)
+class FullScheduleParser(object):
+    def __init__(self, file, year, groups, subjects, teachers):
+        schedule = Schedule(year)
 
-    groups = {}
-    from sqlalchemy import or_
-    q = Session.query(Group).\
-            filter(or_(Group.year_id == school_years.keys()[0].id, Group.year_id == school_years.keys()[1].id, Group.year_id == school_years.keys()[2].id)).\
-            order_by(Group.year_id)
-    for g in q:
-        pr = school_years[g.year]
-        groups[pr + g.name] = g
+        # Read schedule file and split it respectively
+        d = file.read()
+        c, t = re.search(r'!classes(.*)!teachers(.*)', d, re.DOTALL).groups()
 
-    # Initiate subjects
-    subjects = [u'mat',
-                u'pol',
-                u'bio',
-                u'chem',
-                u'fiz',
-                u'geo',
-                u'hist',
-                u'inf',
-                u'wf',
-                u'ang',
-                u'ros',
-                u'fr',
-                u'niem',
-                u'rel',
-                u'muz',
-                u'zwo',
-                u'plast',
-                u'wos',
-                u'tech',
-                u'po',
-                u'eko',
-                u'wok']
-    subs = {}
-    for s in subjects:
-        subs[s] = Subject(s)
-
-    # Read schedule file and split it respectively
-    d = file.read()
-    c, t = re.search(r'!classes(.*)!teachers(.*)', d, re.DOTALL).groups()
-
-    # PARSE!
-    classes = ClassScheduleParser(schedule, subs, groups, c.split('\n'))
-    teachers = TeacherScheduleParser(teachers_info, classes.sections, t.split('\n'))
-
-    return (classes.sections, teachers.sections)
+        # PARSE!
+        classes = ClassScheduleParser(schedule, subjects, groups, c.split('\n'))
+        teachers = TeacherScheduleParser(teachers, classes.sections, t.split('\n'))
+        self.groups = classes.sections
+        self.teachers = teachers.sections

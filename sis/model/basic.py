@@ -185,13 +185,15 @@ class Subject(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(Unicode(128), nullable=False)
+    short = Column(Unicode(5), nullable=False)
 
-    def __init__(self, name):
+    def __init__(self, name, short):
         self.name = name
+        self.short = short
 
     def __repr__(self):
         cls = self.__class__.__name__
-        return "<%s('%s')>" % (cls, self.name)
+        return "<%s(%r)>" % (cls, self.name)
 
 
 class SchoolYear(Base):

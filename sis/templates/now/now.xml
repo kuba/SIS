@@ -9,7 +9,7 @@
         <py:choose>
             <py:when test="c.lesson">
                 (${c.lesson[0].order})
-                ${'/'.join(["%s %s%s %s" % (l.subject.name,  l.group.full_name(c.year), l.part if l.part else '', l.room) for l in c.lesson])}
+                ${'/'.join(["%s %s%s %s" % (l.subject.short,  l.group.full_name(c.year), l.part if l.part else '', l.room) for l in c.lesson])}
             </py:when>
             <py:otherwise>
                 Nie ma obecnie żadnej lekcji.

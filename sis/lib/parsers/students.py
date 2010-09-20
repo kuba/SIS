@@ -13,8 +13,7 @@ import datetime
 from math import ceil
 
 from sis.lib.parsers.base import Parser, ParserError
-from sis.model import Session, SchoolYear, Group, Student, Group, \
-        GroupMembership
+from sis.model import SchoolYear, Group, Student, Group, GroupMembership
 
 class StudentsParser(Parser):
     restudent = re.compile(r"""
@@ -29,6 +28,7 @@ class StudentsParser(Parser):
     def __init__(self, *args, **kwargs):
         self._section = None
         self.students = {}
+        self.groups = []
         super(StudentsParser, self).__init__(*args, **kwargs)
 
 
@@ -55,14 +55,13 @@ class StudentsParser(Parser):
             group_count = len(membership)
             last_first = ceil(group_count/2.0)
             group = Group(group_name, self.year)
-            Session.add(group)
+            self.groups.append(group)
             for order, student in enumerate(membership):
                 student.group = group
                 if order < last_first:
                     student.part = 1
                 else:
                     student.part = 2
-                Session.add(student)
 
     def parse_line(self, line):
         if line.startswith('#'):
