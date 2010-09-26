@@ -97,3 +97,16 @@ div .lucky_number {
 .lucky_number_date {
     font-size: 30px;
 }
+
+table {
+    border-collapse: collapse;
+}
+
+table, td, th {
+    border: 1px solid #666;
+}
+
+td, th {
+    padding: 4px;
+    vertical-align: top;
+}
