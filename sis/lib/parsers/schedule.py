@@ -147,7 +147,7 @@ class ClassScheduleParser(ScheduleParser):
     def process_lesson(self, sub, room, part=None):
         sub = self.subjects[sub]
         teacher = None
-        room = room == 'h' and 100 or room
+        room = room == 'h' and 100 or int(room)
         l = Lesson(self.schedule, self.group, part, sub,
                 teacher, self.day_number, self.order, room)
         Session.add(l)
