@@ -177,7 +177,7 @@ class Educator(Person):
 
     def __repr__(self):
         cls = self.__class__.__name__
-        return "<%s('%s')>" % (cls, self.name_with_title)
+        return "<%s(%r)>" % (cls, self.name_with_title)
 
 
 class Subject(Base):
@@ -576,12 +576,14 @@ class Lesson(Base):
     """
     __tablename__ = 'lessons'
     __table_args__ = (
-            UniqueConstraint('group_id', 'day', 'order',
-                'schedule_id', 'first_part'),
-            UniqueConstraint('group_id', 'day', 'order',
-                'schedule_id', 'second_part'),
-            {}
-            )
+        UniqueConstraint(
+            'group_id', 'day', 'order', 'schedule_id', 'first_part'
+        ),
+        UniqueConstraint(
+            'group_id', 'day', 'order', 'schedule_id', 'second_part'
+        ),
+        {},
+    )
 
     id = Column(Integer, primary_key=True)
 
