@@ -3,7 +3,7 @@
       xmlns:py="http://genshi.edgewall.org/">
     <xi:include href="../../base.xml" />
     <head>
-        <title>Pełny plan lekcji dla nayczycieli.</title>
+        <title>Pełny plan lekcji dla nauczycieli.</title>
     </head>
     <body>
         <table border="1">
