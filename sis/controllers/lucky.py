@@ -1,7 +1,16 @@
+# -*- coding: utf-8 -*-
 import datetime
 
 import logging
 log = logging.getLogger(__name__)
+
+from pkg_resources import Requirement, resource_filename
+
+import StringIO
+from reportlab.lib.pagesizes import A4
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
 
 from pylons import request, response, session, tmpl_context as c, url
 from pylons.controllers.util import abort, redirect
@@ -108,6 +117,58 @@ class LuckyController(BaseController):
         change_hour = 15
         c.numbers = LuckyNumber.current_week(change_hour)
         return render('lucky/week.xml')
+
+    def current_week_pdf(self):
+        """Lucky numbers for current or next week in pdf format."""
+        change_hour = 15
+        numbers = LuckyNumber.current_week(change_hour)
+
+        if len(numbers) == 0:
+            return redirect(url('lucky_week'))
+
+        # Register fonts
+        ubuntu_r = resource_filename(Requirement.parse("SIS"), "resources/Ubuntu-R.ttf")
+        ubuntu_b = resource_filename(Requirement.parse("SIS"), "resources/Ubuntu-B.ttf")
+        pdfmetrics.registerFont(TTFont('Ubuntu', ubuntu_r))
+        pdfmetrics.registerFont(TTFont('Ubuntu Bold', ubuntu_b))
+
+        numbers_pdf = StringIO.StringIO()
+        doc = SimpleDocTemplate(numbers_pdf, pagesize=A4, topMargin=A4[1]*0.26)
+        doc.author = 'SIS'
+        doc.title = 'Szczęśliwy numerek'
+
+        data = []
+        for number in numbers:
+            date = number.date.strftime("%d.%m.%y")
+            data.append(('{0} -'.format(date), str(number.number)))
+
+        table = Table(data)
+        table.setStyle(TableStyle([
+            ('FONT', (0, 0), (0, -1), 'Ubuntu', 80),
+            ('FONT', (1, 0), (1, -1), 'Ubuntu Bold', 80),
+        ]))
+
+        def header_and_footer(canvas, document):
+            canvas.saveState()
+            size = document.pagesize
+            center = size[0] / 2
+
+            canvas.setFont('Ubuntu', 80)
+            canvas.drawCentredString(center,
+                size[1] - document.topMargin / 2, "SZCZĘŚLIWY")
+            canvas.drawCentredString(center, size[1] - document.topMargin + 20, 'NUMEREK')
+
+            canvas.setFont('Ubuntu', 15)
+            canvas.drawRightString(size[0] - document.rightMargin,
+                document.bottomMargin - 20, "Samorząd Uczniowski")
+
+            canvas.restoreState()
+
+        doc.build([table], onFirstPage=header_and_footer,
+            onLaterPages=header_and_footer)
+
+        response.headers['Content-type'] = 'application/pdf'
+        return numbers_pdf.getvalue()
 
     def draw(self):
         c.numbers = LuckyNumber.draw()
