@@ -118,4 +118,4 @@ class Substitution(Base):
         cls = self.__class__.__name__
         name = self.group.name + (self.part if self.part else '')
         return "<%s(%s, %d, %r, %r, comment=%r)>" % (cls, self.date,
-            self.order, self.teacher.name_with_title(), name, self.comment)
+            self.order, self.teacher, name, self.comment)
