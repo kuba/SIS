@@ -160,12 +160,14 @@ class LuckyController(BaseController):
     @restrict('POST')
     @validate(schema=AddLuckyNumbersForm(), form='add_week_form')
     def add(self):
-        numbers = self.form_result['lucky']
-        added = False
-        for lucky in numbers:
+        form_numbers = self.form_result['lucky']
+        numbers = []
+        for lucky in form_numbers:
             if lucky['date'] and lucky['number']:
-                added = True
-                Session.add(LuckyNumber(lucky['date'], lucky['number']))
+                ln = LuckyNumber(lucky['date'], lucky['number'])
+                numbers.append(ln)
+
+        Session.add_all(numbers)
 
         try:
             Session.commit()
@@ -174,7 +176,7 @@ class LuckyController(BaseController):
             session.save()
             return redirect(url('lucky_add'))
         else:
-            if not added:
+            if len(numbers) == 0:
                 session['flash'] = 'No lucky number has been added!'
             else:
                 session['flash'] = 'Lucky numbers have been added!'
