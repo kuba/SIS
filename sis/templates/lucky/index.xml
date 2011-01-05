@@ -20,11 +20,16 @@
             Szczęśliwe numerki na ten tydzień
         </a></h3>
         <py:choose test="">
-            <ul py:when="c.week">
-                <li py:for="lucky in c.week">
-                    ${lucky.date} - <strong>${lucky.number}</strong>
-                </li>
-            </ul>
+            <py:when test="c.week">
+                <a href="${url('lucky_week_pdf')}" py:if="h.signed_in()">
+                    Pobierz numerki w formacie PDF.
+                </a>
+                <ul>
+                    <li py:for="lucky in c.week">
+                        ${lucky.date} - <strong>${lucky.number}</strong>
+                    </li>
+                </ul>
+            </py:when>
             <p py:otherwise="">
                 Nie ma szczęśliwych numerków na ten tydzień.
             </p>
