@@ -17,7 +17,7 @@
 
                 <input type="submit" name="submit" value="Zaloguj"/>
             </form>
-            <p py:otherwise="">Jesteś zalogowny!</p>
+            <p py:otherwise="">Jesteś zalogowany!</p>
     </py:choose>
     </body>
 </html>
