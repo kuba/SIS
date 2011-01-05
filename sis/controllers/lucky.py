@@ -133,7 +133,7 @@ class LuckyController(BaseController):
         """
         today = datetime.date.today()
         weekday = datetime.date.weekday(today)
-        monday = today - datetime.timedelta(weekday )
+        monday = today - datetime.timedelta(weekday)
 
         # Find the first date a lucky number can be drown for
         last = LuckyNumber.last()
