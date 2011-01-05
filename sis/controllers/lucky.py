@@ -118,6 +118,7 @@ class LuckyController(BaseController):
         c.numbers = LuckyNumber.current_week(change_hour)
         return render('lucky/week.xml')
 
+    @ActionProtector(not_anonymous())
     def current_week_pdf(self):
         """Lucky numbers for current or next week in pdf format."""
         change_hour = 15
