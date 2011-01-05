@@ -197,6 +197,7 @@ class Subject(Base):
 
 
 class SchoolYear(Base):
+    """School year."""
     __tablename__ = 'school_years'
 
     id = Column(Integer, primary_key=True)
@@ -204,6 +205,9 @@ class SchoolYear(Base):
     end = Column(Date, nullable=True)
 
     def __init__(self, start, end):
+        if end < start:
+            raise ValueError("End date last than start date.")
+
         self.start = start
         self.end = end
 
