@@ -188,21 +188,28 @@ class LuckyController(BaseController):
 
     @ActionProtector(not_anonymous())
     def add_week_form(self):
-        """
-        Display the form to input numbers only for one week.
+        """Displays a form for adding lucky numbers
+        for one week (at most).
 
         """
+        today = datetime.date.today()
+        weekday = datetime.date.weekday(today)
+        monday = today - datetime.timedelta(weekday)
+
+        # Find the first date a lucky number can be drown for
         last = LuckyNumber.last()
-
-        remain_this_week = 4-datetime.date.weekday(last.date)
-        if remain_this_week < 1:
-            c.first_date = last.date + datetime.timedelta(-remain_this_week + 3)
-            c.count = 5
+        if last.date < monday:
+            c.first_date = monday
         else:
-            c.first_date = last.date + datetime.timedelta(1)
-            c.count = remain_this_week
+            c.first_date = self._closest_working_day(last.date)
 
+        # Find the count of remaining days
+        c.count = 5 - datetime.date.weekday(c.first_date)
+
+        # Draw lucky numbers
         c.numbers = LuckyNumber.draw()
+
+        # Not enough numbers to fill entire week
         if len(c.numbers) < c.count:
             c.count = len(c.numbers)
 
@@ -214,12 +221,14 @@ class LuckyController(BaseController):
     @restrict('POST')
     @validate(schema=AddLuckyNumbersForm(), form='add_week_form')
     def add(self):
-        numbers = self.form_result['lucky']
-        added = False
-        for lucky in numbers:
+        form_numbers = self.form_result['lucky']
+        numbers = []
+        for lucky in form_numbers:
             if lucky['date'] and lucky['number']:
-                added = True
-                Session.add(LuckyNumber(lucky['date'], lucky['number']))
+                ln = LuckyNumber(lucky['date'], lucky['number'])
+                numbers.append(ln)
+
+        Session.add_all(numbers)
 
         try:
             Session.commit()
@@ -228,7 +237,7 @@ class LuckyController(BaseController):
             session.save()
             return redirect(url('lucky_add'))
         else:
-            if not added:
+            if len(numbers) == 0:
                 session['flash'] = 'No lucky number has been added!'
             else:
                 session['flash'] = 'Lucky numbers have been added!'

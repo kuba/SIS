@@ -4,11 +4,19 @@
     <xi:include href="../base.xml" />
     <head>
         <title>Dodaj szczęśliwe numerki na następny tydzień.</title>
-        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"></script>
-        <script type="text/javascript">
-            numbers = new Array(${','.join(str(x) for x in c.numbers)});
+
+        <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css"
+            rel="stylesheet" type="text/css"/>
+        <script type="text/javascript"
+            src="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js">
         </script>
-        <script type="text/javascript" src="/draw.js"></script>
+        <script type="text/javascript"
+            src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js">
+        </script>
+        <script type="text/javascript"
+            src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/i18n/jquery.ui.datepicker-pl.js">
+        </script>
+        <script type="text/javascript" src="/add_form.js"></script>
     </head>
     <body>
         <h2>Dodaj szczęśliwe numerki na następny tydzień</h2>
@@ -32,9 +40,12 @@
         </p>
 
         <form action="${h.url(controller='lucky', action='add')}" method="post">
-            <py:for each="x in range(0, c.count)">
-                <input type="text" value="${(c.first_date + c.datetime.timedelta(1)*x).strftime('%d/%m/%Y')}" name="lucky-${x}.date" />
-                <input type="text" name="lucky-${x}.number" value="${c.numbers[x]}"/>
+            <py:for each="x in xrange(0, c.count)">
+                <input type="text"
+                    value="${(c.first_date + c.datetime.timedelta(1)*x).strftime('%d/%m/%Y')}"
+                    name="lucky-${x}.date" id="lucky-${x}-date" />
+                <input type="text" name="lucky-${x}.number"
+                    value="${c.numbers[x]}" maxlength="2" />
                 <br />
             </py:for>
             <input type="submit" value="Dodaj!" />
@@ -45,7 +56,7 @@
             Poniżej znajduje się lista numerków, które nie były jeszcze
             losowane w obecnej turze.
         </p>
-        <ul id="not_used_numbers">
+        <ul id="unused_numbers">
             <li py:for="n in c.numbers">${n}</li>
         </ul>
     </body>
