@@ -32,7 +32,7 @@
         </p>
 
         <form action="${h.url(controller='lucky', action='add')}" method="post">
-            <py:for each="x in range(0, c.count)">
+            <py:for each="x in xrange(0, c.count)">
                 <input type="text" value="${(c.first_date + c.datetime.timedelta(1)*x).strftime('%d/%m/%Y')}" name="lucky-${x}.date" />
                 <input type="text" name="lucky-${x}.number" value="${c.numbers[x]}" maxlength="2" />
                 <br />
