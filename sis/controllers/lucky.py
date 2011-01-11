@@ -152,8 +152,6 @@ class LuckyController(BaseController):
         if len(c.numbers) < c.count:
             c.count = len(c.numbers)
 
-        c.datetime = datetime
-
         return render('lucky/add_form.xml')
 
     @ActionProtector(not_anonymous())
