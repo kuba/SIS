@@ -23,10 +23,12 @@ setup(
         "repoze.who <= 1.99",
         "repoze.what-quickstart >= 1.0.6",
         "repoze.what-pylons >= 1.0",
-        "repoze.who.plugins.formcookie >= 0.3.0"
+        "repoze.who.plugins.formcookie >= 0.3.0",
+        "reportlab >= 2.4",
     ],
     setup_requires=["PasteScript>=1.6.3"],
     packages=find_packages(exclude=['ez_setup']),
+    data_files = [('resources', ['resources/Ubuntu-R.ttf', 'resources/Ubuntu-B.ttf'])],
     include_package_data=True,
     test_suite='nose.collector',
     package_data={'sis': ['i18n/*/LC_MESSAGES/*.mo']},

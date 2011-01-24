@@ -26,6 +26,7 @@ def make_map(config):
         m.connect('lucky_home', r'', action='index')
         m.connect('lucky_current', r'/current', action='current')
         m.connect('lucky_week', r'/week', action='current_week')
+        m.connect('lucky_week_pdf', r'/week.pdf', action='current_week_pdf')
         m.connect('lucky_left', r'/left', action='left')
         m.connect('lucky_draw', r'/draw', action='draw')
         m.connect('lucky_all', r'/all', action='all')
