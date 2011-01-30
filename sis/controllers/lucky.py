@@ -190,12 +190,15 @@ class LuckyController(BaseController):
     @ActionProtector(not_anonymous())
     def add_week_form(self):
         """Displays a form for adding lucky numbers
-        for one week (at most).
-
-        """
+        for one week (at most)."""
         today = datetime.date.today()
         weekday = datetime.date.weekday(today)
-        monday = today - datetime.timedelta(weekday)
+
+        # If it is Saturday or Sunday today, go to the next Monday
+        if weekday > 4:
+            monday = self._closest_working_day(today)
+        else:
+            monday = today - datetime.timedelta(weekday)
 
         # Find the first date a lucky number can be drown for
         last = LuckyNumber.last()
