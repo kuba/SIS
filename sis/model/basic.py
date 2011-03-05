@@ -284,13 +284,16 @@ class Schedule(Base):
     year_id = Column(ForeignKey('school_years.id'), nullable=False)
     year = relation('SchoolYear', lazy=False)
     start = Column(Date, nullable=False)
+    updated = Column(Date, nullable=False, default=func.now())
 
-    def __init__(self, year, start=None):
+    def __init__(self, year, start=None, updated=None):
         self.year = year
 
         if start is None:
             start = datetime.datetime.now()
         self.start = start
+
+        self.updated = updated
 
     @classmethod
     def query_current(cls, year_id=None, date=None, q=None):

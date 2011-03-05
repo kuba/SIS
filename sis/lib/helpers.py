@@ -11,3 +11,8 @@ from pylons import url
 from webhelpers.html.tags import *
 
 from sis.lib.auth.helpers import signed_in
+from sis.model.basic import Schedule
+
+def schedule_last_update():
+    current = Schedule.current()
+    return current.updated
