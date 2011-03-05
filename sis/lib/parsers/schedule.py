@@ -172,14 +172,14 @@ class ClassScheduleParser(ScheduleParser):
 
 class FullScheduleParser(object):
     def __init__(self, file, year, groups, subjects, teachers):
-        schedule = Schedule(year)
+        self.schedule = Schedule(year)
 
         # Read schedule file and split it respectively
         d = file.read()
         c, t = re.search(r'!classes(.*)!teachers(.*)', d, re.DOTALL).groups()
 
         # PARSE!
-        classes = ClassScheduleParser(schedule, subjects, groups, c.split('\n'))
+        classes = ClassScheduleParser(self.schedule, subjects, groups, c.split('\n'))
         teachers = TeacherScheduleParser(teachers, classes.sections, t.split('\n'))
         self.groups = classes.sections
         self.teachers = teachers.sections

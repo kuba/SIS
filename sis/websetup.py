@@ -11,9 +11,17 @@ from sqlalchemy.exc import IntegrityError
 
 from sis.config.environment import load_environment
 
-from sis.model import Session, Base, AuthUser, Group
-from sis.lib.parsers import TeachersParser, StudentsParser, \
-        LuckyNumberParser, FullScheduleParser, SubjectsParser
+from sis.model import Session
+from sis.model import Base
+from sis.model import AuthUser
+from sis.model import Group
+from sis.model import Subject
+
+from sis.lib.parsers import TeachersParser
+from sis.lib.parsers import StudentsParser
+from sis.lib.parsers import LuckyNumberParser
+from sis.lib.parsers import FullScheduleParser
+from sis.lib.parsers import SubjectsParser
 
 log = logging.getLogger(__name__)
 
@@ -37,6 +45,7 @@ def setup_admin():
     # Add super user do the database
     user = AuthUser(username, password)
     Session.add(user)
+    Session.commit()
 
     log.info("Created super admin account.")
 
@@ -57,7 +66,9 @@ def parse_teachers(path):
         teachers[teacher.last_name] = teacher
         Session.add(teacher)
 
-    log.info("Teachers parsed.")
+    Session.commit()
+
+    log.info("Teachers parsed and committed.")
 
     return teachers
 
@@ -93,7 +104,9 @@ def parse_students(students_dir):
         for group in years[year]:
             groups[user_index+group.name] = group
 
-    log.info("Students parsed.")
+    Session.commit()
+
+    log.info("Students (and groupd) parsed and committed.")
 
     return sorted_years[-1], groups
 
@@ -111,7 +124,9 @@ def parse_subjects(path):
         subjects[subject.short] = subject
         Session.add(subject)
 
-    log.info("Subjects parsed.")
+    Session.commit()
+
+    log.info("Subjects parsed and committed.")
 
     return subjects
 
@@ -127,8 +142,9 @@ def parse_numbers(path):
     lucky_numbers_file = codecs.open(path, 'r', 'utf-8')
     for number in LuckyNumberParser(lucky_numbers_file):
         Session.add(number)
+    Session.commit()
 
-    log.info("Lucky numbers parsed.")
+    log.info("Lucky numbers parsed and committed.")
 
 def parse_schedule(path, current_year, groups, subjects, teachers):
     """
@@ -152,11 +168,20 @@ def parse_schedule(path, current_year, groups, subjects, teachers):
     log.info("Parsing schedule...")
 
     schedule_file = codecs.open(path, 'r', 'utf-8')
-    FullScheduleParser(schedule_file, current_year, groups, subjects,
+    sp = FullScheduleParser(schedule_file, current_year, groups, subjects,
                            teachers)
 
     log.info("Schedule parsed.")
+    return sp.schedule
 
+def check_rooms(schedule):
+    """Check rooms integrity."""
+    log.info("Checking rooms...")
+    conflicts = schedule.check_rooms(exclude=[100])
+    if len(conflicts) == 0:
+        log.info("Rooms checked.")
+    else:
+        log.error("Rooms conflict detected!")
 
 def setup_app(command, conf, vars):
     """Setup the SIS application."""
@@ -169,11 +194,11 @@ def setup_app(command, conf, vars):
     Base.metadata.create_all(bind=Session.bind)
     log.info("Schema saved to the database.")
 
-    # Create superadmin
-    setup_admin()
-
     # Run parsers
     log.info("Running parsers...")
+
+    # Parse lucky numbers
+    parse_numbers(conf['numbers_file'])
 
     # Parse subjects
     subjects_file = conf.get('subjects_file', 'subjects.xml')
@@ -186,12 +211,8 @@ def setup_app(command, conf, vars):
     students_dir = conf['students_dir']
     current_year, groups = parse_students(students_dir)
 
-
-    # Parse lucky numbers
-    parse_numbers(conf['numbers_file'])
-
     # Parse schedule
-    parse_schedule(conf['schedule_file'], current_year, groups, subjects,
+    schedule = parse_schedule(conf['schedule_file'], current_year, groups, subjects,
                    teachers)
 
     try:
@@ -203,10 +224,30 @@ def setup_app(command, conf, vars):
         schedule_id, group_id, first_part, second_part, subject_id, \
             teacher_id, order, day, room = error.params
 
+        # Rollback commit
         Session.rollback()
-        print Session.query(Group).get(group_id).full_name()
-        print day
-        print order
 
-        raise
+        group = Session.query(Group).get(group_id)
+        subject = Session.query(Subject).get(subject_id)
+
+        error_msg = (
+            "Integrity error: no teacher set!:\n"
+            "   group: {0}\n"
+            "   first_part: {1}\n"
+            "   second_part: {2}\n"
+            "   subject: {3}\n"
+            "   day: {4}\n"
+            "   order: {5}\n"
+            "   room: {6}")
+        log.error(error_msg.format(group.full_name(), first_part, second_part,
+            subject.name, day, order, room))
+
+        sys.exit()
+
+    # Check rooms, exclude gym
+    check_rooms(schedule)
+
+    # Create superadmin
+    setup_admin()
+
     log.info("Succesfully set up.")
