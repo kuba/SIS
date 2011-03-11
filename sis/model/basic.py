@@ -3,7 +3,7 @@ import datetime
 from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy import Column, UniqueConstraint, ForeignKey,\
                        Integer, Unicode, Boolean, Date
-from sqlalchemy import func, desc, not_
+from sqlalchemy import func, desc, not_, and_
 from sqlalchemy.orm import relation, eagerload
 
 from sis.model.meta import Base, Session
@@ -342,11 +342,31 @@ class Schedule(Base):
         :type excelud: :class:`list` of :class:`int`
 
         """
-        return Session.query(func.count(Lesson.room), Lesson).\
-                group_by(Lesson.room, Lesson.order, Lesson.day,
-                         Lesson.schedule_id).\
-                having(func.count(Lesson.room)>1).\
-                filter(not_(Lesson.room.in_(exclude))).all()
+        stmt = Session.query(Lesson.room, Lesson.day, Lesson.order,
+            Lesson.schedule_id)
+        stmt = stmt.group_by(Lesson.room, Lesson.order, Lesson.day, Lesson.schedule_id)
+        stmt = stmt.having(func.count(Lesson.room)>1)
+        stmt = stmt.filter(not_(Lesson.room.in_(exclude)))
+        stmt = stmt.subquery()
+        q = Session.query(Lesson).join((stmt, and_(
+            Lesson.room == stmt.c.room,
+            Lesson.day == stmt.c.day,
+            Lesson.order == stmt.c.order,
+            Lesson.schedule_id == stmt.c.schedule_id)))
+        q = q.order_by(Lesson.day, Lesson.order, Lesson.room)
+
+        conflicts = q.all()
+        if len(conflicts) == 0:
+            return []
+        rooms = [[conflicts.pop(0), conflicts.pop(0)]]
+        for c in conflicts:
+            prev = rooms[-1][-1]
+            if c.room == prev.room and c.day == prev.day and c.order == \
+            prev.order and c.schedule_id == prev.schedule_id:
+                rooms[-1].append(c)
+            else:
+                rooms.append([c])
+        return rooms
 
     def __repr__(self):
         cls = self.__class__.__name__

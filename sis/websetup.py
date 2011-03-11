@@ -181,7 +181,15 @@ def check_rooms(schedule):
     if len(conflicts) == 0:
         log.info("Rooms checked.")
     else:
-        log.error("Rooms conflict detected!")
+        error_msg = u"Rooms conflict(s) detected!"
+        for c in conflicts:
+            error_msg += u"\n\troom: {0}\n\tday: {1}\n\torder: {2}".format(
+                c[0].room, c[0].day, c[0].order)
+            for l in c:
+                error_msg += u"\n\t\t# group: {0}\n\t\t  teacher: {1}".format(
+                    l.group.full_name(),
+                    l.teacher.name_with_title)
+        log.error(error_msg.encode("utf-8"))
 
 def setup_app(command, conf, vars):
     """Setup the SIS application."""
