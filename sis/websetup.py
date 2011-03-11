@@ -231,7 +231,7 @@ def setup_app(command, conf, vars):
         subject = Session.query(Subject).get(subject_id)
 
         error_msg = (
-            "Integrity error: no teacher set!:\n"
+            u"Integrity error: no teacher set!:\n"
             "   group: {0}\n"
             "   first_part: {1}\n"
             "   second_part: {2}\n"
@@ -240,7 +240,7 @@ def setup_app(command, conf, vars):
             "   order: {5}\n"
             "   room: {6}")
         log.error(error_msg.format(group.full_name(), first_part, second_part,
-            subject.name, day, order, room))
+            subject.name, day, order, room).encode("utf-8"))
 
         sys.exit()
 
