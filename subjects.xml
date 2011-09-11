@@ -59,6 +59,10 @@
         <short>plast</short>
     </subject>
     <subject>
+        <long>prawo</long>
+        <short>prawo</short>
+    </subject>
+    <subject>
         <long>przysposobienie obronne</long>
         <short>po</short>
     </subject>
@@ -93,5 +97,9 @@
     <subject>
         <long>ZWO</long>
         <short>zwo</short>
+    </subject>
+    <subject>
+        <long>edukacja dla bezpieczeństwa</long>
+        <short>edb</short>
     </subject>
 </subjects>
