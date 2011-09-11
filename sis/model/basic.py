@@ -290,7 +290,7 @@ class Schedule(Base):
         self.year = year
 
         if start is None:
-            start = datetime.datetime.now()
+            start = datetime.date.today()
         self.start = start
 
         self.updated = updated
