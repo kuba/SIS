@@ -18,7 +18,7 @@ setup(
     install_requires=[
         "Routes >= 1.12.3",
         "Pylons >= 1.0",
-        "SQLAlchemy >= 0.6.3",
+        "SQLAlchemy >= 0.6.3, < 0.7",
         "Genshi >= 0.6",
         "repoze.who <= 1.99",
         "repoze.what-quickstart >= 1.0.6",
