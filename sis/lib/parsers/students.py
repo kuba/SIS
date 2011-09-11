@@ -17,12 +17,12 @@ from sis.model import SchoolYear, Group, Student, Group, GroupMembership
 
 class StudentsParser(Parser):
     restudent = re.compile(r"""
-        (?P<last>\w+)\s+           # last name
-        (?P<first>\w+)\s+          # first name
-        (?:(?P<second>\w+)|-)\s+   # second name or '-' if none
-        (?P<gender>M|F)(?:\s+      # sex
+        (?P<last>[\w-]+)\s+         # last name
+        (?P<first>\w+)\s+           # first name
+        (?:(?P<second>\w+)|-)\s+    # second name or '-' if none
+        (?P<gender>M|F)(?:\s+       # sex
         (?P<extensions>[\w\s]+))?$  # extensions (eg. language course)
-                                   # separated by whitespace
+                                    # separated by whitespace
         """, re.UNICODE + re.VERBOSE)
 
     def __init__(self, *args, **kwargs):
