@@ -6,7 +6,7 @@ from sqlalchemy import Column, Integer, SmallInteger, Date
 from sqlalchemy import func, desc
 
 from sis.model.meta import Base, Session
-from sis.model import Student, GroupMembership, Group
+from sis.model import Student, GroupMembership, Group, SchoolYear
 
 
 class LuckyNumber(Base):
@@ -140,9 +140,11 @@ class LuckyNumber(Base):
 
         """
         student_count = func.count(Student.id).label('student_count')
+        recent_years = [sy.id for sy in SchoolYear.recent()]
         stmt =  Session.query(student_count, Student).\
                         join(GroupMembership).\
-                        join(Group).group_by(Group.id).subquery()
+                        join(Group).group_by(Group.id).\
+                        filter(Group.year_id.in_(recent_years)).subquery()
         max = Session.query(func.max(stmt.c.student_count)).first()[0]
         count = Session.query(func.count(LuckyNumber.id)).first()[0]
         past = Session.query(LuckyNumber.number).\
