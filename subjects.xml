@@ -43,6 +43,10 @@
         <short>inf</short>
     </subject>
     <subject>
+        <long>laboratorium</long>
+        <short>lab</short>
+    </subject>
+    <subject>
         <long>matematyka</long>
         <short>mat</short>
     </subject>
